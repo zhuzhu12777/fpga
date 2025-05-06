@@ -2,7 +2,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 // used for generate axis cmd
 // cmd[71:0]
-// [71:64] Reserved 
+// [71:64] Reserved
 // [63:32] Address
 // [31] Type, 0=MM2S, 1=S2MM
 // [30] EOF, End of Frame
@@ -10,7 +10,7 @@
 // [23] SOF, Start of Frame
 // [22:0] BTT, Burst Type and Transfer Length
 
-module axis_cmd_gen_mm2s #(
+module axis_cmd_gen_s2mm #(
     parameter BTT_WIDTH = 23,       // BTT字段宽度
     parameter MAX_BURST_LEN = 512   // 最大突发长度（字节）, 256*16bit
 )(
@@ -22,8 +22,8 @@ module axis_cmd_gen_mm2s #(
     input                       m_axis_tready,
     output                      m_axis_tlast,
 
-    input                       read_start,
-    input                       read_reset,
+    input                       write_start,
+    input                       write_reset,
     input           [31:0]      base_addr,
     input           [31:0]      cap_size
 );
@@ -46,7 +46,7 @@ wire [71:0] cmd = {
     4'b0000,        // 保留
     4'b0000,        // 保留
     current_addr,   // 当前地址
-    1'b0,           // 类型：0=MM2S（内存到流）
+    1'b1,           // 类型：1=S2MM（流到内存）
     1'b1,           // EOF
     6'b000000,      // 保留
     1'b1,           // SOF
@@ -62,7 +62,7 @@ always @(posedge clk) begin
         m_axis_tdata <= 0;
         current_addr <= 0;
         remaining_size <= 0;
-    end else if(read_reset) begin
+    end else if(write_reset) begin
         // 同步软件复位
         state <= IDLE;
         m_axis_tvalid <= 1'b0;
@@ -72,7 +72,7 @@ always @(posedge clk) begin
     end else begin
         case (state)
             IDLE: begin
-                if (read_start) begin
+                if (write_start) begin
                     current_addr <= base_addr;
                     remaining_size <= cap_size;
                     state <= SEND_CMD;
@@ -95,12 +95,12 @@ always @(posedge clk) begin
                     
                     // 检查是否到达末尾
                     if (remaining_size <= transfer_size) begin
-                        // 不回到起始地址重新开始
+                        // 回到起始地址重新开始
                         current_addr <= base_addr;
                         remaining_size <= cap_size;
-                        state <= IDLE; // 结束传输
-                    end else                    
-                        state <= SEND_CMD;
+                    end
+                    
+                    state <= SEND_CMD;
                 end
             end
         endcase

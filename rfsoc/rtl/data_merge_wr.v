@@ -3,11 +3,12 @@
 
 module data_merge_wr(
     input                           axis_aclk, axis_rstb,
-
+    input                           axis_aclk_out, axis_rstb_out,
 
     input                           axis_tready_merge,
     output                          axis_tvalid_merge,
-    output          [191:0]         axis_tdata_merge,
+    output                          axis_tlast_merge,
+    output          [255:0]         axis_tdata_merge,
 
     output                          axis_tready_0,
     input                           axis_tvalid_0,
@@ -139,13 +140,36 @@ axis_combiner_0 combiner_merge (
   .m_axis_tdata         (cbout_tdata)           // output wire [191 : 0] m_axis_tdata
 );
 
-// axis_fifo_merge
+// axis_fifo_converter instance
+axis_converter axis_fifo_converter_inst (
+  .axis_aclk_in       (axis_aclk),            // input wire axis_aclk_in
+  .axis_rstb_in       (axis_rstb),            // input wire axis_rstb_in
+  .axis_aclk_out      (axis_aclk_out),        // input wire axis_aclk_out
+  .axis_rstb_out      (axis_rstb_out),        // input wire axis_rstb_out
+  .axis_tready_out    (axis_tready_merge),    // input wire axis_tready_out
+  .axis_tvalid_out    (axis_tvalid_merge),    // output wire axis_tvalid_out
+  .axis_tdata_out     (axis_tdata_merge),     // output wire [255:0] axis_tdata_out
+  .axis_tready_in     (cbout_tready),         // output wire axis_tready_in
+  .axis_tvalid_in     (cbout_tvalid),         // input wire axis_tvalid_in
+  .axis_tdata_in      (cbout_tdata)           // input wire [191:0] axis_tdata_in
+);
 
-
-
-
-
-
-
+// tlast
+reg [7:0] counter;
+localparam PACKET_LENGTH = 16;
+always @(posedge axis_aclk_out or negedge axis_rstb_out) begin
+    if (!axis_rstb_out) begin
+        counter <= 0;
+    end else begin
+        if (axis_tvalid_merge && axis_tready_merge) begin
+            if (counter == PACKET_LENGTH - 1) begin
+                counter <= 0;
+            end else begin
+                counter <= counter + 1;
+            end
+        end
+    end
+end
+assign axis_tlast_merge = (counter == PACKET_LENGTH - 1) ? 1'b1 : 1'b0;
 
 endmodule

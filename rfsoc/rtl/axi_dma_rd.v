@@ -5,7 +5,7 @@ module axi_dma_rd(
 
     // clock & reset
     input                           axi_aclk, axi_rstb,         // axi & axis clock, 500MHz
-    input                           axis_st_clk, axis_st_rstb,  //axis status clock, 100MHz 
+    input                           axis_st_clk, axis_st_rstb,  //axis status clock, 100MHz
 
     // axi4 mastaer read
     output               [31:0]     axi_araddr,
@@ -32,15 +32,16 @@ module axi_dma_rd(
     output                          axis_tvalid,
 
     // status
+    output reg            [7:0]     datamover_status,
     output reg           [31:0]     current_addr,
     output reg            [7:0]     run_cycles,
     output                          rd_mm2s_err,
 
     // regs
-    input                          read_start,
-    input                          read_reset,
-    input               [31:0]     start_address,
-    input               [31:0]     cap_size
+    input                           read_start,
+    input                           read_reset,
+    input                [31:0]     start_address,
+    input                [31:0]     cap_size
 
 );
 
@@ -53,14 +54,6 @@ wire                            m_axis_sts_tready;
 wire                [7:0]       m_axis_sts_tdata;
 wire                [0:0]       m_axis_sts_tkeep;
 wire                            m_axis_sts_tlast;
-
-// axis fifo
-wire                            fifo_axis_tvalid;
-wire                            fifo_axis_tready;
-wire               [255:0]      fifo_axis_tdata;
-wire                [31:0]      fifo_axis_tkeep;
-wire                            fifo_axis_tlast;
-
 
 axi_datamover_rd axi_datamover_rd (
   .m_axi_mm2s_aclk              (axi_aclk),                     // input wire m_axi_mm2s_aclk
@@ -114,6 +107,14 @@ assign m_axis_sts_tready = 1'b1; // always ready to receive status
 
 always@(posedge axi_aclk or negedge axi_rstb) begin
     if(!axi_rstb)
+        datamover_status <= 8'd0;
+    else if(m_axis_sts_tvalid & m_axis_sts_tready) begin
+        datamover_status <= m_axis_sts_tdata;
+    end
+end
+
+always@(posedge axi_aclk or negedge axi_rstb) begin
+    if(!axi_rstb)
         current_addr <= 32'd0;
     else if(axi_arready & axi_arvalid)
         current_addr <= axi_araddr;
@@ -126,20 +127,5 @@ always@(posedge axi_aclk or negedge axi_rstb) begin
         run_cycles <= run_cycles + 1'b1;
 end
 
-// fifo, depth = 64
-axis_data_fifo_rd axis_data_fifo_rd (
-  .s_axis_aresetn           (axi_rstb),             // input wire s_axis_aresetn
-  .s_axis_aclk              (axi_aclk),             // input wire s_axis_aclk
-  .s_axis_tvalid            (fifo_axis_tvalid),     // input wire s_axis_tvalid
-  .s_axis_tready            (fifo_axis_tready),     // output wire s_axis_tready
-  .s_axis_tdata             (fifo_axis_tdata),      // input wire [255 : 0] s_axis_tdata
-  .s_axis_tkeep             (fifo_axis_tkeep),      // input wire [31 : 0] s_axis_tkeep
-  .s_axis_tlast             (fifo_axis_tlast),      // input wire s_axis_tlast
-  .m_axis_tvalid            (axis_tvalid),          // output wire m_axis_tvalid
-  .m_axis_tready            (axis_tready),          // input wire m_axis_tready
-  .m_axis_tdata             (axis_tdata),           // output wire [255 : 0] m_axis_tdata
-  .m_axis_tkeep             (axis_tkeep),           // output wire [31 : 0] m_axis_tkeep
-  .m_axis_tlast             (axis_tlast)            // output wire m_axis_tlast
-);
 
 endmodule
