@@ -92,15 +92,15 @@ always @(posedge clk) begin
                     // 更新地址和剩余大小
                     current_addr <= current_addr + transfer_size;
                     remaining_size <= remaining_size - transfer_size;
-                    
+
                     // 检查是否到达末尾
                     if (remaining_size <= transfer_size) begin
-                        // 回到起始地址重新开始
+                        // 不回到起始地址重新开始
                         current_addr <= base_addr;
                         remaining_size <= cap_size;
-                    end
-                    
-                    state <= SEND_CMD;
+                        state <= IDLE; // 结束传输
+                    end else                    
+                        state <= SEND_CMD;
                 end
             end
         endcase

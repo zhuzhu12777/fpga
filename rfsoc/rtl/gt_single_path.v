@@ -23,7 +23,7 @@ module gt_signle_path(
 reg  [7:0]  gt_addr;
 wire [31:0] gt_dout;
 
-gt_sdpram_0 u_gt_sdpram (
+blk_mem_gen_0 u_gt_sdpram (
     .clka           (ps_clk),       // input wire clka
     .wea            (ram_we),       // input wire [0 : 0] wea
     .addra          (ram_addr),     // input wire [7 : 0] addra

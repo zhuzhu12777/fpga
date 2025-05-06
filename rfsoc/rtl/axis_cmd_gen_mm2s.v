@@ -12,7 +12,7 @@
 
 module axis_cmd_gen_mm2s #(
     parameter BTT_WIDTH = 23,       // BTT字段宽度
-    parameter MAX_BURST_LEN = 512   // 最大突发长度（字节）, 256*16bit
+    parameter MAX_BURST_LEN = 512   // 最大突发长度（字节）, 256*128bit
 )(
     input                       clk,
     input                       resetn,
@@ -95,12 +95,12 @@ always @(posedge clk) begin
                     
                     // 检查是否到达末尾
                     if (remaining_size <= transfer_size) begin
-                        // 不回到起始地址重新开始
+                        // 回到起始地址重新开始
                         current_addr <= base_addr;
                         remaining_size <= cap_size;
-                        state <= IDLE; // 结束传输
-                    end else                    
-                        state <= SEND_CMD;
+                    end
+                    
+                    state <= SEND_CMD;
                 end
             end
         endcase
