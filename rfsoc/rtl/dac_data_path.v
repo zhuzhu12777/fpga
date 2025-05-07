@@ -96,7 +96,7 @@ axi_dma_rd u_axi_dma_rd (
 wire                            m_axis_tvalid;
 wire                            m_axis_tready;
 wire               [255:0]      m_axis_tdata;
-axis_data_fifo_rd axis_data_fifo_rd (
+axis_data_fifo_rd u_axis_data_fifo_rd (
     .s_axis_aresetn         (pl_rstb),              // input wire s_axis_aresetn
     .s_axis_aclk            (pl_clk),               // input wire s_axis_aclk
     .s_axis_tvalid          (fifo_axis_tvalid),     // input wire s_axis_tvalid
@@ -110,7 +110,7 @@ axis_data_fifo_rd axis_data_fifo_rd (
 
 // axis data width converter, 256b to 128b
 wire                [127:0]    axis_128b_tdata;
-axis_dwidth_converter_rd axis_dwidth_converter_rd (
+axis_dwidth_converter_rd u_axis_dwidth_converter_rd (
     .aclk                   (rf_clk),               // input wire aclk
     .aresetn                (rf_rstb),              // input wire aresetn
     .s_axis_tvalid          (m_axis_tvalid),        // input wire s_axis_tvalid

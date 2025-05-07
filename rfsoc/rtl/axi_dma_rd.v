@@ -55,7 +55,7 @@ wire                [7:0]       m_axis_sts_tdata;
 wire                [0:0]       m_axis_sts_tkeep;
 wire                            m_axis_sts_tlast;
 
-axi_datamover_rd axi_datamover_rd (
+axi_datamover_rd u_axi_datamover_rd (
   .m_axi_mm2s_aclk              (axi_aclk),                     // input wire m_axi_mm2s_aclk
   .m_axi_mm2s_aresetn           (axi_rstb),                     // input wire m_axi_mm2s_aresetn
   .mm2s_err                     (rd_mm2s_err),                  // output wire mm2s_err
@@ -91,7 +91,7 @@ axi_datamover_rd axi_datamover_rd (
   .m_axis_mm2s_tready           (axis_tready)                   // input wire m_axis_mm2s_tready
 );
 
-axis_cmd_gen_mm2s axis_cmd_gen_mm2s(
+axis_cmd_gen_mm2s u_axis_cmd_gen_mm2s(
     .clk                        (axis_st_clk),
     .resetn                     (axis_st_rstb),
     .m_axis_tdata               (s_axis_cmd_tdata),

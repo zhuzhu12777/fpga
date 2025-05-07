@@ -177,7 +177,7 @@ wire         cbout_axis_tvalid;
 wire         cbout_axis_tready;
 wire [191:0] cbout_axis_tdata;
 
-axis_combiner_0 axis_combiner (
+axis_combiner_0 u_axis_combiner (
     .aclk                           (rf_clk),               // input wire aclk
     .aresetn                        (rf_rstb),              // input wire aresetn
     .s_axis_tvalid                  (cbin_axis_tvalid),     // input wire [5 : 0] s_axis_tvalid
@@ -196,7 +196,7 @@ wire [191:0] reorder_tdata = {cbout_axis_tdata[191:184], cbout_axis_tdata[159:15
 wire [191:0] afifo_tdata;
 wire         afifo_tvalid;
 wire         afifo_tready;
-axis_data_afifo_192b axis_data_afifo (
+axis_data_afifo_192b u_axis_data_afifo (
     .s_axis_aresetn                 (rf_rstb),              // input wire s_axis_aresetn
     .s_axis_aclk                    (rf_clk),               // input wire s_axis_aclk
     .s_axis_tvalid                  (cbout_axis_tvalid),    // input wire s_axis_tvalid
@@ -212,7 +212,7 @@ axis_data_afifo_192b axis_data_afifo (
 wire [127:0] dw_axis_tdata;
 wire         dw_axis_tvalid;
 wire         dw_axis_tready;
-axis_dwidth_converter_wr axis_dwidth_converter_wr (
+axis_dwidth_converter_wr u_axis_dwidth_converter_wr (
     .aclk                           (ps_clk),               // input wire aclk
     .aresetn                        (ps_rstb),              // input wire aresetn
     .s_axis_tvalid                  (afifo_tvalid),         // input wire s_axis_tvalid
