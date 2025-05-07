@@ -3,147 +3,141 @@
 // axilite registers to sram to gt path
 
 module gt_data_path(
-    input                           ps_clk, ps_rstb,         // registers clock
-    input                           gt_clk, gt_rstb,         // gt clock
+    input                           axilite_clk, axilite_rstb,  // axilite registers clock, 100MHz
+    input                           gt_clk, gt_rstb,            // gt clock, 187.5MHz
 
     input               [7:0]       ram_addr,
     input              [31:0]       ram_data,
     input                           ram_we,
-    // input               [2:0]       ram_idx,
-    input               [7:0]       gt_cap,
+    input               [2:0]       ram_idx,
 
-    input                           gt_start,
-    input                           gt_reset,
+    input                           reg_start,       // axilite clock
+    input                           reg_reset,
 
     // gt stream output
-    output             [31:0]       gt_tdata_0,
-    output                          gt_tvalid_0,
-    input                           gt_tready_0,
-
-    output             [31:0]       gt_tdata_1,
-    output                          gt_tvalid_1,
-    input                           gt_tready_1,
-
-    output             [31:0]       gt_tdata_2,
-    output                          gt_tvalid_2,
-    input                           gt_tready_2,
-
-    output             [31:0]       gt_tdata_3,
-    output                          gt_tvalid_3,
-    input                           gt_tready_3,
-
-    output             [31:0]       gt_tdata_4,
-    output                          gt_tvalid_4,
-    input                           gt_tready_4,
-
-    output             [31:0]       gt_tdata_5,
-    output                          gt_tvalid_5,
-    input                           gt_tready_5
+    output            [191:0]       gt_data
 );
 
 wire [5:0] gt_ram_we;
 
-assign gt_ram_we[0] = ram_we && (ram_addr == 8'h00);
-assign gt_ram_we[1] = ram_we && (ram_addr == 8'h01);
-assign gt_ram_we[2] = ram_we && (ram_addr == 8'h02);
-assign gt_ram_we[3] = ram_we && (ram_addr == 8'h03);
-assign gt_ram_we[4] = ram_we && (ram_addr == 8'h04);
-assign gt_ram_we[5] = ram_we && (ram_addr == 8'h05);
+assign gt_ram_we[0] = ram_we && (ram_idx == 3'h0);
+assign gt_ram_we[1] = ram_we && (ram_idx == 3'h1);
+assign gt_ram_we[2] = ram_we && (ram_idx == 3'h2);
+assign gt_ram_we[3] = ram_we && (ram_idx == 3'h3);
+assign gt_ram_we[4] = ram_we && (ram_idx == 3'h4);
+assign gt_ram_we[5] = ram_we && (ram_idx == 3'h5);
 
-gt_signle_path u_gt_signle_path_0 (
-    .ps_clk     (ps_clk    ),
-    .ps_rstb    (ps_rstb   ),
-    .gt_clk     (gt_clk    ),
-    .gt_rstb    (gt_rstb   ),
-    .ram_addr   (ram_addr  ),
-    .ram_data   (ram_data  ),
-    .ram_we     (gt_ram_we[0]    ),
-    .gt_cap     (gt_cap    ),
-    .gt_start   (gt_start  ),
-    .gt_reset   (gt_reset  ),
-    .gt_tdata   (gt_tdata_0),
-    .gt_tvalid  (gt_tvalid_0),
-    .gt_tready  (gt_tready_0)
+reg  [7:0]  gt_addr;
+wire [31:0] gt_data_out_0, gt_data_out_1, gt_data_out_2, gt_data_out_3, gt_data_out_4, gt_data_out_5;
+
+// sdpram * 6
+blk_mem_gen_gt blk_mem_gen_gt0 (
+    .clka               (axilite_clk),      // input wire clka
+    .wea                (gt_ram_we[0]),     // input wire [0 : 0] wea
+    .addra              (ram_addr),         // input wire [7 : 0] addra
+    .dina               (ram_data),         // input wire [31 : 0] dina
+    .clkb               (gt_clk),           // input wire clkb
+    .addrb              (gt_addr),          // input wire [7 : 0] addrb
+    .doutb              (gt_data_out_0)     // output wire [31 : 0] doutb
 );
 
-gt_signle_path u_gt_signle_path_1 (
-    .ps_clk     (ps_clk    ),
-    .ps_rstb    (ps_rstb   ),
-    .gt_clk     (gt_clk    ),
-    .gt_rstb    (gt_rstb   ),
-    .ram_addr   (ram_addr  ),
-    .ram_data   (ram_data  ),
-    .ram_we     (gt_ram_we[1]    ),
-    .gt_cap     (gt_cap    ),
-    .gt_start   (gt_start  ),
-    .gt_reset   (gt_reset  ),
-    .gt_tdata   (gt_tdata_1),
-    .gt_tvalid  (gt_tvalid_1),
-    .gt_tready  (gt_tready_1)
+blk_mem_gen_gt blk_mem_gen_gt1 (
+    .clka               (axilite_clk),      // input wire clka
+    .wea                (gt_ram_we[1]),     // input wire [0 : 0] wea
+    .addra              (ram_addr),         // input wire [7 : 0] addra
+    .dina               (ram_data),         // input wire [31 : 0] dina
+    .clkb               (gt_clk),           // input wire clkb
+    .addrb              (gt_addr),          // input wire [7 : 0] addrb
+    .doutb              (gt_data_out_1)     // output wire [31 : 0] doutb
 );
 
-gt_signle_path u_gt_signle_path_2 (
-    .ps_clk     (ps_clk    ),
-    .ps_rstb    (ps_rstb   ),
-    .gt_clk     (gt_clk    ),
-    .gt_rstb    (gt_rstb   ),
-    .ram_addr   (ram_addr  ),
-    .ram_data   (ram_data  ),
-    .ram_we     (gt_ram_we[2]    ),
-    .gt_cap     (gt_cap    ),
-    .gt_start   (gt_start  ),
-    .gt_reset   (gt_reset  ),
-    .gt_tdata   (gt_tdata_2),
-    .gt_tvalid  (gt_tvalid_2),
-    .gt_tready  (gt_tready_2)
+blk_mem_gen_gt blk_mem_gen_gt2 (
+    .clka               (axilite_clk),      // input wire clka
+    .wea                (gt_ram_we[2]),     // input wire [0 : 0] wea
+    .addra              (ram_addr),         // input wire [7 : 0] addra
+    .dina               (ram_data),         // input wire [31 : 0] dina
+    .clkb               (gt_clk),           // input wire clkb
+    .addrb              (gt_addr),          // input wire [7 : 0] addrb
+    .doutb              (gt_data_out_2)     // output wire [31 : 0] doutb
 );
 
-gt_signle_path u_gt_signle_path_3 (
-    .ps_clk     (ps_clk    ),
-    .ps_rstb    (ps_rstb   ),
-    .gt_clk     (gt_clk    ),
-    .gt_rstb    (gt_rstb   ),
-    .ram_addr   (ram_addr  ),
-    .ram_data   (ram_data  ),
-    .ram_we     (gt_ram_we[3]    ),
-    .gt_cap     (gt_cap    ),
-    .gt_start   (gt_start  ),
-    .gt_reset   (gt_reset  ),
-    .gt_tdata   (gt_tdata_3),
-    .gt_tvalid  (gt_tvalid_3),
-    .gt_tready  (gt_tready_3)
+blk_mem_gen_gt blk_mem_gen_gt3 (
+    .clka               (axilite_clk),      // input wire clka
+    .wea                (gt_ram_we[3]),     // input wire [0 : 0] wea
+    .addra              (ram_addr),         // input wire [7 : 0] addra
+    .dina               (ram_data),         // input wire [31 : 0] dina
+    .clkb               (gt_clk),           // input wire clkb
+    .addrb              (gt_addr),          // input wire [7 : 0] addrb
+    .doutb              (gt_data_out_3)     // output wire [31 : 0] doutb
 );
 
-gt_signle_path u_gt_signle_path_4 (
-    .ps_clk     (ps_clk    ),
-    .ps_rstb    (ps_rstb   ),
-    .gt_clk     (gt_clk    ),
-    .gt_rstb    (gt_rstb   ),
-    .ram_addr   (ram_addr  ),
-    .ram_data   (ram_data  ),
-    .ram_we     (gt_ram_we[4]    ),
-    .gt_cap     (gt_cap    ),
-    .gt_start   (gt_start  ),
-    .gt_reset   (gt_reset  ),
-    .gt_tdata   (gt_tdata_4),
-    .gt_tvalid  (gt_tvalid_4),
-    .gt_tready  (gt_tready_4)
+blk_mem_gen_gt blk_mem_gen_gt4 (
+    .clka               (axilite_clk),      // input wire clka
+    .wea                (gt_ram_we[4]),     // input wire [0 : 0] wea
+    .addra              (ram_addr),         // input wire [7 : 0] addra
+    .dina               (ram_data),         // input wire [31 : 0] dina
+    .clkb               (gt_clk),           // input wire clkb
+    .addrb              (gt_addr),          // input wire [7 : 0] addrb
+    .doutb              (gt_data_out_4)     // output wire [31 : 0] doutb
 );
 
-gt_signle_path u_gt_signle_path_5 (
-    .ps_clk     (ps_clk    ),
-    .ps_rstb    (ps_rstb   ),
-    .gt_clk     (gt_clk    ),
-    .gt_rstb    (gt_rstb   ),
-    .ram_addr   (ram_addr  ),
-    .ram_data   (ram_data  ),
-    .ram_we     (gt_ram_we[5]    ),
-    .gt_cap     (gt_cap    ),
-    .gt_start   (gt_start  ),
-    .gt_reset   (gt_reset  ),
-    .gt_tdata   (gt_tdata_5),
-    .gt_tvalid  (gt_tvalid_5),
-    .gt_tready  (gt_tready_5)
+blk_mem_gen_gt blk_mem_gen_gt5 (
+    .clka               (axilite_clk),      // input wire clka
+    .wea                (gt_ram_we[5]),     // input wire [0 : 0] wea
+    .addra              (ram_addr),         // input wire [7 : 0] addra
+    .dina               (ram_data),         // input wire [31 : 0] dina
+    .clkb               (gt_clk),           // input wire clkb
+    .addrb              (gt_addr),          // input wire [7 : 0] addrb
+    .doutb              (gt_data_out_5)     // output wire [31 : 0] doutb
 );
+
+reg [7:0] ram_addr_max;     // save max address
+always @(posedge axilite_clk or negedge axilite_rstb) begin
+    if(!axilite_rstb)
+        ram_addr_max <= 8'h0;
+    else if(reg_reset)
+        ram_addr_max <= 8'h0;
+    else if(ram_we && (ram_addr > ram_addr_max))
+        ram_addr_max <= ram_addr;
+end
+
+// gt_start
+wire gt_start;      // gt_clk domain start signal
+wire gt_reset;      // gt_clk domain reset signal
+xpm_cdc_single #(
+    .DEST_SYNC_FF(2),   // 同步寄存器级数，通常2-4
+    .INIT_SYNC_FF(0),   // 0=禁用初始同步，1=启用
+    .SIM_ASSERT_CHK(0), // 0=禁用仿真检查，1=启用
+    .SRC_INPUT_REG(1)   // 0=无输入寄存器，1=有输入寄存器
+) gt_start_sync (
+    .src_clk            (axilite_clk),      // 源时钟 (可选，如果SRC_INPUT_REG=1)
+    .src_in             (reg_start),        // 输入信号
+    .dest_clk           (gt_clk),           // 目标时钟
+    .dest_out           (gt_start)          // 同步后的输出信号
+);
+
+xpm_cdc_single #(
+    .DEST_SYNC_FF(2),   // 同步寄存器级数，通常2-4
+    .INIT_SYNC_FF(0),   // 0=禁用初始同步，1=启用
+    .SIM_ASSERT_CHK(0), // 0=禁用仿真检查，1=启用
+    .SRC_INPUT_REG(1)   // 0=无输入寄存器，1=有输入寄存器
+) gt_reset_sync (
+    .src_clk            (axilite_clk),      // 源时钟 (可选，如果SRC_INPUT_REG=1)
+    .src_in             (reg_reset),        // 输入信号
+    .dest_clk           (gt_clk),           // 目标时钟
+    .dest_out           (gt_reset)          // 同步后的输出信号
+);
+
+// gt_addr
+always @(posedge gt_clk or negedge gt_rstb) begin
+    if(!gt_rstb)
+        gt_addr <= 8'h0;
+    else if(gt_reset)
+        gt_addr <= 8'h0;
+    else if(gt_start)
+        gt_addr <= gt_addr < ram_addr_max ? gt_addr + 1'b1 : 8'h0;
+end
+
+assign gt_data = {gt_data_out_5, gt_data_out_4, gt_data_out_3, gt_data_out_2, gt_data_out_1, gt_data_out_0};
 
 endmodule

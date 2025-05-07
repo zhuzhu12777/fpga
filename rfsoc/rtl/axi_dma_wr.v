@@ -18,8 +18,8 @@ module axi_dma_wr(
     output                [2:0]     axi_awsize,
     output                [3:0]     axi_awuser,
     output                          axi_awvalid,
-    output              [255:0]     axi_wdata,
-    output               [31:0]     axi_wstrb,
+    output              [128:0]     axi_wdata,
+    output               [15:0]     axi_wstrb,
     output                          axi_wlast,
     output                          axi_wvalid,
     input                           axi_wready,
@@ -28,8 +28,8 @@ module axi_dma_wr(
     output                          axi_bready,
 
     // axis
-    input               [255:0]     axis_tdata,
-    input                [31:0]     axis_tkeep,
+    input               [128:0]     axis_tdata,
+    input                [15:0]     axis_tkeep,
     input                           axis_tlast,
     output                          axis_tready,
     input                           axis_tvalid,
@@ -83,16 +83,16 @@ axi_datamover_wr axi_datamover_wr (
   .m_axi_s2mm_awuser            (axi_awuser),                       // output wire [3 : 0] m_axi_s2mm_awuser
   .m_axi_s2mm_awvalid           (axi_awvalid),                      // output wire m_axi_s2mm_awvalid
   .m_axi_s2mm_awready           (axi_awready),                      // input wire m_axi_s2mm_awready
-  .m_axi_s2mm_wdata             (axi_wdata),                        // output wire [255 : 0] m_axi_s2mm_wdata
-  .m_axi_s2mm_wstrb             (axi_wstrb),                        // output wire [31 : 0] m_axi_s2mm_wstrb
+  .m_axi_s2mm_wdata             (axi_wdata),                        // output wire [127 : 0] m_axi_s2mm_wdata
+  .m_axi_s2mm_wstrb             (axi_wstrb),                        // output wire [15 : 0] m_axi_s2mm_wstrb
   .m_axi_s2mm_wlast             (axi_wlast),                        // output wire m_axi_s2mm_wlast
   .m_axi_s2mm_wvalid            (axi_wvalid),                       // output wire m_axi_s2mm_wvalid
   .m_axi_s2mm_wready            (axi_wready),                       // input wire m_axi_s2mm_wready
   .m_axi_s2mm_bresp             (axi_bresp),                        // input wire [1 : 0] m_axi_s2mm_bresp
   .m_axi_s2mm_bvalid            (axi_bvalid),                       // input wire m_axi_s2mm_bvalid
   .m_axi_s2mm_bready            (axi_bready),                       // output wire m_axi_s2mm_bready
-  .s_axis_s2mm_tdata            (axis_tdata),                       // input wire [255 : 0] s_axis_s2mm_tdata
-  .s_axis_s2mm_tkeep            (axis_tkeep),                       // input wire [31 : 0] s_axis_s2mm_tkeep
+  .s_axis_s2mm_tdata            (axis_tdata),                       // input wire [127 : 0] s_axis_s2mm_tdata
+  .s_axis_s2mm_tkeep            (axis_tkeep),                       // input wire [15 : 0] s_axis_s2mm_tkeep
   .s_axis_s2mm_tlast            (axis_tlast),                       // input wire s_axis_s2mm_tlast
   .s_axis_s2mm_tvalid           (axis_tvalid),                      // input wire s_axis_s2mm_tvalid
   .s_axis_s2mm_tready           (axis_tready)                       // output wire s_axis_s2mm_tready
@@ -112,8 +112,10 @@ axis_cmd_gen_s2mm axis_cmd_gen_s2mm(
 
 assign m_axis_sts_tready = 1'b1; // always ready to receive status
 
-always@(posedge axi_aclk or negedge axi_rstb) begin
-    if(!axi_rstb)
+always@(posedge axis_st_clk or negedge axis_st_rstb) begin
+    if(!axis_st_rstb)
+        datamover_status <= 8'd0;
+    else if(write_reset)
         datamover_status <= 8'd0;
     else if(m_axis_sts_tvalid & m_axis_sts_tready) begin
         datamover_status <= m_axis_sts_tdata;
@@ -123,25 +125,30 @@ end
 always@(posedge axi_aclk or negedge axi_rstb) begin
     if(!axi_rstb)
         current_addr <= 32'd0;
+    else if(write_reset)
+        current_addr <= 32'd0;
     else if(axi_awready & axi_awvalid)
         current_addr <= axi_awaddr;
 end
 
 // axi each transaction size is 256*16bit = 512byte
+localparam PACKET_SIZE = 4096;
 always@(posedge axi_aclk or negedge axi_rstb) begin
     if(!axi_rstb)
         run_cycles <= 8'd0;
-    else if(axi_awready & axi_awvalid & (axi_awaddr + 512 == start_address + cap_size))
+    else if(write_reset)
+        run_cycles <= 8'd0;
+    else if(axi_awready & axi_awvalid & (axi_awaddr + PACKET_SIZE >= start_address + cap_size))
         run_cycles <= run_cycles + 1'b1;
 end
 
 always@(posedge axi_aclk or negedge axi_rstb) begin
     if(!axi_rstb)
         cap_done <= 1'b0;
-    else if(axi_awready & axi_awvalid & (axi_awaddr + 512 == start_address + cap_size))
-        cap_done <= 1'b1;
-    else
+    else if(write_reset)
         cap_done <= 1'b0;
+    else if(axi_awready & axi_awvalid & (axi_awaddr + PACKET_SIZE >= start_address + cap_size))
+        cap_done <= 1'b1;
 end
 
 endmodule

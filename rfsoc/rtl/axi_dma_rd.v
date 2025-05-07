@@ -59,8 +59,8 @@ axi_datamover_rd axi_datamover_rd (
   .m_axi_mm2s_aclk              (axi_aclk),                     // input wire m_axi_mm2s_aclk
   .m_axi_mm2s_aresetn           (axi_rstb),                     // input wire m_axi_mm2s_aresetn
   .mm2s_err                     (rd_mm2s_err),                  // output wire mm2s_err
-  .m_axis_mm2s_cmdsts_aclk      (axis_st_clk),                  // input wire m_axis_mm2s_cmdsts_aclk
-  .m_axis_mm2s_cmdsts_aresetn   (axis_st_rstb),                 // input wire m_axis_mm2s_cmdsts_aresetn
+  .m_axis_mm2s_cmdsts_aclk      (axilite_clk),                  // input wire m_axis_mm2s_cmdsts_aclk
+  .m_axis_mm2s_cmdsts_aresetn   (axilite_rstb),                 // input wire m_axis_mm2s_cmdsts_aresetn
   .s_axis_mm2s_cmd_tvalid       (s_axis_cmd_tvalid),            // input wire s_axis_mm2s_cmd_tvalid
   .s_axis_mm2s_cmd_tready       (s_axis_cmd_tready),            // output wire s_axis_mm2s_cmd_tready
   .s_axis_mm2s_cmd_tdata        (s_axis_cmd_tdata),             // input wire [71 : 0] s_axis_mm2s_cmd_tdata
@@ -105,8 +105,10 @@ axis_cmd_gen_mm2s axis_cmd_gen_mm2s(
 
 assign m_axis_sts_tready = 1'b1; // always ready to receive status
 
-always@(posedge axi_aclk or negedge axi_rstb) begin
-    if(!axi_rstb)
+always@(posedge axis_st_clk or negedge axis_st_rstb) begin
+    if(!axis_st_rstb)
+        datamover_status <= 8'd0;
+    else if(read_reset)
         datamover_status <= 8'd0;
     else if(m_axis_sts_tvalid & m_axis_sts_tready) begin
         datamover_status <= m_axis_sts_tdata;
@@ -116,14 +118,19 @@ end
 always@(posedge axi_aclk or negedge axi_rstb) begin
     if(!axi_rstb)
         current_addr <= 32'd0;
+    else if(read_reset)
+        current_addr <= 32'd0;
     else if(axi_arready & axi_arvalid)
         current_addr <= axi_araddr;
 end
 
+localparam PACKET_SIZE = 4096;
 always@(posedge axi_aclk or negedge axi_rstb) begin
     if(!axi_rstb)
         run_cycles <= 8'd0;
-    else if(axi_arready & axi_arvalid & (axi_araddr + 512 == start_address + cap_size))
+    else if(read_reset)
+        run_cycles <= 8'd0;
+    else if(axi_arready & axi_arvalid & (axi_araddr + PACKET_SIZE >= start_address + cap_size))
         run_cycles <= run_cycles + 1'b1;
 end
 

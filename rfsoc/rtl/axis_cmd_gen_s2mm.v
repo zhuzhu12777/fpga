@@ -11,8 +11,8 @@
 // [22:0] BTT, Burst Type and Transfer Length
 
 module axis_cmd_gen_s2mm #(
-    parameter BTT_WIDTH = 23,       // BTT字段宽度
-    parameter MAX_BURST_LEN = 512   // 最大突发长度（字节）, 256*16bit
+    parameter BTT_WIDTH = 23,           // BTT字段宽度
+    parameter MAX_BURST_LEN = 4096      // 最大突发长度（字节）, 128*256bit
 )(
     input                       clk,
     input                       resetn,
@@ -20,7 +20,6 @@ module axis_cmd_gen_s2mm #(
     output reg      [71:0]      m_axis_tdata,
     output reg                  m_axis_tvalid,
     input                       m_axis_tready,
-    output                      m_axis_tlast,
 
     input                       write_start,
     input                       write_reset,
@@ -55,7 +54,7 @@ wire [71:0] cmd = {
 
 assign m_axis_tlast = 1'b1;  // 每个命令都是单独的包
 
-always @(posedge clk) begin
+always @(posedge clk or negedge resetn) begin
     if (!resetn) begin
         state <= IDLE;
         m_axis_tvalid <= 1'b0;
@@ -99,7 +98,7 @@ always @(posedge clk) begin
                         current_addr <= base_addr;
                         remaining_size <= cap_size;
                         state <= IDLE; // 结束传输
-                    end else                    
+                    end else
                         state <= SEND_CMD;
                 end
             end
