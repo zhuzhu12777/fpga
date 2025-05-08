@@ -110,9 +110,8 @@ always@(posedge axis_st_clk or negedge axis_st_rstb) begin
         datamover_status <= 8'd0;
     else if(read_reset)
         datamover_status <= 8'd0;
-    else if(m_axis_sts_tvalid & m_axis_sts_tready) begin
+    else if(m_axis_sts_tvalid & m_axis_sts_tready)
         datamover_status <= m_axis_sts_tdata;
-    end
 end
 
 always@(posedge axi_aclk or negedge axi_rstb) begin

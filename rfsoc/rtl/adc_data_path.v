@@ -226,48 +226,48 @@ axis_dwidth_converter_wr u_axis_dwidth_converter_wr (
 // 6. axi_dma_wr to move data to ddr
 axi_dma_wr u_axi_dma_wr (
     // clock & reset
-    .axi_aclk           (ps_clk),
-    .axi_rstb           (ps_rstb),
-    .axis_st_clk        (axilite_clk),
-    .axis_st_rstb       (axilite_rstb),
+    .axi_aclk                       (ps_clk),
+    .axi_rstb                       (ps_rstb),
+    .axis_st_clk                    (axilite_clk),
+    .axis_st_rstb                   (axilite_rstb),
 
     // axi4 master write
-    .axi_awaddr         (axi_awaddr),
-    .axi_awburst        (axi_awburst),
-    .axi_awcache        (axi_awcache),
-    .axi_awid           (axi_awid),
-    .axi_awlen          (axi_awlen),
-    .axi_awprot         (axi_awprot),
-    .axi_awready        (axi_awready),
-    .axi_awsize         (axi_awsize),
-    .axi_awuser         (axi_awuser),
-    .axi_awvalid        (axi_awvalid),
-    .axi_wdata          (axi_wdata),
-    .axi_wstrb          (axi_wstrb),
-    .axi_wlast          (axi_wlast),
-    .axi_wvalid         (axi_wvalid),
-    .axi_wready         (axi_wready),
-    .axi_bresp          (axi_bresp),
-    .axi_bvalid         (axi_bvalid),
-    .axi_bready         (axi_bready),
+    .axi_awaddr                     (axi_awaddr),
+    .axi_awburst                    (axi_awburst),
+    .axi_awcache                    (axi_awcache),
+    .axi_awid                       (axi_awid),
+    .axi_awlen                      (axi_awlen),
+    .axi_awprot                     (axi_awprot),
+    .axi_awready                    (axi_awready),
+    .axi_awsize                     (axi_awsize),
+    .axi_awuser                     (axi_awuser),
+    .axi_awvalid                    (axi_awvalid),
+    .axi_wdata                      (axi_wdata),
+    .axi_wstrb                      (axi_wstrb),
+    .axi_wlast                      (axi_wlast),
+    .axi_wvalid                     (axi_wvalid),
+    .axi_wready                     (axi_wready),
+    .axi_bresp                      (axi_bresp),
+    .axi_bvalid                     (axi_bvalid),
+    .axi_bready                     (axi_bready),
 
     // axis
-    .axis_tdata         (dw_axis_tdata),
-    .axis_tready        (dw_axis_tready),
-    .axis_tvalid        (dw_axis_tvalid),
+    .axis_tdata                     (dw_axis_tdata),
+    .axis_tready                    (dw_axis_tready),
+    .axis_tvalid                    (dw_axis_tvalid),
 
     // status
-    .datamover_status   (datamover_status),
-    .current_addr       (current_addr),
-    .run_cycles         (run_cycles),
-    .wr_mm2s_err        (wr_mm2s_err),
-    .cap_done           (cap_done),
+    .datamover_status               (datamover_status),
+    .current_addr                   (current_addr),
+    .run_cycles                     (run_cycles),
+    .wr_mm2s_err                    (wr_mm2s_err),
+    .cap_done                       (cap_done),
 
     // regs
-    .write_start        (write_start),
-    .write_reset        (write_reset),
-    .start_address      (start_address),
-    .cap_size           (cap_size)
+    .write_start                    (write_start),
+    .write_reset                    (write_reset),
+    .start_address                  (start_address),
+    .cap_size                       (cap_size)
 );
 
 endmodule

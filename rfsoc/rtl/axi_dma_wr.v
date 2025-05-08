@@ -29,8 +29,6 @@ module axi_dma_wr(
 
     // axis
     input               [128:0]     axis_tdata,
-    input                [15:0]     axis_tkeep,
-    input                           axis_tlast,
     output                          axis_tready,
     input                           axis_tvalid,
 
@@ -92,8 +90,8 @@ axi_datamover_wr u_axi_datamover_wr (
   .m_axi_s2mm_bvalid            (axi_bvalid),                       // input wire m_axi_s2mm_bvalid
   .m_axi_s2mm_bready            (axi_bready),                       // output wire m_axi_s2mm_bready
   .s_axis_s2mm_tdata            (axis_tdata),                       // input wire [127 : 0] s_axis_s2mm_tdata
-  .s_axis_s2mm_tkeep            (axis_tkeep),                       // input wire [15 : 0] s_axis_s2mm_tkeep
-  .s_axis_s2mm_tlast            (axis_tlast),                       // input wire s_axis_s2mm_tlast
+  .s_axis_s2mm_tkeep            (16'hff),                           // input wire [15 : 0] s_axis_s2mm_tkeep
+  .s_axis_s2mm_tlast            (1'b0),                             // input wire s_axis_s2mm_tlast
   .s_axis_s2mm_tvalid           (axis_tvalid),                      // input wire s_axis_s2mm_tvalid
   .s_axis_s2mm_tready           (axis_tready)                       // output wire s_axis_s2mm_tready
 );

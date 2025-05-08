@@ -1,6 +1,9 @@
+set cur_tcl_path [file dirname [file normalize [info script]]]
 
-
-create_ip -name axi_datamover -vendor xilinx.com -library ip -version 5.1 -module_name axi_datamover_rd
+## dac path
+if {[get_ips axi_datamover_rd] == ""} {
+  create_ip -name axi_datamover -vendor xilinx.com -library ip -module_name axi_datamover_rd
+}
 set_property -dict [list \
   CONFIG.Component_Name {axi_datamover_rd} \
   CONFIG.c_enable_s2mm {0} \
@@ -10,8 +13,9 @@ set_property -dict [list \
   CONFIG.c_mm2s_stscmd_is_async {true} \
 ] [get_ips axi_datamover_rd]
 
-
-create_ip -name axis_data_fifo -vendor xilinx.com -library ip -version 2.0 -module_name axis_data_fifo_rd
+if {[get_ips axis_data_fifo_rd] == ""} {
+  create_ip -name axis_data_fifo -vendor xilinx.com -library ip -module_name axis_data_fifo_rd
+}
 set_property -dict [list \
   CONFIG.Component_Name {axis_data_fifo_rd} \
   CONFIG.FIFO_DEPTH {64} \
@@ -19,8 +23,9 @@ set_property -dict [list \
   CONFIG.TDATA_NUM_BYTES {32} \
 ] [get_ips axis_data_fifo_rd]
 
-
-create_ip -name axis_dwidth_converter -vendor xilinx.com -library ip -version 1.1 -module_name axis_dwidth_converter_rd
+if {[get_ips axis_dwidth_converter_rd] == ""} {
+  create_ip -name axis_dwidth_converter -vendor xilinx.com -library ip -module_name axis_dwidth_converter_rd
+}
 set_property -dict [list \
   CONFIG.Component_Name {axis_dwidth_converter_rd} \
   CONFIG.M_TDATA_NUM_BYTES {16} \
@@ -28,8 +33,10 @@ set_property -dict [list \
 ] [get_ips axis_dwidth_converter_rd]
 
 
-
-create_ip -name axi_datamover -vendor xilinx.com -library ip -version 5.1 -module_name axi_datamover_wr
+## adc path
+if {[get_ips axi_datamover_wr] == ""} {
+  create_ip -name axi_datamover -vendor xilinx.com -library ip -module_name axi_datamover_wr
+}
 set_property -dict [list \
   CONFIG.Component_Name {axi_datamover_wr} \
   CONFIG.c_enable_mm2s {0} \
@@ -40,31 +47,35 @@ set_property -dict [list \
   CONFIG.c_m_axi_s2mm_data_width {128} \
 ] [get_ips axi_datamover_wr]
 
-
-create_ip -name axis_data_fifo -vendor xilinx.com -library ip -version 2.0 -module_name axis_data_fifo_32b
+if {[get_ips axis_data_fifo_32b] == ""} {
+  create_ip -name axis_data_fifo -vendor xilinx.com -library ip -module_name axis_data_fifo_32b
+}
 set_property -dict [list \
   CONFIG.Component_Name {axis_data_fifo_32b} \
   CONFIG.FIFO_DEPTH {64} \
   CONFIG.TDATA_NUM_BYTES {4} \
 ] [get_ips axis_data_fifo_32b]
 
-
-create_ip -name axis_combiner -vendor xilinx.com -library ip -version 1.1 -module_name axis_combiner_0
+if {[get_ips axis_combiner_0] == ""} {
+  create_ip -name axis_combiner -vendor xilinx.com -library ip -module_name axis_combiner_0
+}
 set_property -dict [list \
   CONFIG.NUM_SI {6} \
   CONFIG.TDATA_NUM_BYTES {4} \
 ] [get_ips axis_combiner_0]
 
-
-create_ip -name axis_dwidth_converter -vendor xilinx.com -library ip -version 1.1 -module_name axis_dwidth_converter_wr
+if {[get_ips axis_dwidth_converter_wr] == ""} {
+  create_ip -name axis_dwidth_converter -vendor xilinx.com -library ip -module_name axis_dwidth_converter_wr
+}
 set_property -dict [list \
   CONFIG.Component_Name {axis_dwidth_converter_wr} \
   CONFIG.M_TDATA_NUM_BYTES {16} \
   CONFIG.S_TDATA_NUM_BYTES {24} \
 ] [get_ips axis_dwidth_converter_wr]
 
-
-create_ip -name axis_data_fifo -vendor xilinx.com -library ip -version 2.0 -module_name axis_data_afifo_192b
+if {[get_ips axis_data_afifo_192b] == ""} {
+  create_ip -name axis_data_fifo -vendor xilinx.com -library ip -module_name axis_data_afifo_192b
+}
 set_property -dict [list \
   CONFIG.Component_Name {axis_data_afifo_192b} \
   CONFIG.FIFO_DEPTH {256} \
@@ -73,7 +84,10 @@ set_property -dict [list \
 ] [get_ips axis_data_afifo_192b]
 
 
-create_ip -name blk_mem_gen -vendor xilinx.com -library ip -version 8.4 -module_name blk_mem_gen_gt
+# gt path
+if {[get_ips blk_mem_gen_gt] == ""} {
+  create_ip -name blk_mem_gen -vendor xilinx.com -library ip -module_name blk_mem_gen_gt
+}
 set_property -dict [list \
   CONFIG.Assume_Synchronous_Clk {false} \
   CONFIG.Component_Name {blk_mem_gen_gt} \
@@ -84,3 +98,21 @@ set_property -dict [list \
   CONFIG.Write_Depth_A {256} \
   CONFIG.Write_Width_A {32} \
 ] [get_ips blk_mem_gen_gt]
+
+
+# reg map
+create_ip -name axi_apb_bridge -vendor xilinx.com -library ip -version 3.0 -module_name axi_apb_bridge_0
+set_property -dict [list \
+  CONFIG.C_APB_NUM_SLAVES {1} \
+  CONFIG.C_M_APB_PROTOCOL {apb4} \
+  CONFIG.C_HIGHADDR {0x00000000FFFFFFFF} \
+] [get_ips axi_apb_bridge_0]
+
+
+# rf converter
+
+
+# gty
+
+
+
