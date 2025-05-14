@@ -98,6 +98,18 @@ wire [7:0]  stream_3_sample_2_data = (axis_tdata_3[79:72] + axis_tdata_3[95:88] 
 wire [7:0]  stream_3_sample_3_data = (axis_tdata_3[111:104] + axis_tdata_3[127:120] + 1)>>1;  //round
 wire [31:0] stream_3_tdata = {stream_3_sample_3_data, stream_3_sample_2_data, stream_3_sample_1_data, stream_3_sample_0_data};
 
+wire [7:0]  stream_4_sample_0_data = (axis_tdata_4[15:7] + axis_tdata_4[31:24] + 1)>>1;  //round
+wire [7:0]  stream_4_sample_1_data = (axis_tdata_4[47:40] + axis_tdata_4[63:56] + 1)>>1;  //round
+wire [7:0]  stream_4_sample_2_data = (axis_tdata_4[79:72] + axis_tdata_4[95:88] + 1)>>1;  //round
+wire [7:0]  stream_4_sample_3_data = (axis_tdata_4[111:104] + axis_tdata_4[127:120] + 1)>>1;  //round
+wire [31:0] stream_4_tdata = {stream_4_sample_3_data, stream_4_sample_2_data, stream_4_sample_1_data, stream_4_sample_0_data};
+
+wire [7:0]  stream_5_sample_0_data = (axis_tdata_5[15:7] + axis_tdata_5[31:24] + 1)>>1;  //round
+wire [7:0]  stream_5_sample_1_data = (axis_tdata_5[47:40] + axis_tdata_5[63:56] + 1)>>1;  //round
+wire [7:0]  stream_5_sample_2_data = (axis_tdata_5[79:72] + axis_tdata_5[95:88] + 1)>>1;  //round
+wire [7:0]  stream_5_sample_3_data = (axis_tdata_5[111:104] + axis_tdata_5[127:120] + 1)>>1;  //round
+wire [31:0] stream_5_tdata = {stream_5_sample_3_data, stream_5_sample_2_data, stream_5_sample_1_data, stream_5_sample_0_data};
+
 // 2. each axis async fifo, depth = 64
 wire [31:0] fifo_tdata_0, fifo_tdata_1, fifo_tdata_2, fifo_tdata_3, fifo_tdata_4, fifo_tdata_5;
 wire        fifo_tready_0, fifo_tready_1, fifo_tready_2, fifo_tready_3, fifo_tready_4, fifo_tready_5;
@@ -152,7 +164,7 @@ axis_data_fifo_32b stream_4_fifo (
     .s_axis_aclk                    (rf_clk),           // input wire s_axis_aclk
     .s_axis_tvalid                  (axis_tready_4),    // input wire s_axis_tvalid
     .s_axis_tready                  (axis_tvalid_4),    // output wire s_axis_tready
-    .s_axis_tdata                   (axis_tdata_4),     // input wire [31 : 0] s_axis_tdata
+    .s_axis_tdata                   (stream_4_tdata),   // input wire [31 : 0] s_axis_tdata
     .m_axis_tvalid                  (fifo_tvalid_4),    // output wire m_axis_tvalid
     .m_axis_tready                  (fifo_tready_4),    // input wire m_axis_tready
     .m_axis_tdata                   (fifo_tdata_4)      // output wire [31 : 0] m_axis_tdata
@@ -163,7 +175,7 @@ axis_data_fifo_32b stream_5_fifo (
     .s_axis_aclk                    (rf_clk),           // input wire s_axis_aclk
     .s_axis_tvalid                  (axis_tready_5),    // input wire s_axis_tvalid
     .s_axis_tready                  (axis_tvalid_5),    // output wire s_axis_tready
-    .s_axis_tdata                   (axis_tdata_5),     // input wire [31 : 0] s_axis_tdata
+    .s_axis_tdata                   (stream_5_tdata),   // input wire [31 : 0] s_axis_tdata
     .m_axis_tvalid                  (fifo_tvalid_5),    // output wire m_axis_tvalid
     .m_axis_tready                  (fifo_tready_5),    // input wire m_axis_tready
     .m_axis_tdata                   (fifo_tdata_5)      // output wire [31 : 0] m_axis_tdata
