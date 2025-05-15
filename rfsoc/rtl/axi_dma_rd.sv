@@ -5,31 +5,13 @@ module axi_dma_rd(
 
     // clock & reset
     input                           axi_aclk, axi_rstb,         // axi & axis clock, 500MHz
-    input                           axis_st_clk, axis_st_rstb,  //axis status clock, 100MHz
+    input                           axilite_clk, axilite_rstb,  // axis status clock, 100MHz
 
     // axi4 mastaer read
-    output               [31:0]     axi_araddr,
-    output                [1:0]     axi_arburst,
-    output                [3:0]     axi_arcache,
-    output                [3:0]     axi_arid,
-    output                [7:0]     axi_arlen,
-    output                [2:0]     axi_arprot,
-    input                           axi_arready,
-    output                [2:0]     axi_arsize,
-    output                [3:0]     axi_aruser,
-    output                          axi_arvalid,
-    input               [255:0]     axi_rdata,
-    input                           axi_rlast,
-    output                          axi_rready,
-    input                 [1:0]     axi_rresp,
-    input                           axi_rvalid,
+    AXI4.master                     m_axi,
 
     // axis
-    output              [255:0]     axis_tdata,
-    output               [31:0]     axis_tkeep,
-    output                          axis_tlast,
-    input                           axis_tready,
-    output                          axis_tvalid,
+    STREAM.master                   m_axis,     //256b
 
     // status
     output reg            [7:0]     datamover_status,
@@ -69,31 +51,31 @@ axi_datamover_rd u_axi_datamover_rd (
   .m_axis_mm2s_sts_tdata        (m_axis_sts_tdata),             // output wire [7 : 0] m_axis_mm2s_sts_tdata
   .m_axis_mm2s_sts_tkeep        (m_axis_sts_tkeep),             // output wire [0 : 0] m_axis_mm2s_sts_tkeep
   .m_axis_mm2s_sts_tlast        (m_axis_sts_tlast),             // output wire m_axis_mm2s_sts_tlast
-  .m_axi_mm2s_arid              (axi_arid),                     // output wire [3 : 0] m_axi_mm2s_arid
-  .m_axi_mm2s_araddr            (axi_araddr),                   // output wire [31 : 0] m_axi_mm2s_araddr
-  .m_axi_mm2s_arlen             (axi_arlen),                    // output wire [7 : 0] m_axi_mm2s_arlen
-  .m_axi_mm2s_arsize            (axi_arsize),                   // output wire [2 : 0] m_axi_mm2s_arsize
-  .m_axi_mm2s_arburst           (axi_arburst),                  // output wire [1 : 0] m_axi_mm2s_arburst
-  .m_axi_mm2s_arprot            (axi_arprot),                   // output wire [2 : 0] m_axi_mm2s_arprot
-  .m_axi_mm2s_arcache           (axi_arcache),                  // output wire [3 : 0] m_axi_mm2s_arcache
-  .m_axi_mm2s_aruser            (axi_aruser),                   // output wire [3 : 0] m_axi_mm2s_aruser
-  .m_axi_mm2s_arvalid           (axi_arvalid),                  // output wire m_axi_mm2s_arvalid
-  .m_axi_mm2s_arready           (axi_arready),                  // input wire m_axi_mm2s_arready
-  .m_axi_mm2s_rdata             (axi_rdata),                    // input wire [255 : 0] m_axi_mm2s_rdata
-  .m_axi_mm2s_rresp             (axi_rresp),                    // input wire [1 : 0] m_axi_mm2s_rresp
-  .m_axi_mm2s_rlast             (axi_rlast),                    // input wire m_axi_mm2s_rlast
-  .m_axi_mm2s_rvalid            (axi_rvalid),                   // input wire m_axi_mm2s_rvalid
-  .m_axi_mm2s_rready            (axi_rready),                   // output wire m_axi_mm2s_rready
-  .m_axis_mm2s_tdata            (axis_tdata),                   // output wire [255 : 0] m_axis_mm2s_tdata
-  .m_axis_mm2s_tkeep            (axis_tkeep),                   // output wire [31 : 0] m_axis_mm2s_tkeep
-  .m_axis_mm2s_tlast            (axis_tlast),                   // output wire m_axis_mm2s_tlast
-  .m_axis_mm2s_tvalid           (axis_tvalid),                  // output wire m_axis_mm2s_tvalid
-  .m_axis_mm2s_tready           (axis_tready)                   // input wire m_axis_mm2s_tready
+  .m_axi_mm2s_arid              (m_axi.arid),                     // output wire [3 : 0] m_axi_mm2s_arid
+  .m_axi_mm2s_araddr            (m_axi.araddr),                   // output wire [31 : 0] m_axi_mm2s_araddr
+  .m_axi_mm2s_arlen             (m_axi.arlen),                    // output wire [7 : 0] m_axi_mm2s_arlen
+  .m_axi_mm2s_arsize            (m_axi.arsize),                   // output wire [2 : 0] m_axi_mm2s_arsize
+  .m_axi_mm2s_arburst           (m_axi.arburst),                  // output wire [1 : 0] m_axi_mm2s_arburst
+  .m_axi_mm2s_arprot            (m_axi.arprot),                   // output wire [2 : 0] m_axi_mm2s_arprot
+  .m_axi_mm2s_arcache           (m_axi.arcache),                  // output wire [3 : 0] m_axi_mm2s_arcache
+  .m_axi_mm2s_aruser            (m_axi.aruser),                   // output wire [3 : 0] m_axi_mm2s_aruser
+  .m_axi_mm2s_arvalid           (m_axi.arvalid),                  // output wire m_axi_mm2s_arvalid
+  .m_axi_mm2s_arready           (m_axi.arready),                  // input wire m_axi_mm2s_arready
+  .m_axi_mm2s_rdata             (m_axi.rdata),                    // input wire [255 : 0] m_axi_mm2s_rdata
+  .m_axi_mm2s_rresp             (m_axi.rresp),                    // input wire [1 : 0] m_axi_mm2s_rresp
+  .m_axi_mm2s_rlast             (m_axi.rlast),                    // input wire m_axi_mm2s_rlast
+  .m_axi_mm2s_rvalid            (m_axi.rvalid),                   // input wire m_axi_mm2s_rvalid
+  .m_axi_mm2s_rready            (m_axi.rready),                   // output wire m_axi_mm2s_rready
+  .m_axis_mm2s_tdata            (m_axis.tdata),                   // output wire [255 : 0] m_axis_mm2s_tdata
+  .m_axis_mm2s_tkeep            (m_axis.tkeep),                   // output wire [31 : 0] m_axis_mm2s_tkeep
+  .m_axis_mm2s_tlast            (m_axis.tlast),                   // output wire m_axis_mm2s_tlast
+  .m_axis_mm2s_tvalid           (m_axis.tvalid),                  // output wire m_axis_mm2s_tvalid
+  .m_axis_mm2s_tready           (m_axis.tready)                   // input wire m_axis_mm2s_tready
 );
 
 axis_cmd_gen_mm2s u_axis_cmd_gen_mm2s(
-    .clk                        (axis_st_clk),
-    .resetn                     (axis_st_rstb),
+    .clk                        (axilite_clk),
+    .resetn                     (axilite_rstb),
     .m_axis_tdata               (s_axis_cmd_tdata),
     .m_axis_tvalid              (s_axis_cmd_tvalid),
     .m_axis_tready              (s_axis_cmd_tready),
@@ -105,8 +87,8 @@ axis_cmd_gen_mm2s u_axis_cmd_gen_mm2s(
 
 assign m_axis_sts_tready = 1'b1; // always ready to receive status
 
-always@(posedge axis_st_clk or negedge axis_st_rstb) begin
-    if(!axis_st_rstb)
+always@(posedge axilite_clk or negedge axilite_rstb) begin
+    if(!axilite_rstb)
         datamover_status <= 8'd0;
     else if(read_reset)
         datamover_status <= 8'd0;
@@ -119,8 +101,8 @@ always@(posedge axi_aclk or negedge axi_rstb) begin
         current_addr <= 32'd0;
     else if(read_reset)
         current_addr <= 32'd0;
-    else if(axi_arready & axi_arvalid)
-        current_addr <= axi_araddr;
+    else if(m_axi.arready & m_axi.arvalid)
+        current_addr <= m_axi.araddr;
 end
 
 localparam PACKET_SIZE = 4096;
@@ -129,7 +111,7 @@ always@(posedge axi_aclk or negedge axi_rstb) begin
         run_cycles <= 8'd0;
     else if(read_reset)
         run_cycles <= 8'd0;
-    else if(axi_arready & axi_arvalid & (axi_araddr + PACKET_SIZE >= start_address + cap_size))
+    else if(m_axi.arready & m_axi.arvalid & (m_axi.araddr + PACKET_SIZE >= start_address + cap_size))
         run_cycles <= run_cycles + 1'b1;
 end
 

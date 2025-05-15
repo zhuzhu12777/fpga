@@ -101,7 +101,7 @@ set_property -dict [list \
 
 
 # reg map
-create_ip -name axi_apb_bridge -vendor xilinx.com -library ip -version 3.0 -module_name axi_apb_bridge_0
+create_ip -name axi_apb_bridge -vendor xilinx.com -library ip -module_name axi_apb_bridge_0
 set_property -dict [list \
   CONFIG.C_APB_NUM_SLAVES {1} \
   CONFIG.C_M_APB_PROTOCOL {apb4} \
@@ -113,6 +113,20 @@ set_property -dict [list \
 
 
 # gty
-
+if {[get_ips GTY_Raw_6CHN] == ""} {
+    create_ip -name gtwizard_ultrascale -vendor xilinx.com -library ip -module_name GTY_Raw_6CHN
+}
+set_property -dict [list \
+    CONFIG.CHANNEL_ENABLE {X0Y9 X0Y8 X0Y7 X0Y6 X0Y5 X0Y4} \
+    CONFIG.FREERUN_FREQUENCY {100} \
+    CONFIG.RX_LINE_RATE {6} \
+    CONFIG.RX_PLL_TYPE {CPLL} \
+    CONFIG.RX_REFCLK_FREQUENCY {150} \
+    CONFIG.RX_REFCLK_SOURCE {X0Y9 clk0-1 X0Y8 clk0-1} \
+    CONFIG.TX_LINE_RATE {6} \
+    CONFIG.TX_PLL_TYPE {CPLL} \
+    CONFIG.TX_REFCLK_FREQUENCY {150} \
+    CONFIG.TX_REFCLK_SOURCE {X0Y9 clk0-1 X0Y8 clk0-1} \
+] [get_ips GTY_Raw_6CHN]
 
 

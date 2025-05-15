@@ -24,7 +24,8 @@ module axis_cmd_gen_s2mm #(
     input                       write_start,
     input                       write_reset,
     input           [31:0]      base_addr,
-    input           [31:0]      cap_size
+    input           [31:0]      cap_size,
+    output reg                  cap_done
 );
 
 // 状态定义
@@ -61,6 +62,7 @@ always @(posedge clk or negedge resetn) begin
         m_axis_tdata <= 0;
         current_addr <= 0;
         remaining_size <= 0;
+        cap_done <= 0;
     end else if(write_reset) begin
         // 同步软件复位
         state <= IDLE;
@@ -68,10 +70,11 @@ always @(posedge clk or negedge resetn) begin
         m_axis_tdata <= 0;
         current_addr <= base_addr;  // 复位到基地址
         remaining_size <= cap_size; // 复位到总容量
+        cap_done <= 0;
     end else begin
         case (state)
             IDLE: begin
-                if (write_start) begin
+                if (write_start && !cap_done) begin
                     current_addr <= base_addr;
                     remaining_size <= cap_size;
                     state <= SEND_CMD;
@@ -94,9 +97,10 @@ always @(posedge clk or negedge resetn) begin
 
                     // 检查是否到达末尾
                     if (remaining_size <= transfer_size) begin
-                        // 不回到起始地址重新开始
+                        // 不回到起始地址，结束传输
                         current_addr <= base_addr;
                         remaining_size <= cap_size;
+                        cap_done <= 1'b1; // 设置完成标志
                         state <= IDLE; // 结束传输
                     end else
                         state <= SEND_CMD;
