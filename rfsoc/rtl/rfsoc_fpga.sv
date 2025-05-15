@@ -1,8 +1,6 @@
 module rfsoc_fpga(
 
 
-    input  logic            gt_refclk_in,
-
     AXI4.master             pl_m_axi_rd,          // axi4 master read from pl ddr
     AXI4.master             ps_m_axi_wr,          // axi4 master write to ps ddr
     AXI4Lite.slave          ps_s_axilite,         // axilite slave
@@ -14,7 +12,7 @@ module rfsoc_fpga(
     input  logic    [5:0]   vin_n,
     output logic            vout_p,
     output logic            vout_n,
-    output logic            rf_int
+    output logic            ps_int
 );
 
 wire                pl_clk, pl_rstb;    // 333.25MHz
@@ -23,6 +21,8 @@ wire                dac_clk, dac_rstb;    // 500MHz
 wire                adc_clk, adc_rstb;    // 187.5MHz
 wire                gt_clk, gt_rstb;      // 187.5MHz
 wire                axilite_clk, axilite_rstb; // 100MHz
+
+wire                gt_refclk_in;
 
 wire    [5:0]       adc0_clk_p, adc0_clk_n;
 wire                dac0_clk_p, dac0_clk_n;
@@ -51,7 +51,7 @@ reg_map #(
     .m_axil                 (ps_s_axilite),
     .regs                   (regs)
 );
-assign rf_int = regs.rf_int;
+assign ps_int = regs.rf_int;
 
 STREAM #(256) dac_stream;
 dac_data_path u_dac_data_path (

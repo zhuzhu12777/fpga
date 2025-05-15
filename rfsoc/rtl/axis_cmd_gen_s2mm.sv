@@ -53,7 +53,6 @@ wire [71:0] cmd = {
     btt             // BTT字段
 };
 
-assign m_axis_tlast = 1'b1;  // 每个命令都是单独的包
 
 always @(posedge clk or negedge resetn) begin
     if (!resetn) begin

@@ -75,9 +75,9 @@ STREAM #(128) axis_128b;
 axis_dwidth_converter_rd u_axis_dwidth_converter_rd (
     .aclk                   (rf_clk),               // input wire aclk
     .aresetn                (rf_rstb),              // input wire aresetn
-    .s_axis_tvalid          (m_axis_tvalid),        // input wire s_axis_tvalid
-    .s_axis_tready          (m_axis_tready),        // output wire s_axis_tready
-    .s_axis_tdata           (m_axis_tdata),         // input wire [255 : 0] s_axis_tdata
+    .s_axis_tvalid          (fifo_axis.tvalid),        // input wire s_axis_tvalid
+    .s_axis_tready          (fifo_axis.tready),        // output wire s_axis_tready
+    .s_axis_tdata           (fifo_axis.tdata),         // input wire [255 : 0] s_axis_tdata
     .m_axis_tvalid          (axis_128b.tvalid),          // output wire m_axis_tvalid
     .m_axis_tready          (axis_128b.tready),          // input wire m_axis_tready
     .m_axis_tdata           (axis_128b.tdata)       // output wire [127 : 0] m_axis_tdata
