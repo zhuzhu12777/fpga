@@ -1,0 +1,362 @@
+2022.2:
+ * Version 2.6 (Rev. 3)
+ * Bug Fix: Fixed multi tile SYNC enablement in ADC tile 3
+ * Other: Improved timing for Multi Tile SYNC
+
+2022.1.2:
+ * Version 2.6 (Rev. 2)
+ * No changes
+
+2022.1.1:
+ * Version 2.6 (Rev. 2)
+ * No changes
+
+2022.1:
+ * Version 2.6 (Rev. 2)
+ * Bug Fix: Fixed ADC calibration frozen reporting in gen 3 devices
+ * Bug Fix: Fixed read back of Start Data register in example design data capture block
+ * Other: Modified gen 3 calibration freeze process to improve recovery time following an over voltage event
+ * Other: Modified gen 3 example design to use the signal magnitude detector output to freeze calibration
+ * Other: Restarting a gen 3 ADC tile from the foreground calibration stage no longer effects other tiles in the clock chain
+
+2021.2.2:
+ * Version 2.6 (Rev. 1)
+ * No changes
+
+2021.2.1:
+ * Version 2.6 (Rev. 1)
+ * New Feature: Added support for production DFE devices
+
+2021.2:
+ * Version 2.6
+ * Bug Fix: Enabled SYSREF passing through disabled tiles
+ * Bug Fix: Fixed power-up state reporting in gen 3 devices
+ * Bug Fix: Fixed observation channel FIFO interrupt enable in converter 3
+ * New Feature: Added signal detect output for gen 3 devices
+ * New Feature: Added clocking resources panel
+ * New Feature: Added variable fabric width option for multi tile sync in gen 1 and gen 2 devices
+ * Other: Added warning for upgrade between different RFSoC families
+ * Other: Shortened ADC calibration time in simulation for gen 3 devices
+ * Other: Added TDD module to RF Analyzer for gen 3 devices
+ * Other: Modified calibration freeze process in gen 3 devices to freeze only the GCB and TSCB calibrations
+
+2021.1.1:
+ * Version 2.5
+ * No changes
+
+2021.1:
+ * Version 2.5
+ * Bug Fix: Moved the setting of the converter interrupt registers to later in the start up sequence to ensure correct operation
+ * Bug Fix: Fixed tdd_mode real time signal connections in dual channel DACs
+ * Bug Fix: Fixed ADC configuration for channels with dither disabled in gen 3 device
+ * Bug Fix: Fixed SYSREF passing to ADCs when the SYSREF source DAC is disabled in gen 3 devices
+ * Bug Fix: Fixed rounding error in fabric clock frequency setting
+ * Bug Fix: Fixed issue with the opening of RF Analyzer example designs when multi tile sync is enabled in some tiles but not others
+ * New Feature: Added DAC link coupling option for gen 3 devices
+ * New Feature: Set TDD registers to power down without driver involvement in gen 3 devices
+ * New Feature: Added observation channel configuration for gen 3 devices
+ * New Feature: Added real time signal for datapath overflow
+ * Other: Updated clock distribution options in gen 3 devices
+ * Other: Updated PLL reference clock frequency range
+ * Other: Changed ADC input in demo testbench to have a full scale range of 1V in gen 3 devices
+ * Other: Updated range of PLL reference clock warning to match the datasheet values
+ * Other: Added default address range of 256k
+ * Other: Removed analog clock detection option from GUI
+ * Other: Updated the example design Questa elaboration options to allow simulation with Questa 2020.4
+
+2020.3:
+ * Version 2.4 (Rev. 1)
+ * No changes
+
+2020.2.2:
+ * Version 2.4 (Rev. 1)
+ * New Feature: New gen 3 device support
+
+2020.2.1:
+ * Version 2.4
+ * No changes
+
+2020.2:
+ * Version 2.4
+ * Bug Fix: Fixed gen 3 RF-DAC PLL settings
+ * Bug Fix: Optimized clock forwarding for gen 3 devices
+ * Bug Fix: Fixed datapath mode programming for multi-band configurations in gen 3 dual DAC devices
+ * Bug Fix: Fixed calibration mode comment in IP GUI
+ * Bug Fix: Fixed DAC data path mode comment in IP GUI
+ * Bug Fix: Fixed SYSREF gate real time input on gen 3 ADC
+ * New Feature: Added ADC observation interface for gen 3 devices
+ * New Feature: Added support for gen 3 production devices
+ * New Feature: Added support for gen 3 autocal option
+ * New Feature: Added support for gen 3 TDD real time signal interface
+ * Other: Updated clock distribution options in gen 3 devices
+ * Other: Updated sample rate limits for -1 speed grade gen 3 devices
+ * Other: Optimized calibration process in gen 3 devices
+ * Other: Modified DAC VOP real time signal interface to assert done when the update of each individual channel has completed
+ * Other: Reduced power consumption of gen 3 quad ADC tiles when in the shut down state
+ * Other: Updated DAC clocking in the demonstration testbench
+ * Other: Turned Questa optimization off for example design simulations to avoid DAC output corruption
+
+2020.1.1:
+ * Version 2.3
+ * No changes
+
+2020.1:
+ * Version 2.3
+ * Bug Fix: Fixed clock forwarding options for gen 3 devices
+ * Bug Fix: Made RF analyzer configurations where MMCM cannot supply the correct fabric clock illegal
+ * Bug Fix: Enabled calibration freeze from API when calibration freeze real time signals are not enabled
+ * Bug Fix: Fixed an issue on dual ADC gen 2 devices where the PL event input to ADC tiles 226 and 227 was not being connected
+ * New Feature: Added DAC VOP real time signal interface
+ * New Feature: Added clear over range real time signal input
+ * Other: Updated ADC and DAC real time signal interfaces to use rfdc_rts_pins_rtl interface from IP packager
+ * Other: Updated ADC and DAC NCO real time signal interfaces to use rfdc_nco_pins_rtl interface from IP packager
+ * Other: Updated calibration freeze interface
+ * Other: Added examples processes to set the ADC thresholds in demonstration testbench
+ * Other: Updated gen 3 maximum sample rates
+ * Other: Updated gen 3 PLL configuration
+ * Other: Updated gen 3 FIFO read pointer start time
+ * Other: Updated gen 3 clock routing
+ * Other: Removed reserved calibration option for gen 3 devices
+ * Other: Removed reserved TDD options for gen 3 devices
+
+2019.2.2:
+ * Version 2.2 (Rev. 2)
+ * Bug Fix: Fixed clock forwarding options for gen 3 devices
+ * Bug Fix: Fixed simulation of gen 3 devices when the converter band mode is set to Multi x2(IQ)
+
+2019.2.1:
+ * Version 2.2 (Rev. 1)
+ * New Feature: Added support for gen3 devices
+
+2019.2:
+ * Version 2.2
+ * Bug Fix: Fixed demonstration testbench  ADC data checking for configurations where decimation rates are larger than 1
+ * Bug Fix: Extended calibration freeze process to freeze OCB1 calibration stage
+ * New Feature: Added support for PLL reference clock input divider
+ * Other: Moved the setting of the clock divider register to the initial configuration stage
+ * Other: Added registers in the example design data stimulus block to improve timing
+ * Other: Updated ADC interrupt register default values
+ * Other: Removed ADCx_Outdiv and DACx_Outdiv parameters as these should not be modified by the user
+ * Other: Reworked the generation of the ADC and DAC control buses
+ * Other: Example design no longer sets the default simulator to Questa
+
+2019.1.3:
+ * Version 2.1 (Rev. 2)
+ * No changes
+
+2019.1.2:
+ * Version 2.1 (Rev. 2)
+ * No changes
+
+2019.1.1:
+ * Version 2.1 (Rev. 2)
+ * No changes
+
+2019.1:
+ * Version 2.1 (Rev. 2)
+ * Bug Fix: Fixed the demonstration testbench data checker for DAC Nyquist zone 2
+ * Bug Fix: Fixed the demonstration testbench data checkers for DAC and ADC inverted Q output
+ * Bug Fix: Fixed issue where GUI would allow reference clock frequencies above the maximum supported by the PLL
+ * Bug Fix: Fixed rounding issue for the data stimulus block clock in the IPI example design
+ * New Feature: Added support for RF Analyzer
+ * New Feature: Added background calibration bypass option
+ * New Feature: Added an interrupt for when the POR Finite State Machine detects an error in the power-up sequence
+ * Other: Added parameter for total number of slices per Tile
+ * Other: Changed Mixer Type to "Off" for ADC slices 1 and 3 when in Bypass IQ->IQ mode
+ * Other: Removed the "_i" extension from the component name in the IPI example design
+ * Other: Removed the following parameters which were not used by the IP DAC_AdderXY_Enable, DAC_FifoXY_Enable, DAC1_Output_Current and DAC2_Output_Current,  ADC_FifoXY_Enable
+ * Other: Removed ADC/DAC debug options from IP GUI
+ * Other: Removed calibration time option from GUI
+ * Other: Removed pblock constraints from example design
+ * Other: Reduced maximum ADC sample rate for gen 2 devices
+
+2018.3.1:
+ * Version 2.1 (Rev. 1)
+ * Bug Fix: Fixed GUI issue where switching between Simple and Advanced Set-up without making any changing would sometimes cause GUI to not update correctly
+ * Bug Fix: Fixed issue where the example design data capture block failed to capture the requested number of samples
+ * Bug Fix: Set the FREQ_HZ parameter on clk_adcX and clk_dacX to an integer
+ * Bug Fix: Fixed issue where frequency in DAC slice 3 was incorrect when updating using NCO Real-Time ports
+ * Feature Enhancement: Increased Max ADC sampling rate for 5G support
+
+2018.3:
+ * Version 2.1
+ * Port Change: Added new debug port for powerup state monitoring
+ * Bug Fix: Fixed DAC minimum sampling rate from 100MHz to 500MHz
+ * Bug Fix: Fixed issue where Multi Tile Sync could be enabled when interpolation/decimation values did not match
+ * Bug Fix: Fixed issue where Multi Tile Sync could be enabled when slice 0 in a Tile was not enabled
+ * Bug Fix: Fixed ADC scaling output factor for Real to Complex configurations
+ * Bug Fix: Fixed issue where an early state machine restart for one tile could interfere with the operation of another
+ * Bug Fix: Fixed issue where post-implementation simulations could fail when ADC0 or DAC0 were disabled
+ * Bug Fix: Fixed issue where reads from the HSCOM_PWR register could get incorrect data
+ * New Feature: Added support for Multiband
+ * New Feature: Added support for Real Time NCO changes via dedicated ports
+ * New Feature: Added counters for unexpected resets in each tile. Values stored in register Tile BaseAddress + 0x38
+ * New Feature: Added option to modify reference clock divider
+ * Feature Enhancement: Changed default value of Mixer Type to "Off" from "Bypass"
+ * Other: Added PLL Summary Tab to GUI
+ * Other: IP GUI widgets have been updated
+ * Other: Interpolation/Decimation parameter values have been changed (x4->4 and x8->8)
+ * Other: Increased the AXI-4Lite timeout by a factor of 4
+ * Other: Added memory based data stimulus and capture blocks to example design
+ * Other: Modified demo testbench data generation and checking. Data is now analyzed in the frequency domain
+
+2018.2:
+ * Version 2.0 (Rev. 1)
+ * Bug Fix: Fixed DAC PLL Vco range for sampling rates above 6.4GSPS
+ * Bug Fix: Set max ADC sampling rate to 4.096GHz for ZU25/27/28DR devices
+ * Bug Fix: Fix issue with Multi Tile SYNC sysref counters. Previous counters could fail to meet the minimum threshold value
+ * Bug Fix: Fixed issue with the opening of the example design in Windows
+ * Bug Fix: Updated PLL VREG setting
+ * Feature Enhancement: Improved AXI to DRP access times
+ * Feature Enhancement: Disabled interpolation filter on unused paths
+ * Feature Enhancement: Removed LUTAR methodology warning
+ * Feature Enhancement: Implemented new PLL lock procedure
+ * Feature Enhancement: Wait for de-assertion of AXI-Streaming reset before completing start-up
+ * Other: Changed example design name to rfdc_ex to reduce path lengths
+ * Other: Increased minimum PLL reference clock from 50MHz to 102.4062MHZ
+
+2018.1:
+ * Version 2.0
+ * Port Change: Removed user_sysref port and replaced with optional dac_user_sysref and adc_user_sysref ports. See product guide for more information
+ * Port Change: Added ADC over voltage and over range to the real time signal ports
+ * Port Change: Re-named ADC real time signal and calibration freeze ports
+ * Port Change: Changed Calibration Freeze Port interface to per tile. No change to actual ports
+ * Port Change: Removed bit 15 from ADC and DAC cmn_control debug ports
+ * Bug Fix: Fixed issue with ADC CONTROL_COMMON inputs being tied all to same input
+ * Bug Fix: Fixed synthesis issue when ADC calibration mode is set to mode1, data output is I/Q and mixer is bypassed
+ * Bug Fix: Fixed issue with ADC/DAC tile debug ports (pll_dmon, pll_lock, status and done) not being driven
+ * Bug Fix: Always enable the DAC Vdda bleeder
+ * New Feature: Added support for Multi Tile SYNC
+ * New Feature: Added GUI option to enable/disable dither
+ * New Feature: Added GUI option to speed-up Calibration Time
+ * New Feature: Added GUI option for Auto Calibration Freeze
+ * New Feature: Added GUI option for Simple Converter Set-up
+ * New Feature: Added support for creating example design in IP Integrator
+ * Feature Enhancement: Updated ADC calibration freeze settings
+ * Feature Enhancement: Enhanced Vco settings
+ * Feature Enhancement: Freeze calibration when over-voltage or over-range converter outputs are asserted
+ * Feature Enhancement: Cleared datapath, fabric and decoder interrupts after start-up
+ * Feature Enhancement: Reset the ADC NCO phase to align I and Q output on 4GSPS ADCs
+ * Feature Enhancement: Increased Max Sampling Rates for ADC and DAC.
+ * Feature Enhancement: Optimized calibration process to shorten start up time
+ * Feature Enhancement: Added support for NCO frequencies above Fs/2
+ * Feature Enhancement: Improved GUI layout
+ * Other: Removed GUI option to select external/internal SYSREF
+ * Other: Release AXI IPIF files into same directory as the other HDL
+
+2017.4:
+ * Version 1.1
+ * No changes
+
+2017.3:
+ * Version 1.1
+ * Bug Fix: 2017.3_uspea_updates
+ * Bug Fix: Negative Quadrature option is only available when Fine Mixer is enabled
+ * Bug Fix: Tile and Slice interrupts are now enabled by default
+ * Bug Fix: Link Coupling is now an option for each individual ADC Tile
+ * Bug Fix: Corrected coarse mixer settings
+ * Bug Fix: Fixed reset of state machines when supplies or clocks are lost
+ * Bug Fix: Fixed issue regarding tile resets and restarts. Please see product guide for detailed information
+ * Bug Fix: AXI Streaming bus widths depend on the number of AXI4-lite words per clock cycle
+ * Bug Fix: Fixed issue where in some configurations Clock Out Frequency was not listing all valid frequencies
+ * Bug Fix: Removed invalid samples per AXI4-Stream word values from GUI when IQ data selected
+ * Bug Fix: Fixed issue that could cause in some occasions incorrect data to be returned from a read to a DRP register
+ * Bug Fix: Corrected DAC decoder output order
+ * Bug Fix: Corrected ADC calibration constants and sequence
+ * Bug Fix: 2017.3_updates
+ * Bug Fix: Fixed DAC interpolation data register setting for IQ data
+ * Bug Fix: Fixed issue where SYSREF Source was enabled only when DAC Tile 228 PLL was enabled
+ * Bug Fix: Maximum ADC output clock frequency has been reduced to avoid min-pulse-width violations
+ * Bug Fix: Corrected 2GSPS ADC IQ to IQ data routing
+ * Bug Fix: NCO values now updated on a per tile basis rather then per individual slice
+ * Bug Fix: Fine mixer settings fixed for negative quadrature option
+ * Bug Fix: Fixed negative NCO frequency setting in ADC calibration mode 1
+ * Bug Fix: Increased time for regulators to settle
+ * Bug Fix: Ensured clock divider is set correctly after a reset
+ * Bug Fix: Fixed the setting of the fine mixer NCO frequency on windows
+ * Feature Enhancement: 2017.3_uspea_updates
+ * Feature Enhancement: Added option to GUI for selecting Nyquist Zone
+ * Feature Enhancement: Added option to GUI for selecting DAC Decoder Mode
+ * Feature Enhancement: Added option to GUI to select the Coarse mixer frequency
+ * Feature Enhancement: Added option to GUI for debug ports
+ * Feature Enhancement: Added option to GUI to save and load custom presets
+ * Feature Enhancement: Added support for Fine NCO mixer
+ * Feature Enhancement: Added a register to set the power up sequence timer
+ * Feature Enhancement: Added a new input user_sysref. See product guide for more information
+ * Feature Enhancement: Updated PLL and ADC calibration settings
+ * Feature Enhancement: Added location constraints of converters
+ * Feature Enhancement: Added option to GUI to disable analog clock detection
+ * Feature Enhancement: Added option to GUI to select DAC output current
+ * Feature Enhancement: Added option to GUI to select ADC calibration mode
+ * Feature Enhancement: 2017.3_updates
+ * Feature Enhancement: Improved PLL lock performance
+ * Feature Enhancement: Added Over Range and Over Voltage interrupts to ADC
+ * Feature Enhancement: BUFG GTs have been added on all DAC and ADC output clocks
+ * Feature Enhancement: Added support in ADC for IQ->IQ when Mixer is bypassed
+ * Feature Enhancement: Added support for real time control of the converters
+ * Feature Enhancement: Added register to disable the converter FIFOs
+ * Feature Enhancement: Disabled unused Mixer and FIFO when in IQ->IQ mode to reduce power consumption
+ * Feature Enhancement: Added calibration freeze when the ADC input is lost
+ * Other: 2017.3_uspea_updates
+ * Other: Reduced behavioral simulation start up time
+ * Other: Restricted write access to some of the DRP registers
+ * Other: Power down PLL in tiles where it is not being used
+ * Other: Added delay between power-up state machine so converters do not all start at the same time
+ * Other: 2017.3_updates
+ * Other: Bypassed PLL fractional divider
+ * Other: Optimized post-implementation speed up registers
+ * Other: Removed medium and low BW decimation and interpolation options
+
+2017.2:
+ * Version 1.0
+ * No changes
+
+2017.1:
+ * Version 1.0
+ * General: Initial Release
+
+(c) Copyright 2017 - 2022 Xilinx, Inc. All rights reserved.
+
+This file contains confidential and proprietary information
+of Xilinx, Inc. and is protected under U.S. and
+international copyright and other intellectual property
+laws.
+
+DISCLAIMER
+This disclaimer is not a license and does not grant any
+rights to the materials distributed herewith. Except as
+otherwise provided in a valid license issued to you by
+Xilinx, and to the maximum extent permitted by applicable
+law: (1) THESE MATERIALS ARE MADE AVAILABLE "AS IS" AND
+WITH ALL FAULTS, AND XILINX HEREBY DISCLAIMS ALL WARRANTIES
+AND CONDITIONS, EXPRESS, IMPLIED, OR STATUTORY, INCLUDING
+BUT NOT LIMITED TO WARRANTIES OF MERCHANTABILITY, NON-
+INFRINGEMENT, OR FITNESS FOR ANY PARTICULAR PURPOSE; and
+(2) Xilinx shall not be liable (whether in contract or tort,
+including negligence, or under any other theory of
+liability) for any loss or damage of any kind or nature
+related to, arising under or in connection with these
+materials, including for any direct, or any indirect,
+special, incidental, or consequential loss or damage
+(including loss of data, profits, goodwill, or any type of
+loss or damage suffered as a result of any action brought
+by a third party) even if such damage or loss was
+reasonably foreseeable or Xilinx had been advised of the
+possibility of the same.
+
+CRITICAL APPLICATIONS
+Xilinx products are not designed or intended to be fail-
+safe, or for use in any application requiring fail-safe
+performance, such as life-support or safety devices or
+systems, Class III medical devices, nuclear facilities,
+applications related to the deployment of airbags, or any
+other applications that could lead to death, personal
+injury, or severe property or environmental damage
+(individually and collectively, "Critical
+Applications"). Customer assumes the sole risk and
+liability of any use of Xilinx products in Critical
+Applications, subject only to applicable laws and
+regulations governing limitations on product liability.
+
+THIS COPYRIGHT NOTICE AND DISCLAIMER MUST BE RETAINED AS
+PART OF THIS FILE AT ALL TIMES.

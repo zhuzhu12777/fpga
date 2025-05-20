@@ -85,7 +85,9 @@ set_property -dict [list \
 
 
 # reg map
-create_ip -name axi_apb_bridge -vendor xilinx.com -library ip -module_name axi_apb_bridge_0
+if {[get_ips axi_apb_bridge_0] == ""} {
+  create_ip -name axi_apb_bridge -vendor xilinx.com -library ip -module_name axi_apb_bridge_0
+}
 set_property -dict [list \
   CONFIG.C_APB_NUM_SLAVES {1} \
   CONFIG.C_M_APB_PROTOCOL {apb4} \
@@ -94,7 +96,33 @@ set_property -dict [list \
 
 
 # rf converter
-
+if {[get_ips usp_rf_data_converter_0] == ""} {
+  create_ip -name usp_rf_data_converter -vendor xilinx.com -library ip -version 2.6 -module_name usp_rf_data_converter_0
+}
+set_property -dict [list \
+  CONFIG.ADC0_Outclk_Freq {11.719} \
+  CONFIG.ADC0_PLL_Enable {true} \
+  CONFIG.ADC0_Refclk_Freq {125.000} \
+  CONFIG.ADC0_Sampling_Rate {1.5} \
+  CONFIG.ADC1_Outclk_Freq {11.719} \
+  CONFIG.ADC1_PLL_Enable {true} \
+  CONFIG.ADC1_Refclk_Freq {125.000} \
+  CONFIG.ADC1_Sampling_Rate {1.5} \
+  CONFIG.ADC2_Outclk_Freq {11.719} \
+  CONFIG.ADC2_PLL_Enable {true} \
+  CONFIG.ADC2_Refclk_Freq {125.000} \
+  CONFIG.ADC2_Sampling_Rate {1.5} \
+  CONFIG.ADC_Slice02_Enable {true} \
+  CONFIG.ADC_Slice10_Enable {true} \
+  CONFIG.ADC_Slice12_Enable {true} \
+  CONFIG.ADC_Slice20_Enable {true} \
+  CONFIG.ADC_Slice22_Enable {true} \
+  CONFIG.DAC0_PLL_Enable {true} \
+  CONFIG.DAC0_Refclk_Freq {125.000} \
+  CONFIG.DAC0_Sampling_Rate {8} \
+  CONFIG.DAC_Mode00 {3} \
+  CONFIG.DAC_Slice00_Enable {true} \
+] [get_ips usp_rf_data_converter_0]
 
 # gty
 if {[get_ips GTY_Raw_6CHN] == ""} {

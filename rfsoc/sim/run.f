@@ -4,11 +4,13 @@
 // --------------------
 // xpm
 D:/Xilinx/Vivado/2024.2/data/ip/xpm/xpm_cdc/hdl/xpm_cdc.sv
+D:/Xilinx/Vivado/2024.2/data/ip/xpm/xpm_fifo/hdl/xpm_fifo.sv
+D:/Xilinx/Vivado/2024.2/data/ip/xpm/xpm_memory/hdl/xpm_memory.sv
 
 // --------------------
 // ip
-D:/mydata/git_resp/rfsoc/rfsoc.gen/sources_1/ip/axi_apb_bridge_0/axi_apb_bridge_0_sim_netlist.v
-D:/mydata/git_resp/rfsoc/rfsoc.gen/sources_1/ip/blk_mem_gen_gt/blk_mem_gen_gt_sim_netlist.v
+../ip/axi_apb_bridge_0/axi_apb_bridge_0_sim_netlist.v
+../ip/blk_mem_gen_gt/blk_mem_gen_gt_sim_netlist.v
 
 // --------------------
 // rtl
