@@ -22,16 +22,13 @@ module GT_TX_Wrapper #(
     output logic [GT_CHN_NUM-1:0]                       gt_txp          ,//output GT_CHN_NUM-bit
     output logic [GT_CHN_NUM-1:0]                       gt_txn          ,//output GT_CHN_NUM-bit
     output logic                                        userclk_out     ,//output 1-bit, sync by all below signals
-    input  logic [GT_CHN_NUM-1:0][USER_DATA_WIDTH-1:0]  tx_data         ,//input GT_CHN_NUM*USER_DATA_WIDTH-bit, unuesd
-    output logic                                        tx_resetdone    ,//output 1-bit
+    output logic                                        userrst_out     ,//output 1-bit
+    input  logic [GT_CHN_NUM-1:0][USER_DATA_WIDTH-1:0]  tx_data         ,//input GT_CHN_NUM*USER_DATA_WIDTH-bit, sync to userclk_out
+    // output logic                                        tx_resetdone    ,//output 1-bit
     output logic                                        gt_powergood     //output 1-bit
 );
 
-    `define GT_IP_NAME_0 GTY_Raw_6CHN
-    `define GT_IP_NAME_1 
-
-    localparam IP_is_GTY = 1;
-    localparam IP_NAME_i = 0;
+    localparam IP_is_GTY                    = 1                                     ;
 
     genvar                                  i                                       ;
     logic                                   gtwiz_userclk_tx_reset_in               ;
@@ -60,6 +57,8 @@ module GT_TX_Wrapper #(
     logic [GT_CHN_NUM-1:0]                  txusrclk_in                             ;
     logic [GT_CHN_NUM-1:0]                  txusrclk2_in                            ;
     logic [GT_CHN_NUM-1:0]                  gtpowergood_out                         ;
+    logic [GT_CHN_NUM-1:0]                  gthtxn_out                              ;
+    logic [GT_CHN_NUM-1:0]                  gthtxp_out                              ;
     logic [GT_CHN_NUM-1:0]                  gtytxn_out                              ;
     logic [GT_CHN_NUM-1:0]                  gtytxp_out                              ;
     logic [GT_CHN_NUM-1:0]                  rxoutclk_out                            ;
@@ -127,14 +126,14 @@ module GT_TX_Wrapper #(
     // assign rx_data                          = gtwiz_userdata_rx_out     ;
     
     generate if(IP_is_GTY) begin: gty
-        assign gtyrxp_in                    = gt_rxp                    ;
-        assign gtyrxn_in                    = gt_rxn                    ;
+        assign gtyrxp_in                    = 1'b0                      ;
+        assign gtyrxn_in                    = 1'b0                      ;
         assign gt_txp                       = gtytxp_out                ;
         assign gt_txn                       = gtytxn_out                ;
     end
     else begin: gth
-        assign gthrxp_in                    = gt_rxp                    ;
-        assign gthrxn_in                    = gt_rxn                    ;
+        assign gthrxp_in                    = 1'b0                      ;
+        assign gthrxn_in                    = 1'b0                      ;
         assign gt_txp                       = gthtxp_out                ;
         assign gt_txn                       = gthtxn_out                ;
     end
@@ -150,6 +149,9 @@ module GT_TX_Wrapper #(
     end
     endgenerate
 
+    logic                   tx_resetdone            ;
+    logic                   rx_resetdone            ;
+
     logic [2:0]             gt_rxresetdone_r        ;
     logic [2:0]             gt_txresetdone_r        ;
     logic [2:0]             gt_powergood_r          ;
@@ -163,10 +165,24 @@ module GT_TX_Wrapper #(
         gt_txresetdone_r    <= {gt_txresetdone_r[1:0], gtwiz_reset_tx_done_out};
         gt_powergood_r      <= {gt_powergood_r[1:0]  , &gtpowergood_out       };
     end
+
+    logic               gt_reset_cdc;
+
+    xpm_cdc_sync_rst #(
+        .DEST_SYNC_FF   (2  ),//2-10, Number of register stages used to synchronize signal in dest_clk
+        .INIT           (1  ),//0-1, 0=initialize synchronization registers to 0, 1=initialize synchronization registers to 1
+        .INIT_SYNC_FF   (0  ),//0-1, 0=disable simulation init values, 1=enable simulation init values on sync stages
+        .SIM_ASSERT_CHK (0  ) //0-1, 0=disable simulation messages, 1=enable simulation messages
+    ) resetcdc_inst (
+        .dest_rst       (gt_reset_cdc       ),//1-bit output: registered src_rst synchronized to dest_clk
+        .dest_clk       (userclk_out        ),//1-bit input: Destination clock.
+        .src_rst        (gt_reset           ) //1-bit input: Source reset signal.
+    );
+
+    always @(posedge userclk_out) begin
+        userrst_out <= gt_reset_cdc | ~tx_resetdone;
+    end
     
-    generate
-             if(IP_NAME_i == 0) begin: ip0 `GT_IP_NAME_0 gt_inst (.*); end
-        else if(IP_NAME_i == 1) begin: ip1 `GT_IP_NAME_1 gt_inst (.*); end
-    endgenerate
+    GTY_Raw_6CHN gt_inst (.*);
 
 endmodule

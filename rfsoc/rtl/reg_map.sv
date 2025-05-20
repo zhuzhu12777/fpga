@@ -6,25 +6,28 @@ module reg_map #(
 )(
     input                       axilite_clk, axilite_rstb,      // AXI-Lite clock and reset
 
-    AXI4Lite.slave              s_axil,     // axi-lite interface
-    RFSOC_REGS.master           regs        // registers
+    AXI4Lite.slave              s_axil, 
+    RFSOC_REG.master            regs
 );
 
-APB4    apb_if;
+APB4 #(.ADDR_WIDTH(32), .DATA_WIDTH(32)) apb_if();
 
 axi_apb_bridge_0 u_axi_apb (
     .s_axi_aclk                 (axilite_clk),          // input wire s_axi_aclk
     .s_axi_aresetn              (axilite_rstb),         // input wire s_axi_aresetn
     .s_axi_awaddr               (s_axil.awaddr),           // input wire [31 : 0] s_axi_awaddr
+    .s_axi_awprot               (s_axil.awprot),           // input wire [2 : 0] s_axi_awprot
     .s_axi_awvalid              (s_axil.awvalid),          // input wire s_axi_awvalid
     .s_axi_awready              (s_axil.awready),          // output wire s_axi_awready
     .s_axi_wdata                (s_axil.wdata),            // input wire [31 : 0] s_axi_wdata
+    .s_axi_wstrb                (s_axil.wstrb),            // input wire [3 : 0] s_axi_wstrb
     .s_axi_wvalid               (s_axil.wvalid),           // input wire s_axi_wvalid
     .s_axi_wready               (s_axil.wready),           // output wire s_axi_wready
     .s_axi_bresp                (s_axil.bresp),            // output wire [1 : 0] s_axi_bresp
     .s_axi_bvalid               (s_axil.bvalid),           // output wire s_axi_bvalid
     .s_axi_bready               (s_axil.bready),           // input wire s_axi_bready
     .s_axi_araddr               (s_axil.araddr),           // input wire [31 : 0] s_axi_araddr
+    .s_axi_arprot               (s_axil.arprot),           // input wire [2 : 0] s_axi_arprot
     .s_axi_arvalid              (s_axil.arvalid),          // input wire s_axi_arvalid
     .s_axi_arready              (s_axil.arready),          // output wire s_axi_arready
     .s_axi_rdata                (s_axil.rdata),            // output wire [31 : 0] s_axi_rdata
@@ -42,6 +45,8 @@ axi_apb_bridge_0 u_axi_apb (
     .m_apb_pprot                (apb_if.pprot),                // output wire [2 : 0] m_apb_pprot
     .m_apb_pstrb                (apb_if.pstrb)                 // output wire [3 : 0] m_apb_pstrb
 );
+assign apb_if.pready = 1'b1;
+assign apb_if.pslverr = 1'b0;
 
 // reg interface
 wire [15:0] offset = {apb_if.paddr[15:2], 2'b00};

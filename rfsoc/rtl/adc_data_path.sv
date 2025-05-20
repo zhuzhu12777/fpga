@@ -6,7 +6,9 @@ module adc_data_path(
     // clock & reset
     input                           ps_clk, ps_rstb,            // axi wr clock, 333.25MHz
     input                           axilite_clk, axilite_rstb,  // axilite clock, 100MHz
-    input                           rf_clk, rf_rstb,            // rf adc clock, 187.5MHz
+    input                           rf_clk0, rf_rstb0,            // rf adc clock, 187.5MHz
+    input                           rf_clk1, rf_rstb1,            // rf adc clock, 187.5MHz
+    input                           rf_clk2, rf_rstb2,            // rf adc clock, 187.5MHz
 
     // axi write to ps
     AXI4.master                     m_axi,      // aw w b
@@ -71,70 +73,75 @@ wire [7:0]  stream_5_sample_2_data = (s_axis[5].tdata[79:72] + s_axis[5].tdata[9
 wire [7:0]  stream_5_sample_3_data = (s_axis[5].tdata[111:104] + s_axis[5].tdata[127:120] + 1)>>1;  //round
 wire [31:0] stream_5_tdata = {stream_5_sample_3_data, stream_5_sample_2_data, stream_5_sample_1_data, stream_5_sample_0_data};
 
-// 2. each axis async fifo, depth = 64
+// 2. each axis async fifo, depth = 128
 STREAM #(32) fifo_stream[6];
-
-axis_data_fifo_32b u_stream_0_fifo (
-    .s_axis_aresetn                 (rf_rstb),          // input wire s_axis_aresetn
-    .s_axis_aclk                    (rf_clk),           // input wire s_axis_aclk
+axis_data_afifo_32b u_stream_0_fifo (
+    .s_axis_aresetn                 (rf_rstb0),          // input wire s_axis_aresetn
+    .s_axis_aclk                    (rf_clk0),           // input wire s_axis_aclk
     .s_axis_tvalid                  (s_axis[0].tready),    // input wire s_axis_tvalid
     .s_axis_tready                  (s_axis[0].tvalid),    // output wire s_axis_tready
-    .s_axis_tdata                   (stream_0_tdata),   // input wire [31 : 0] s_axis_tdata
+    .s_axis_tdata                   (stream_0_tdata),       // input wire [31 : 0] s_axis_tdata
+    .m_axis_aclk                    (ps_clk),               // input wire m_axis_aclk
     .m_axis_tvalid                  (fifo_stream[0].tvalid),    // output wire m_axis_tvalid
     .m_axis_tready                  (fifo_stream[0].tready),    // input wire m_axis_tready
     .m_axis_tdata                   (fifo_stream[0].tdata)      // output wire [31 : 0] m_axis_tdata
 );
 
-axis_data_fifo_32b u_stream_1_fifo (
-    .s_axis_aresetn                 (rf_rstb),          // input wire s_axis_aresetn
-    .s_axis_aclk                    (rf_clk),           // input wire s_axis_aclk
+axis_data_afifo_32b u_stream_1_fifo (
+    .s_axis_aresetn                 (rf_rstb0),          // input wire s_axis_aresetn
+    .s_axis_aclk                    (rf_clk0),           // input wire s_axis_aclk
     .s_axis_tvalid                  (s_axis[1].tready),    // input wire s_axis_tvalid
     .s_axis_tready                  (s_axis[1].tvalid),    // output wire s_axis_tready
     .s_axis_tdata                   (stream_1_tdata),   // input wire [31 : 0] s_axis_tdata
+    .m_axis_aclk                    (ps_clk),               // input wire m_axis_aclk
     .m_axis_tvalid                  (fifo_stream[1].tvalid),    // output wire m_axis_tvalid
     .m_axis_tready                  (fifo_stream[1].tready),    // input wire m_axis_tready
     .m_axis_tdata                   (fifo_stream[1].tdata)      // output wire [31 : 0] m_axis_tdata
 );
 
-axis_data_fifo_32b u_stream_2_fifo (
-    .s_axis_aresetn                 (rf_rstb),          // input wire s_axis_aresetn
-    .s_axis_aclk                    (rf_clk),           // input wire s_axis_aclk
+axis_data_afifo_32b u_stream_2_fifo (
+    .s_axis_aresetn                 (rf_rstb1),          // input wire s_axis_aresetn
+    .s_axis_aclk                    (rf_clk1),           // input wire s_axis_aclk
     .s_axis_tvalid                  (s_axis[2].tready),    // input wire s_axis_tvalid
     .s_axis_tready                  (s_axis[2].tvalid),    // output wire s_axis_tready
     .s_axis_tdata                   (stream_2_tdata),   // input wire [31 : 0] s_axis_tdata
+    .m_axis_aclk                    (ps_clk),               // input wire m_axis_aclk
     .m_axis_tvalid                  (fifo_stream[2].tvalid),    // output wire m_axis_tvalid
     .m_axis_tready                  (fifo_stream[2].tready),    // input wire m_axis_tready
     .m_axis_tdata                   (fifo_stream[2].tdata)      // output wire [31 : 0] m_axis_tdata
 );
 
-axis_data_fifo_32b u_stream_3_fifo (
-    .s_axis_aresetn                 (rf_rstb),          // input wire s_axis_aresetn
-    .s_axis_aclk                    (rf_clk),           // input wire s_axis_aclk
+axis_data_afifo_32b u_stream_3_fifo (
+    .s_axis_aresetn                 (rf_rstb1),          // input wire s_axis_aresetn
+    .s_axis_aclk                    (rf_clk1),           // input wire s_axis_aclk
     .s_axis_tvalid                  (s_axis[3].tready),    // input wire s_axis_tvalid
     .s_axis_tready                  (s_axis[3].tvalid),    // output wire s_axis_tready
     .s_axis_tdata                   (stream_3_tdata),   // input wire [31 : 0] s_axis_tdata
+    .m_axis_aclk                    (ps_clk),               // input wire m_axis_aclk
     .m_axis_tvalid                  (fifo_stream[3].tvalid),    // output wire m_axis_tvalid
     .m_axis_tready                  (fifo_stream[3].tready),    // input wire m_axis_tready
     .m_axis_tdata                   (fifo_stream[3].tdata)      // output wire [31 : 0] m_axis_tdata
 );
 
-axis_data_fifo_32b u_stream_4_fifo (
-    .s_axis_aresetn                 (rf_rstb),          // input wire s_axis_aresetn
-    .s_axis_aclk                    (rf_clk),           // input wire s_axis_aclk
+axis_data_afifo_32b u_stream_4_fifo (
+    .s_axis_aresetn                 (rf_rstb2),          // input wire s_axis_aresetn
+    .s_axis_aclk                    (rf_clk2),           // input wire s_axis_aclk
     .s_axis_tvalid                  (s_axis[4].tready),    // input wire s_axis_tvalid
     .s_axis_tready                  (s_axis[4].tvalid),    // output wire s_axis_tready
     .s_axis_tdata                   (stream_4_tdata),   // input wire [31 : 0] s_axis_tdata
+    .m_axis_aclk                    (ps_clk),               // input wire m_axis_aclk
     .m_axis_tvalid                  (fifo_stream[4].tvalid),    // output wire m_axis_tvalid
     .m_axis_tready                  (fifo_stream[4].tready),    // input wire m_axis_tready
     .m_axis_tdata                   (fifo_stream[4].tdata)      // output wire [31 : 0] m_axis_tdata
 );
 
-axis_data_fifo_32b u_stream_5_fifo (
-    .s_axis_aresetn                 (rf_rstb),          // input wire s_axis_aresetn
-    .s_axis_aclk                    (rf_clk),           // input wire s_axis_aclk
+axis_data_afifo_32b u_stream_5_fifo (
+    .s_axis_aresetn                 (rf_rstb2),          // input wire s_axis_aresetn
+    .s_axis_aclk                    (rf_clk2),           // input wire s_axis_aclk
     .s_axis_tvalid                  (s_axis[5].tready),    // input wire s_axis_tvalid
     .s_axis_tready                  (s_axis[5].tvalid),    // output wire s_axis_tready
     .s_axis_tdata                   (stream_5_tdata),   // input wire [31 : 0] s_axis_tdata
+    .m_axis_aclk                    (ps_clk),               // input wire m_axis_aclk
     .m_axis_tvalid                  (fifo_stream[5].tvalid),    // output wire m_axis_tvalid
     .m_axis_tready                  (fifo_stream[5].tready),    // input wire m_axis_tready
     .m_axis_tdata                   (fifo_stream[5].tdata)      // output wire [31 : 0] m_axis_tdata
@@ -147,8 +154,8 @@ wire [191:0] cbin_axis_tdata = {fifo_stream[5].tdata, fifo_stream[4].tdata, fifo
 
 STREAM #(192) cbout_axis;
 axis_combiner_0 u_axis_combiner (
-    .aclk                           (rf_clk),               // input wire aclk
-    .aresetn                        (rf_rstb),              // input wire aresetn
+    .aclk                           (ps_clk),               // input wire aclk
+    .aresetn                        (ps_rstb),              // input wire aresetn
     .s_axis_tvalid                  (cbin_axis_tvalid),     // input wire [5 : 0] s_axis_tvalid
     .s_axis_tready                  (cbin_axis_tready),     // output wire [5 : 0] s_axis_tready
     .s_axis_tdata                   (cbin_axis_tdata),      // input wire [191 : 0] s_axis_tdata
@@ -160,20 +167,6 @@ wire [191:0] reorder_tdata = {cbout_axis.tdata[191:184], cbout_axis.tdata[159:15
                               cbout_axis.tdata[183:176], cbout_axis.tdata[151:144], cbout_axis.tdata[119:112], cbout_axis.tdata[87:80], cbout_axis.tdata[55:48], cbout_axis.tdata[23:16],
                               cbout_axis.tdata[175:168], cbout_axis.tdata[143:136], cbout_axis.tdata[111:104], cbout_axis.tdata[79:72], cbout_axis.tdata[47:40], cbout_axis.tdata[15:8],
                               cbout_axis.tdata[167:160], cbout_axis.tdata[135:128], cbout_axis.tdata[103:96], cbout_axis.tdata[71:64], cbout_axis.tdata[39:32], cbout_axis.tdata[7:0]};
-
-// 4. async fifo, from rf_clk to ps_clk
-STREAM #(192) afifo_axis;
-axis_data_afifo_192b u_axis_data_afifo (
-    .s_axis_aresetn                 (rf_rstb),              // input wire s_axis_aresetn
-    .s_axis_aclk                    (rf_clk),               // input wire s_axis_aclk
-    .s_axis_tvalid                  (cbout_axis.tvalid),    // input wire s_axis_tvalid
-    .s_axis_tready                  (cbout_axis.tready),    // output wire s_axis_tready
-    .s_axis_tdata                   (reorder_tdata),        // input wire [191 : 0] s_axis_tdata
-    .m_axis_aclk                    (ps_clk),               // input wire m_axis_aclk
-    .m_axis_tvalid                  (afifo_axis.tvalid),         // output wire m_axis_tvalid
-    .m_axis_tready                  (afifo_axis.tready),         // input wire m_axis_tready
-    .m_axis_tdata                   (afifo_axis.tdata)           // output wire [191 : 0] m_axis_tdata
-);
 
 // 5. change bit width from 192 to 128
 STREAM #(128) dw_axis;

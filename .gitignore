@@ -1,3 +1,7 @@
-xvlog.log
-xvlog.pb
+xvlog.*
+xelab.*
 *.log
+*.vcd
+*.jou
+*.wdb
+xsim.dir/

@@ -27,7 +27,7 @@ module rfsoc_reg (
     input               [31:0]  wdata,
     input               [3:0]   wstrb,
 
-    RFSOC_REGS.master           regs
+    RFSOC_REG.master           regs
 );
 
 always @(posedge clk or negedge rstb) begin

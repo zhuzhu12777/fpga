@@ -9,7 +9,7 @@ module gt_data_path(
     input               [7:0]       ram_addr,
     input              [31:0]       ram_data,
     input                           ram_we,
-    input               [2:0]       ram_idx,
+    input               [3:0]       ram_idx,
 
     input                           reg_start,       // axilite clock
     input                           reg_reset,
@@ -20,12 +20,12 @@ module gt_data_path(
 
 wire [5:0] gt_ram_we;
 
-assign gt_ram_we[0] = ram_we && (ram_idx == 3'h0);
-assign gt_ram_we[1] = ram_we && (ram_idx == 3'h1);
-assign gt_ram_we[2] = ram_we && (ram_idx == 3'h2);
-assign gt_ram_we[3] = ram_we && (ram_idx == 3'h3);
-assign gt_ram_we[4] = ram_we && (ram_idx == 3'h4);
-assign gt_ram_we[5] = ram_we && (ram_idx == 3'h5);
+assign gt_ram_we[0] = ram_we && (ram_idx == 4'h0);
+assign gt_ram_we[1] = ram_we && (ram_idx == 4'h1);
+assign gt_ram_we[2] = ram_we && (ram_idx == 4'h2);
+assign gt_ram_we[3] = ram_we && (ram_idx == 4'h3);
+assign gt_ram_we[4] = ram_we && (ram_idx == 4'h4);
+assign gt_ram_we[5] = ram_we && (ram_idx == 4'h5);
 
 reg  [7:0]  gt_addr;
 wire [31:0] gt_data_out_0, gt_data_out_1, gt_data_out_2, gt_data_out_3, gt_data_out_4, gt_data_out_5;

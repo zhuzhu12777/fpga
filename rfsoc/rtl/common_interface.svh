@@ -165,27 +165,28 @@ interface APB4 #(
     logic                       pwrite;     // Write/read control
     logic [DATA_WIDTH-1:0]      pwdata;     // Write data
     logic [DATA_WIDTH/8-1:0]    pstrb;     // Write strobe
+    logic [2:0]                 pprot;
     logic [DATA_WIDTH-1:0]      prdata;     // Read data
     logic                       pready;     // Ready from slave
     logic                       pslverr;    // Error response
 
     modport master(
-        output paddr, psel, penable, pwrite, pwdata, pstrb,
+        output paddr, psel, penable, pwrite, pwdata, pstrb, pprot,
         input  prdata, pready, pslverr
     );
     modport slave(
-        input  paddr, psel, penable, pwrite, pwdata, pstrb,
+        input  paddr, psel, penable, pwrite, pwdata, pstrb, pprot,
         output prdata, pready, pslverr
     );
 endinterface
 
 interface RFSOC_REG;
-    logic [31:0] dac_start_address;
+    logic [31:0] dac_start_addr;
     logic [31:0] dac_cap_size;
     logic        dac_reset;
     logic        dac_start;
 
-    logic [31:0] adc_start_address;
+    logic [31:0] adc_start_addr;
     logic [31:0] adc_cap_size;
     logic        adc_reset;
     logic        adc_start;
@@ -212,8 +213,8 @@ interface RFSOC_REG;
     logic        rf_int;
 
     modport master(
-        output dac_start_address, dac_cap_size, dac_reset, dac_start,
-        output adc_start_address, adc_cap_size, adc_reset, adc_start,
+        output dac_start_addr, dac_cap_size, dac_reset, dac_start,
+        output adc_start_addr, adc_cap_size, adc_reset, adc_start,
         output gty_chn, gty_ram_addr, gty_ram_data, gty_ram_wren, gty_start, gty_reset,
         input  adc_cap_done,
         input  dac_datamover_status, dac_current_addr, dac_run_cycles, dac_read_mm2s_err,

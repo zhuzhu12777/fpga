@@ -2,51 +2,40 @@
 //////////////////////////////////////////////////////////////////////////////////
 module top();
 
-real clk_period = 2.0; // 500MHz
-real clk_period_axis = 10.0; // 100MHz
+real clk_period_axi = 2.0; // 500MHz
+real clk_period_axilite = 10.0; // 100MHz
 
 
 logic axi_aclk, axi_rstb; // 500MHz
-logic axis_st_clk, axis_st_rstb; // 100MHz
+logic axilite_clk, axilite_rstb; // 100MHz
 event RST_DONE;
 
 initial begin
     axi_aclk = 1'b0;
-    forever #(clk_period/2) axi_aclk = ~axi_aclk;
+    forever #(clk_period_axi/2) axi_aclk = ~axi_aclk;
 end
 
 initial begin
     axi_rstb = 1'b0;
-    #(clk_period*10) axi_rstb = 1'b1;
+    #(clk_period_axi*10) axi_rstb = 1'b1;
 end
 
 initial begin
-    axis_st_clk = 1'b0;
-    forever #(clk_period_axis/2) axis_st_clk = ~axis_st_clk;
+    axilite_clk = 1'b0;
+    forever #(clk_period_axilite/2) axilite_clk = ~axilite_clk;
 end
 
 initial begin
-    axis_st_rstb = 1'b0;
-    #(clk_period_axis*10) axis_st_rstb = 1'b1;
+    axilite_rstb = 1'b0;
+    #(clk_period_axilite*10) axilite_rstb = 1'b1;
     -> RST_DONE;
 end
 
-logic             [31:0]     axi_araddr;
-logic              [1:0]     axi_arburst;
-logic              [3:0]     axi_arcache;
-logic              [3:0]     axi_arid;
-logic              [7:0]     axi_arlen;
-logic              [2:0]     axi_arprot;
-logic                        axi_arready;
-logic              [2:0]     axi_arsize;
-logic              [3:0]     axi_aruser;
-logic                        axi_arvalid;
+// interface
+AXI4.master axi4_if;
 
-logic            [255:0]     axi_rdata;
-logic                        axi_rlast;
-logic                        axi_rready;
-logic              [1:0]     axi_rresp;
-logic                        axi_rvalid;
+
+
 logic            [255:0]     axis_tdata;
 logic             [31:0]     axis_tkeep;
 logic                        axis_tlast;
@@ -135,20 +124,20 @@ axi_bram_ctrl_0 U_BRAM (
   .s_axi_bresp          (m_axi_bresp),      // output wire [1 : 0] s_axi_bresp
   .s_axi_bvalid         (m_axi_bvalid),    // output wire s_axi_bvalid
   .s_axi_bready         (m_axi_bready),    // input wire s_axi_bready
-  .s_axi_araddr         (axi_araddr[14:0]),    // input wire [14 : 0] s_axi_araddr
-  .s_axi_arlen          (axi_arlen),      // input wire [7 : 0] s_axi_arlen
-  .s_axi_arsize         (axi_arsize),    // input wire [2 : 0] s_axi_arsize
-  .s_axi_arburst        (axi_arburst),  // input wire [1 : 0] s_axi_arburst
+  .s_axi_araddr         (axi.araddr[14:0]),    // input wire [14 : 0] s_axi_araddr
+  .s_axi_arlen          (axi.arlen),      // input wire [7 : 0] s_axi_arlen
+  .s_axi_arsize         (axi.arsize),    // input wire [2 : 0] s_axi_arsize
+  .s_axi_arburst        (axi.arburst),  // input wire [1 : 0] s_axi_arburst
   .s_axi_arlock         (1'b0),         // input wire s_axi_arlock
-  .s_axi_arcache        (axi_arcache),  // input wire [3 : 0] s_axi_arcache
-  .s_axi_arprot         (axi_arprot),    // input wire [2 : 0] s_axi_arprot
-  .s_axi_arvalid        (axi_arvalid),  // input wire s_axi_arvalid
-  .s_axi_arready        (axi_arready),  // output wire s_axi_arready
-  .s_axi_rdata          (axi_rdata),      // output wire [255 : 0] s_axi_rdata
-  .s_axi_rresp          (axi_rresp),      // output wire [1 : 0] s_axi_rresp
-  .s_axi_rlast          (axi_rlast),      // output wire s_axi_rlast
-  .s_axi_rvalid         (axi_rvalid),    // output wire s_axi_rvalid
-  .s_axi_rready         (axi_rready)    // input wire s_axi_rready
+  .s_axi_arcache        (axi.arcache),  // input wire [3 : 0] s_axi_arcache
+  .s_axi_arprot         (axi.arprot),    // input wire [2 : 0] s_axi_arprot
+  .s_axi_arvalid        (axi.arvalid),  // input wire s_axi_arvalid
+  .s_axi_arready        (axi.arready),  // output wire s_axi_arready
+  .s_axi_rdata          (axi.rdata),      // output wire [255 : 0] s_axi_rdata
+  .s_axi_rresp          (axi.rresp),      // output wire [1 : 0] s_axi_rresp
+  .s_axi_rlast          (axi.rlast),      // output wire s_axi_rlast
+  .s_axi_rvalid         (axi.rvalid),    // output wire s_axi_rvalid
+  .s_axi_rready         (axi.rready)    // input wire s_axi_rready
 );
 
 

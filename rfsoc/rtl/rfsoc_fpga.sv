@@ -48,7 +48,7 @@ reg_map #(
     .axilite_clk            (axilite_clk),
     .axilite_rstb           (axilite_rstb),
 
-    .m_axil                 (ps_s_axilite),
+    .s_axil                 (ps_s_axilite),
     .regs                   (regs)
 );
 assign ps_int = regs.rf_int;

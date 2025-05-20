@@ -43,13 +43,14 @@ set_property -dict [list \
   CONFIG.c_m_axi_s2mm_data_width {128} \
 ] [get_ips axi_datamover_wr]
 
-if {[get_ips axis_data_fifo_32b] == ""} {
-  create_ip -name axis_data_fifo -vendor xilinx.com -library ip -module_name axis_data_fifo_32b
+if {[get_ips axis_data_afifo_32b] == ""} {
+  create_ip -name axis_data_fifo -vendor xilinx.com -library ip -module_name axis_data_afifo_32b
 }
 set_property -dict [list \
-  CONFIG.FIFO_DEPTH {64} \
+  CONFIG.FIFO_DEPTH {128} \
+  CONFIG.IS_ACLK_ASYNC {1} \
   CONFIG.TDATA_NUM_BYTES {4} \
-] [get_ips axis_data_fifo_32b]
+] [get_ips axis_data_afifo_32b]
 
 if {[get_ips axis_combiner_0] == ""} {
   create_ip -name axis_combiner -vendor xilinx.com -library ip -module_name axis_combiner_0
@@ -66,15 +67,6 @@ set_property -dict [list \
   CONFIG.M_TDATA_NUM_BYTES {16} \
   CONFIG.S_TDATA_NUM_BYTES {24} \
 ] [get_ips axis_dwidth_converter_wr]
-
-if {[get_ips axis_data_afifo_192b] == ""} {
-  create_ip -name axis_data_fifo -vendor xilinx.com -library ip -module_name axis_data_afifo_192b
-}
-set_property -dict [list \
-  CONFIG.FIFO_DEPTH {256} \
-  CONFIG.IS_ACLK_ASYNC {1} \
-  CONFIG.TDATA_NUM_BYTES {24} \
-] [get_ips axis_data_afifo_192b]
 
 
 # gt path
