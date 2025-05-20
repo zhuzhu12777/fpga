@@ -126,7 +126,7 @@ initial begin
     wait(top.u_gt_data_path.gt_start);
     @(posedge gt_clk);
     for(int i = 0; i < addr_max; i++) begin
-        @(posedge gt_clk);
+        @(posedge gt_clk); 
         read_gt_data.push_back(gt_tx_data);
     end
     gt_data_check(gt_data, read_gt_data);

@@ -60,7 +60,7 @@ package axi4_task;
             @(posedge axi_aclk);
             m_axi.bready <= 1'b0;
             @(posedge axi_aclk);
-            $display("[%t] axi4_write(0x%0h, 0x%0h)", $time, addr, data);
+            $display("[%t] : axi4_write(0x%0h, 0x%0h)", $time, addr, data);
         end else begin
             $display("Error: AXI4 interface is not bound");
         end
@@ -80,7 +80,7 @@ package axi4_task;
             data = m_axi.rdata;
             @(posedge axi_aclk);
             m_axi.rready <= 1'b0;
-            $display("[%t] axi4_read(0x%0h, 0x%0h)", $time, addr, data);
+            $display("[%t] : axi4_read(0x%0h, 0x%0h)", $time, addr, data);
         end else begin
             $display("Error: AXI4 interface is not bound");
         end
@@ -121,7 +121,7 @@ package axi4_task;
             @(posedge axilite_clk);
             m_axil.bready <= 1'b0;
             @(posedge axilite_clk);
-            $display("[%t] WriteReg(0x%0h, 0x%0h)", $time, addr, data);
+            $display("[%t] : WriteReg(0x%0h, 0x%0h)", $time, addr, data);
         end else begin
             $display("Error: AXI4Lite interface is not bound");
         end
@@ -140,7 +140,7 @@ package axi4_task;
             data = m_axil.rdata;
             @(posedge axilite_clk);
             m_axil.rready <= 1'b0;
-            $display("[%t] ReadReg(0x%0h, 0x%0h)", $time, addr, data);
+            $display("[%t] : ReadReg(0x%0h, 0x%0h)", $time, addr, data);
         end else begin
             $display("Error: AXI4Lite interface is not bound");
         end
