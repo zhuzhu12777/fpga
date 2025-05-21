@@ -94,6 +94,16 @@ set_property -dict [list \
   CONFIG.C_HIGHADDR {0x00000000FFFFFFFF} \
 ] [get_ips axi_apb_bridge_0]
 
+if {[get_ips axilite_crossbar_0] == ""} {
+  create_ip -name axi_crossbar -vendor xilinx.com -library ip -version 2.1 -module_name axilite_crossbar_0
+}
+set_property -dict [list \
+  CONFIG.ADDR_RANGES {1} \
+  CONFIG.M00_S00_READ_CONNECTIVITY {1} \
+  CONFIG.PROTOCOL {AXI4LITE} \
+] [get_ips axilite_crossbar_0]
+
+
 
 # rf converter
 if {[get_ips usp_rf_data_converter_0] == ""} {
@@ -140,5 +150,8 @@ set_property -dict [list \
     CONFIG.TX_REFCLK_FREQUENCY {150} \
     CONFIG.TX_REFCLK_SOURCE {X0Y9 clk0-1 X0Y8 clk0-1} \
 ] [get_ips GTY_Raw_6CHN]
+
+
+
 
 
