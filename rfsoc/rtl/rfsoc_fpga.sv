@@ -1,9 +1,25 @@
 module rfsoc_fpga(
 
 
-    AXI4.master             pl_m_axi_rd,          // axi4 master read from pl ddr
-    AXI4.master             ps_m_axi_wr,          // axi4 master write to ps ddr
-    AXI4Lite.slave          ps_s_axilite,         // axilite slave
+    input  logic             ps_clk, ps_rstb,               // 333.25MHz
+    input  logic             axilite_clk, axilite_rstb,     // 100MHz
+
+    // axi4 pl 256b TODO
+
+    // axi4 ps 128b TODO
+
+    // axi4l slave TODO
+
+
+
+
+    input  logic    [5:0]   adc_clk_p,
+    input  logic    [5:0]   adc_clk_n,
+    input  logic            dac_clk_p,
+    input  logic            dac_clk_n,
+    input  logic            sysref_in_p,
+    input  logic            sysref_in_n,
+    
 
     output logic    [5:0]   gt_txp,
     output logic    [5:0]   gt_txn,
@@ -11,39 +27,31 @@ module rfsoc_fpga(
     input  logic    [5:0]   vin_p,
     input  logic    [5:0]   vin_n,
     output logic            vout_p,
-    output logic            vout_n,
-    output logic            ps_int
+    output logic            vout_n
 );
 
 wire                pl_clk, pl_rstb;    // 333.25MHz
-wire                ps_clk, ps_rstb;    // 333.25MHz
-wire                dac_clk, dac_rstb;    // 500MHz
-wire                adc_clk, adc_rstb;    // 187.5MHz
-wire                gt_clk, gt_rstb;      // 187.5MHz
-wire                axilite_clk, axilite_rstb; // 100MHz
+wire                dac_usr_clk, dac_usr_rstb;    // 500MHz
+wire [2:0]          adc_usr_clk, adc_usr_rstb;    // 187.5MHz
+wire                gt_usr_clk, gt_usr_rstb;      // 187.5MHz
+wire                gt_refclk_in;   // 50MHz
+wire                gt_init_clk, gt_init_rstb;    // 187.5MHz
 
-wire                gt_refclk_in;
+// interface
+AXI4 #(.DATA_WIDTH(256))    pl_m_axi_rd();
+AXI4 #(.DATA_WIDTH(128))    ps_m_axi_wr();
+AXI4Lite                    axil_regs();
+AXI4Lite                    axil_rf_ctrl();
+RFSOC_REG                   regs();
 
-wire    [5:0]       adc0_clk_p, adc0_clk_n;
-wire                dac0_clk_p, dac0_clk_n;
-wire                sysref_in_p, sysref_in_n;
+// PLL gen TODO
 
+// reset generator TODO
 
+// here need an axi interconnect TODO
 
-
-
-
-
-
-// reset generator
-wire        gt_tx_resetdone;
-//reset_generator u_reset_generator();
-
-
-
-RFSOC_REG regs;
 reg_map #(
-    .ADDR_SEGMENT           (16'h0000)
+    .ADDR_SEGMENT           (16'h0010)
 ) u_reg_map (
     .axilite_clk            (axilite_clk),
     .axilite_rstb           (axilite_rstb),
@@ -51,7 +59,6 @@ reg_map #(
     .s_axil                 (ps_s_axilite),
     .regs                   (regs)
 );
-assign ps_int = regs.rf_int;
 
 STREAM #(256) dac_stream;
 dac_data_path u_dac_data_path (
@@ -60,8 +67,8 @@ dac_data_path u_dac_data_path (
     .pl_rstb                (pl_rstb),
     .axilite_clk            (axilite_clk),
     .axilite_rstb           (axilite_rstb),
-    .rf_clk                 (dac_clk),
-    .rf_rstb                (dac_rstb),
+    .rf_clk                 (dac_usr_clk),
+    .rf_rstb                (dac_usr_rstb),
 
     // axi4 master read from pl ddr
     .m_axi                  (pl_m_axi_rd),
@@ -89,8 +96,12 @@ adc_data_path u_adc_data_path (
     .ps_rstb                (ps_rstb),
     .axilite_clk            (axilite_clk),
     .axilite_rstb           (axilite_rstb),
-    .rf_clk                 (adc_clk),
-    .rf_rstb                (adc_rstb),
+    .rf_clk0                (adc_usr_clk[0]),
+    .rf_rstb0               (adc_usr_rstb[0]),
+    .rf_clk1                (adc_usr_clk[1]),
+    .rf_rstb1               (adc_usr_rstb[1]),
+    .rf_clk2                (adc_usr_clk[2]),
+    .rf_rstb2               (adc_usr_rstb[2]),
 
     // axi write to ps
     .m_axi                  (ps_m_axi_wr),
@@ -116,8 +127,8 @@ wire [191:0]  gt_tx_data;
 gt_data_path u_gt_data_path (
     .axilite_clk            (axilite_clk),
     .axilite_rstb           (axilite_rstb),
-    .gt_clk                 (gt_clk),
-    .gt_rstb                (gt_rstb),
+    .gt_clk                 (gt_usr_clk),
+    .gt_rstb                (gt_usr_rstb),
 
     .ram_addr               (regs.gty_ram_addr),
     .ram_data               (regs.gty_ram_data),
@@ -132,33 +143,33 @@ gt_data_path u_gt_data_path (
 
 // rfsoc wrapper
 RF_Wrapper #(
-    .RF_ADC_NUM                                (6),
-    .RF_ADC_AXIS_WID                           (128)
+    .RF_ADC_NUM             (6),
+    .RF_ADC_AXIS_WID        (128)
 ) u_rf_wrapper (
-    .axilite_clk                               (axilite_clk),
-    .axilite_rstb                              (axilite_rstb),
+    .axilite_clk            (axilite_clk),
+    .axilite_rstb           (axilite_rstb),
 
-    .adc_clk_p                                 (adc0_clk_p),
-    .adc_clk_n                                 (adc0_clk_n),
-    .clk_adc                                   (adc_clk),
-    .adc_rstb                                  (adc_rstb),
-    .dac_clk_p                                 (dac0_clk_p),
-    .dac_clk_n                                 (dac0_clk_n),
-    .clk_dac                                   (dac_clk),
-    .dac_rstb                                  (dac_rstb),
-    .sysref_in_p                               (sysref_in_p),
-    .sysref_in_n                               (sysref_in_n),
+    .adc_clk_p              (adc_clk_p),
+    .adc_clk_n              (adc_clk_n),
+    .adc_usr_clk            (adc_usr_clk),
+    .adc_usr_rstb           (adc_usr_rstb),
+    .dac_clk_p              (dac_clk_p),
+    .dac_clk_n              (dac_clk_n),
+    .dac_usr_clk            (dac_usr_clk),
+    .dac_usr_rstb           (dac_usr_rstb),
+    .sysref_in_p            (sysref_in_p),
+    .sysref_in_n            (sysref_in_n),
 
-    .vin_p                                     (vin_p),
-    .vin_n                                     (vin_n),
-    .vout_p                                    (vout_p),
-    .vout_n                                    (vout_n),
+    .vin_p                  (vin_p),
+    .vin_n                  (vin_n),
+    .vout_p                 (vout_p),
+    .vout_n                 (vout_n),
 
-    .s_axil                                    (ps_s_axilite),
-    .m_axis                                    (adc_stream),
-    .s_axis                                    (dac_stream),
+    .s_axil                 (axil_rf_ctrl),
+    .m_axis                 (adc_stream),
+    .s_axis                 (dac_stream),
 
-    .irq                                       (regs.rf_irq)
+    .irq                    (regs.rf_irq)
 );
 
 // gt wrapper
@@ -167,14 +178,14 @@ GT_TX_Wrapper #(
     .MASTER_CHN            (3),
     .USER_DATA_WIDTH       (32)
 ) u_gt_tx_wrapper (
-    .gt_reset              (!gt_rstb),
-    .gt_init_clk           (gt_clk),
+    .gt_reset              (!gt_init_rstb),
+    .gt_init_clk           (gt_init_clk),
     .gt_refclk_in          (gt_refclk_in),
     .gt_txp                (gt_txp),
     .gt_txn                (gt_txn),
-    .userclk_out           (),
+    .userclk_out           (gt_usr_clk),
+    .userrst_out           (gt_usr_rstb),
     .tx_data               (gt_tx_data),
-    .tx_resetdone          (gt_tx_resetdone),
     .gt_powergood          (regs.gt_powergood)
 );
 

@@ -210,3 +210,72 @@ axi_dma_wr u_axi_dma_wr (
 );
 
 endmodule
+
+// 定义 stream interface
+interface stream_if #(parameter WIDTH = 32) (
+    input logic clk,
+    input logic rst_n
+);
+    logic [WIDTH-1:0] data;
+    logic valid;
+    logic ready;
+
+    modport master (
+        output data,
+        output valid,
+        input ready
+    );
+
+    modport slave (
+        input data,
+        input valid,
+        output ready
+    );
+endinterface
+
+// 模块定义
+module adc_data_path #(
+    parameter NUM_STREAMS = 4,
+    parameter DATA_WIDTH = 32
+)(
+    input logic clk,
+    input logic rst_n,
+    stream_if.master stream_master [NUM_STREAMS-1:0],
+    stream_if.slave stream_slave [NUM_STREAMS-1:0]
+);
+
+    // 模块内部逻辑
+    for (genvar i = 0; i < NUM_STREAMS; i++) begin : gen_stream_logic
+        always_ff @(posedge clk or negedge rst_n) begin
+            if (!rst_n) begin
+                stream_slave[i].ready <= 1'b0;
+            end else begin
+                stream_slave[i].ready <= stream_master[i].valid;
+            end
+        end
+    end
+
+endmodule
+
+// 模块例化
+module top_module (
+    input logic clk,
+    input logic rst_n
+);
+
+    // 定义 stream interface 数组
+    stream_if #(DATA_WIDTH) stream_master [NUM_STREAMS-1:0] (.clk(clk), .rst_n(rst_n));
+    stream_if #(DATA_WIDTH) stream_slave [NUM_STREAMS-1:0] (.clk(clk), .rst_n(rst_n));
+
+    // 实例化 adc_data_path 模块
+    adc_data_path #(
+        .NUM_STREAMS(NUM_STREAMS),
+        .DATA_WIDTH(DATA_WIDTH)
+    ) u_adc_data_path (
+        .clk(clk),
+        .rst_n(rst_n),
+        .stream_master(stream_master),
+        .stream_slave(stream_slave)
+    );
+
+endmodule

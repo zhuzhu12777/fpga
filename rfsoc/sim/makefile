@@ -3,7 +3,7 @@ XILINX_TOOL_PATH = /d/Xilinx/Vivado/2024.2/bin
 XILINX_DATA_PATH = /d/Xilinx/Vivado/2024.2/data
 XILINX_IP_PATH = /d/mydata/git_resp/rfsoc/rfsoc.gen/sources_1/ip
 
-TOP = top
+TOP ?= top
 DUT = gt_data_path
 WAVE_FILE = wave.vcd
 
@@ -23,7 +23,7 @@ sim:
 
 clean:
 	rm -rf log/*.log *.jou *.pb *.wdb *.vcd
-	rm -rf xsim.dir .Xil
+	rm -rf xsim.dir/$(TOP)_sim .Xil
 
 view:
 	gtkwave $(WAVE_FILE) &

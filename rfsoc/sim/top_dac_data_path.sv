@@ -2,12 +2,17 @@
 //////////////////////////////////////////////////////////////////////////////////
 module top();
 
-real clk_period_axi = 2.0; // 500MHz
+import axi4_task::*;
+glbl glbl();
+
+real clk_period_axi = 1000/333.25; // 333.25MHz
 real clk_period_axilite = 10.0; // 100MHz
+real clk_period_rf = 1000/500;  // 500MHz
 
 
 logic axi_aclk, axi_rstb; // 500MHz
 logic axilite_clk, axilite_rstb; // 100MHz
+logic rf_clk, rf_rstb;
 event RST_DONE;
 
 initial begin
@@ -21,6 +26,17 @@ initial begin
 end
 
 initial begin
+    rf_clk = 1'b0;
+    forever #(clk_period_rf/2) rf_clk = ~rf_clk;
+end
+
+initial begin
+    rf_rstb = 1'b0;
+    #(clk_period_rf*10) rf_rstb = 1'b1;
+end
+
+
+initial begin
     axilite_clk = 1'b0;
     forever #(clk_period_axilite/2) axilite_clk = ~axilite_clk;
 end
@@ -29,133 +45,131 @@ initial begin
     axilite_rstb = 1'b0;
     #(clk_period_axilite*10) axilite_rstb = 1'b1;
     -> RST_DONE;
+    $display("[%t] Reset Done", $time);
 end
 
 // interface
-AXI4.master axi4_if;
+AXI4 #(.DATA_WIDTH(256))    pl_m_axi_rd();
+AXI4 #(.DATA_WIDTH(128))    ps_m_axi_wr();
+AXI4Lite                    axil_regs();
+AXI4Lite                    axil_rf_ctrl();
+RFSOC_REG                   regs();
+STREAM #(256)               dac_stream();
 
 
 
-logic            [255:0]     axis_tdata;
-logic             [31:0]     axis_tkeep;
-logic                        axis_tlast;
-logic                        axis_tready;
-logic                        axis_tvalid;
+reg_map #(
+    .ADDR_SEGMENT           (16'h0000)
+) u_reg_map (
+    .axilite_clk            (axilite_clk),
+    .axilite_rstb           (axilite_rstb),
 
-logic                        rd_mm2s_err;
-logic                        read_start;
-logic                        read_reset;
-logic             [31:0]     start_address;
-logic             [31:0]     cap_size;
-logic             [31:0]     current_addr;
-logic              [7:0]     run_cycles;
-
-axi_dma_rd axi_dma_rd (
-    .axi_aclk(axi_aclk),
-    .axi_rstb(axi_rstb),
-    .axis_st_clk(axis_st_clk),
-    .axis_st_rstb(axis_st_rstb),
-
-    .axi_araddr(axi_araddr),
-    .axi_arburst(axi_arburst),
-    .axi_arcache(axi_arcache),
-    .axi_arid(axi_arid),
-    .axi_arlen(axi_arlen),
-    .axi_arprot(axi_arprot),
-    .axi_arready(axi_arready),
-    .axi_arsize(axi_arsize),
-    .axi_aruser(axi_aruser),
-    .axi_arvalid(axi_arvalid),
-
-    .axi_rdata(axi_rdata),
-    .axi_rlast(axi_rlast),
-    .axi_rready(axi_rready),
-    .axi_rresp(axi_rresp),
-    .axi_rvalid(axi_rvalid),
-
-    .axis_tdata(axis_tdata),
-    .axis_tkeep(axis_tkeep),
-    .axis_tlast(axis_tlast),
-    .axis_tready(axis_tready),
-    .axis_tvalid(axis_tvalid),
-
-    // Control signals
-    .rd_mm2s_err(rd_mm2s_err),
-    .run_cycles(run_cycles),
-    .current_addr(current_addr),
-    .read_start(read_start),
-    .read_reset(read_reset),
-
-    // Configuration signals
-    .start_address(start_address),
-    .cap_size(cap_size)
-);
-assign axis_tready = 1'b1;
-
-logic    [31:0]  m_axi_awaddr;
-logic    [1:0]   m_axi_awburst;
-logic    [2:0]   m_axi_awsize;
-logic    [7:0]   m_axi_awlen;
-logic            m_axi_awvalid, m_axi_awready;
-logic            m_axi_wlast, m_axi_wvalid, m_axi_wready;
-logic    [255:0] m_axi_wdata;
-logic    [31:0]  m_axi_wstrb;
-logic            m_axi_bvalid, m_axi_bready;
-logic    [1:0]   m_axi_bresp;
-
-
-axi_bram_ctrl_0 U_BRAM (
-  .s_axi_aclk           (axi_aclk),        // input wire s_axi_aclk
-  .s_axi_aresetn        (axi_rstb),  // input wire s_axi_aresetn
-  .s_axi_awaddr         (m_axi_awaddr[14:0]),    // input wire [14 : 0] s_axi_awaddr
-  .s_axi_awlen          (m_axi_awlen),      // input wire [7 : 0] s_axi_awlen
-  .s_axi_awsize         (m_axi_awsize),    // input wire [2 : 0] s_axi_awsize
-  .s_axi_awburst        (m_axi_awburst),  // input wire [1 : 0] s_axi_awburst
-  .s_axi_awlock         (1'b0),         // input wire s_axi_awlock
-  .s_axi_awcache        (4'b0),         // input wire [3 : 0] s_axi_awcache
-  .s_axi_awprot         (3'b0),         // input wire [2 : 0] s_axi_awprot
-  .s_axi_awvalid        (m_axi_awvalid),  // input wire s_axi_awvalid
-  .s_axi_awready        (m_axi_awready),  // output wire s_axi_awready
-  .s_axi_wdata          (m_axi_wdata),      // input wire [255 : 0] s_axi_wdata
-  .s_axi_wstrb          (m_axi_wstrb),      // input wire [31 : 0] s_axi_wstrb
-  .s_axi_wlast          (m_axi_wlast),      // input wire s_axi_wlast
-  .s_axi_wvalid         (m_axi_wvalid),    // input wire s_axi_wvalid
-  .s_axi_wready         (m_axi_wready),    // output wire s_axi_wready
-  .s_axi_bresp          (m_axi_bresp),      // output wire [1 : 0] s_axi_bresp
-  .s_axi_bvalid         (m_axi_bvalid),    // output wire s_axi_bvalid
-  .s_axi_bready         (m_axi_bready),    // input wire s_axi_bready
-  .s_axi_araddr         (axi.araddr[14:0]),    // input wire [14 : 0] s_axi_araddr
-  .s_axi_arlen          (axi.arlen),      // input wire [7 : 0] s_axi_arlen
-  .s_axi_arsize         (axi.arsize),    // input wire [2 : 0] s_axi_arsize
-  .s_axi_arburst        (axi.arburst),  // input wire [1 : 0] s_axi_arburst
-  .s_axi_arlock         (1'b0),         // input wire s_axi_arlock
-  .s_axi_arcache        (axi.arcache),  // input wire [3 : 0] s_axi_arcache
-  .s_axi_arprot         (axi.arprot),    // input wire [2 : 0] s_axi_arprot
-  .s_axi_arvalid        (axi.arvalid),  // input wire s_axi_arvalid
-  .s_axi_arready        (axi.arready),  // output wire s_axi_arready
-  .s_axi_rdata          (axi.rdata),      // output wire [255 : 0] s_axi_rdata
-  .s_axi_rresp          (axi.rresp),      // output wire [1 : 0] s_axi_rresp
-  .s_axi_rlast          (axi.rlast),      // output wire s_axi_rlast
-  .s_axi_rvalid         (axi.rvalid),    // output wire s_axi_rvalid
-  .s_axi_rready         (axi.rready)    // input wire s_axi_rready
+    // 显式指定modport连接
+    .s_axil                 (axil_regs),
+    .regs                   (regs)
 );
 
+wire        pl_clk = axi_aclk;
+wire        pl_rstb = axi_rstb;
+wire        dac_usr_clk = rf_clk;
+wire        dac_usr_rstb = rf_rstb;
+
+dac_data_path u_dac_data_path (
+    // clock & reset
+    .pl_clk                 (pl_clk),
+    .pl_rstb                (pl_rstb),
+    .axilite_clk            (axilite_clk),
+    .axilite_rstb           (axilite_rstb),
+    .rf_clk                 (dac_usr_clk),
+    .rf_rstb                (dac_usr_rstb),
+
+    // axi4 master read from pl ddr
+    .m_axi                  (pl_m_axi_rd),
+
+    // dac axis output to rf
+    .m_axis                 (dac_stream),
+
+    // status for debug
+    .datamover_status       (regs.dac_datamover_status),
+    .current_addr           (regs.dac_current_addr),
+    .run_cycles             (regs.dac_run_cycles),
+    .read_mm2s_err          (regs.dac_read_mm2s_err),
+
+    // regs
+    .read_start             (regs.dac_start),
+    .read_reset             (regs.dac_reset),
+    .start_address          (regs.dac_start_address),
+    .cap_size               (regs.dac_cap_size)
+);
+
+// here need a AXI4 BRAM TODO
+AXI4 #(.DATA_WIDTH(256))    bram_wr_axi();
 
 
+
+
+
+
+
+
+
+
+
+assign axi4_task::axi_aclk = axi_aclk;
+assign axi4_task::axilite_clk = axilite_clk;
 
 initial begin
-    start_address = 0;
-    cap_size = 0;
-    read_start = 0;
-    read_reset = 0;
-    // Wait for reset to be released
-    @(RST_DONE);
-    repeat(100) @ (posedge axis_st_clk);
-    // Set the start address and size
-    start_address = 32'h00000000;
-    cap_size = 32'h00010000; // 256*256 bytes
-    read_start = 1'b1; // Start the read operation
-    read_reset = 1'b0;
+    int val, read_data;
+    int addr_max;
+    bit [191:0] gt_data[$], read_gt_data[$], gt_data_tmp;
+    axi4_task::m_axil = axil_regs;
+    axi4_task::axilite_reset();
+    @RST_DONE;
+    repeat(100) @(posedge axilite_clk);
+    addr_max = $urandom_range(10, 50);
+    for(int i = 0; i < addr_max; i++) begin
+        gt_data_tmp = {$urandom(), $urandom(), $urandom(), $urandom(), $urandom(), $urandom()};
+        gt_data.push_back(gt_data_tmp);
+        for(int ch = 0; ch < 6; ch++) begin
+            val = (1<<12) | (ch<<8) | i[7:0];
+            axi4_task::WriteReg(32'h1c, gt_data_tmp[ch*32+:32]);
+            axi4_task::WriteReg(32'h18, val);
+        end
+    end
+    $display("[%t] : Write GT data done", $time);
+    repeat(100) @(posedge axilite_clk);
+
+    axi4_task::WriteReg(32'h20, 1);
+    $display("[%t] : GT data start, check 1st loop", $time);
+    wait(top.u_gt_data_path.gt_start);
+    @(posedge gt_clk);
+    for(int i = 0; i < addr_max; i++) begin
+        @(posedge gt_clk); 
+        read_gt_data.push_back(gt_tx_data);
+    end
+    gt_data_check(gt_data, read_gt_data);
+
+    $display("[%t] : check 2nd loop", $time);
+    for(int i = 0; i < addr_max; i++) begin
+        @(posedge gt_clk);
+        read_gt_data.push_back(gt_tx_data);
+    end
+    gt_data_check(gt_data, read_gt_data);
+
+    repeat(100) @(posedge axilite_clk);
+    $finish;
+end
+
+initial begin
+    string wave_file;
+    int tmp;
+    $timeformat(-9, 2, " ns", 16);  // set time format to allow #?ns etc.
+    if ($test$plusargs("WAVE_FILE"))
+        tmp = $value$plusargs("WAVE_FILE=%s", wave_file);
+    else
+        wave_file = "wave.vcd";
+    $dumpfile(wave_file);
+    $dumpvars(0, top);
 end
 
 
