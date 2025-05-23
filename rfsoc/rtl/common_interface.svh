@@ -1,6 +1,7 @@
 `ifndef _COMMON_INTERFACE_SVH_
 `define _COMMON_INTERFACE_SVH_
 
+`timescale 1ns/1ps
 
 interface STREAM #(
     parameter WIDTH = 512

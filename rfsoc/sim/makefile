@@ -4,7 +4,7 @@ XILINX_DATA_PATH = /d/Xilinx/Vivado/2024.2/data
 XILINX_IP_PATH = /d/mydata/git_resp/rfsoc/rfsoc.gen/sources_1/ip
 
 TOP ?= top
-DUT = gt_data_path
+DUT = dac_data_path
 WAVE_FILE = wave.vcd
 
 FILE_LIST = run.f
@@ -12,9 +12,9 @@ FILE_LIST = run.f
 all: com sim
 
 pre:
-	$(XILINX_TOOL_PATH)/xvlog --incr --sv -f D:/Xilinx/Vivado/2024.2/data/verilog/src/unisims.f -log log/xvlog_pre.log
+	$(XILINX_TOOL_PATH)/xvlog --incr --sv -f share.f -log log/xvlog_pre.log
 
-com: pre
+com:
 	$(XILINX_TOOL_PATH)/xvlog --incr --sv -f $(FILE_LIST) -log log/xvlog_$(DUT).log
 	$(XILINX_TOOL_PATH)/xelab --incr -debug typical $(TOP) -s $(TOP)_sim -log log/xelab_$(DUT).log
 

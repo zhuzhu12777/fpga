@@ -29,7 +29,7 @@ module dac_data_path(
 );
 
 // axis fifo
-STREAM #(256) dma_axis;
+STREAM #(256) dma_axis();
 axi_dma_rd u_axi_dma_rd (
     // clock & reset
     .axi_aclk           (pl_clk),
@@ -41,7 +41,7 @@ axi_dma_rd u_axi_dma_rd (
     .m_axi              (m_axi),
 
     // axis
-    .m_axis             (dma_axis),
+    .m_axis             (dma_axis.master),
 
     // status
     .datamover_status   (datamover_status),
@@ -57,7 +57,7 @@ axi_dma_rd u_axi_dma_rd (
 );
 
 // axis fifo, depth = 64
-STREAM #(256) fifo_axis;
+STREAM #(256) fifo_axis();
 axis_data_fifo_rd u_axis_data_fifo_rd (
     .s_axis_aresetn         (pl_rstb),              // input wire s_axis_aresetn
     .s_axis_aclk            (pl_clk),               // input wire s_axis_aclk
@@ -71,7 +71,7 @@ axis_data_fifo_rd u_axis_data_fifo_rd (
 );
 
 // axis data width converter, 256b to 128b
-STREAM #(128) axis_128b;
+STREAM #(128) axis_128b();
 axis_dwidth_converter_rd u_axis_dwidth_converter_rd (
     .aclk                   (rf_clk),               // input wire aclk
     .aresetn                (rf_rstb),              // input wire aresetn

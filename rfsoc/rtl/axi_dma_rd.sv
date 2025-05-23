@@ -58,7 +58,7 @@ axi_datamover_rd u_axi_datamover_rd (
   .m_axi_mm2s_arburst           (m_axi.arburst),                  // output wire [1 : 0] m_axi_mm2s_arburst
   .m_axi_mm2s_arprot            (m_axi.arprot),                   // output wire [2 : 0] m_axi_mm2s_arprot
   .m_axi_mm2s_arcache           (m_axi.arcache),                  // output wire [3 : 0] m_axi_mm2s_arcache
-  .m_axi_mm2s_aruser            (m_axi.aruser),                   // output wire [3 : 0] m_axi_mm2s_aruser
+  .m_axi_mm2s_aruser            (),                               // output wire [3 : 0] m_axi_mm2s_aruser
   .m_axi_mm2s_arvalid           (m_axi.arvalid),                  // output wire m_axi_mm2s_arvalid
   .m_axi_mm2s_arready           (m_axi.arready),                  // input wire m_axi_mm2s_arready
   .m_axi_mm2s_rdata             (m_axi.rdata),                    // input wire [255 : 0] m_axi_mm2s_rdata
