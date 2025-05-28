@@ -58,5 +58,5 @@ unsetenv GREP_OPTIONS
 setenv PATH "/c/Users/sailong.fan/AppData/Local/Programs/Microsoft VS Code/bin:$PATH"
 setenv PATH "/c/Users/sailong.fan/AppData/Local/Programs/Python/Python313/:$PATH"
 setenv PATH "/c/Users/sailong.fan/AppData/Local/Programs/Python/Python313/Scripts/:$PATH"
-setenv PATH "/d/Xilinx/Vivado/2024.2/bin/:$PATH"
+setenv PATH "/d/Xilinx/Vivado/2022.2/bin/:$PATH"
 setenv PATH "/d/Program Files/Vim/vim91/:$PATH"
