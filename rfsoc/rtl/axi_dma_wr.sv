@@ -59,7 +59,7 @@ axi_datamover_wr u_axi_datamover_wr (
   .m_axi_s2mm_awburst           (m_axi.awburst),                    // output wire [1 : 0] m_axi_s2mm_awburst
   .m_axi_s2mm_awprot            (m_axi.awprot),                     // output wire [2 : 0] m_axi_s2mm_awprot
   .m_axi_s2mm_awcache           (m_axi.awcache),                    // output wire [3 : 0] m_axi_s2mm_awcache
-  .m_axi_s2mm_awuser            (m_axi.awuser),                     // output wire [3 : 0] m_axi_s2mm_awuser
+  .m_axi_s2mm_awuser            (),                     // output wire [3 : 0] m_axi_s2mm_awuser
   .m_axi_s2mm_awvalid           (m_axi.awvalid),                    // output wire m_axi_s2mm_awvalid
   .m_axi_s2mm_awready           (m_axi.awready),                    // input wire m_axi_s2mm_awready
   .m_axi_s2mm_wdata             (m_axi.wdata),                      // output wire [127 : 0] m_axi_s2mm_wdata

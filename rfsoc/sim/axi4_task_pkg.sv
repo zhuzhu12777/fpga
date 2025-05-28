@@ -1,6 +1,8 @@
 package axi4_task;
 
-    virtual AXI4 m_axi;
+    parameter DATA_WIDTH = 128;
+
+    virtual AXI4 #(.DATA_WIDTH(DATA_WIDTH)) m_axi;
     virtual AXI4Lite m_axil;
     logic axi_aclk;
     logic axilite_clk;
@@ -20,7 +22,7 @@ package axi4_task;
         m_axi.rready <= '0;
         m_axi.awid  <= '0;
         m_axi.awlen   <= '1;        // len = 1
-        m_axi.awsize  <= 'd5;       // 256b
+        m_axi.awsize  <= $clog2(DATA_WIDTH/8);       // 256b
         m_axi.awburst <= '1;        // incr
         m_axi.awlock  <= '0;
         m_axi.awcache <= '0;
@@ -29,7 +31,7 @@ package axi4_task;
         m_axi.wlast <= '0;
         m_axi.arid  <= '1;
         m_axi.arlen   <= '1;
-        m_axi.arsize  <= 'd5;
+        m_axi.arsize  <= $clog2(DATA_WIDTH/8);
         m_axi.arburst <= '1;
         m_axi.arlock  <= '0;
         m_axi.arcache <= '0;
@@ -37,7 +39,7 @@ package axi4_task;
         m_axi.arregion <= '0;
     endtask
 
-    task axi4_write(input logic [31:0] addr, input logic [255:0] data);
+    task axi4_write(input logic [31:0] addr, input logic [DATA_WIDTH-1:0] data);
         @(posedge axi_aclk);
         m_axi.awlen   <= '1;
         if (m_axi != null) begin
@@ -66,7 +68,7 @@ package axi4_task;
         end
     endtask
 
-    task axi4_read(input [31:0] addr, output [255:0] data);
+    task axi4_read(input [31:0] addr, output [DATA_WIDTH-1:0] data);
         m_axi.arlen   <= '1;
         @(posedge axi_aclk);
         if (m_axi != null) begin

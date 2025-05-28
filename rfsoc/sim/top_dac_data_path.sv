@@ -177,9 +177,8 @@ assign axi4_task::axilite_clk = axilite_clk;
 parameter PKG_NUM = 10;
 
 initial begin
-    int val;
     bit [255:0] exp_data[$], real_data[$];
-    bit [255:0] val1, val2;
+    bit [255:0] val, val1, val2;
     dac_stream.tready = '0;
     axi4_task::m_axi = bram_wr_axi;
     axi4_task::m_axil = axil_regs;
@@ -212,9 +211,8 @@ initial begin
         if (dac_stream.tvalid) begin
             val2 = dac_stream.tdata;
         end
-        // val = val1[]
-
-        real_data.push_back(dac_stream.tdata);
+        val = {val2[255-:8], val2[255-16-:8], val2[255-32-:8], val2[255-48-:8], val2[255-64-:8], val2[255-80-:8], val2[255-96-:8], val2[255-112-:8], val2[255-128-:8], val2[255-144-:8], val2[255-160-:8], val2[255-176-:8], val2[255-192-:8], val2[255-208-:8], val2[255-224-:8], val2[255-240-:8], val1[255-:8], val1[255-16-:8], val1[255-32-:8], val1[255-48-:8], val1[255-64-:8], val1[255-80-:8], val1[255-96-:8], val1[255-112-:8], val1[255-128-:8], val1[255-144-:8], val1[255-160-:8], val1[255-176-:8], val1[255-192-:8], val1[255-208-:8], val1[255-224-:8], val1[255-240-:8]};
+        real_data.push_back(val);
     end
     check_dac_data_path(exp_data, real_data);
 
@@ -222,8 +220,14 @@ initial begin
     for (int i = 0; i < PKG_NUM; i++) begin
         @(posedge rf_clk);
         if (dac_stream.tvalid) begin
-            real_data.push_back(dac_stream.tdata);
+            val1 = dac_stream.tdata;
         end
+        @(posedge rf_clk);
+        if (dac_stream.tvalid) begin
+            val2 = dac_stream.tdata;
+        end
+        val = {val2[255-:8], val2[255-16-:8], val2[255-32-:8], val2[255-48-:8], val2[255-64-:8], val2[255-80-:8], val2[255-96-:8], val2[255-112-:8], val2[255-128-:8], val2[255-144-:8], val2[255-160-:8], val2[255-176-:8], val2[255-192-:8], val2[255-208-:8], val2[255-224-:8], val2[255-240-:8], val1[255-:8], val1[255-16-:8], val1[255-32-:8], val1[255-48-:8], val1[255-64-:8], val1[255-80-:8], val1[255-96-:8], val1[255-112-:8], val1[255-128-:8], val1[255-144-:8], val1[255-160-:8], val1[255-176-:8], val1[255-192-:8], val1[255-208-:8], val1[255-224-:8], val1[255-240-:8]};
+        real_data.push_back(val);
     end
     check_dac_data_path(exp_data, real_data);
 

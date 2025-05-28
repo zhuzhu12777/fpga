@@ -98,8 +98,6 @@ if {[get_ips axilite_crossbar_0] == ""} {
   create_ip -name axi_crossbar -vendor xilinx.com -library ip -version 2.1 -module_name axilite_crossbar_0
 }
 set_property -dict [list \
-  CONFIG.ADDR_RANGES {1} \
-  CONFIG.M00_S00_READ_CONNECTIVITY {1} \
   CONFIG.PROTOCOL {AXI4LITE} \
 ] [get_ips axilite_crossbar_0]
 

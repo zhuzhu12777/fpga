@@ -4,8 +4,8 @@ XILINX_DATA_PATH = /d/Xilinx/Vivado/2024.2/data
 XILINX_IP_PATH = /d/mydata/git_resp/rfsoc/rfsoc.gen/sources_1/ip
 
 TOP ?= top
-DUT = dac_data_path
-WAVE_FILE = wave.vcd
+DUT = adc_data_path
+WAVE_FILE = $(DUT)_wave.vcd
 
 FILE_LIST = run.f
 

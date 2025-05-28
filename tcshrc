@@ -1,0 +1,62 @@
+
+set SHELL = /bin/tcsh
+set nobeep
+set filec
+set ignoreeof
+limit coredumpsize 0
+
+if ($?prompt) then            # 仅对交互式Shell生效 
+    set autolist              # 按下Tab键直接补全 
+    set complete = enhance    # 补全时忽略大小写，认为-与_相同，将.、-、_作为单词分隔符； 
+                              # 若将enhance更换为igncase则仅忽略大小写 
+    set autoexpand            # 补全时参考history命令的输出 
+                        #set correct = cmd   #命令唯一时，可以自动纠正，比如ecoh可以纠正为echo；
+                        #但是LS不能纠正为ls，因为还有lsattr等符合
+                        #    set correct = all   #当correct设置为cmd时，tcsh将命令名ecno校正为echo。
+                        #当correct设置为all，tcsh将同时校正命令名和变量。
+                        #而如果命令行上出现文件名，它还试图校正该文件名。
+endif
+
+set prompt = "%B[%/] > "
+
+setenv LSCOLORS ExGxFxdxCxegedabagExEx
+setenv CLICOLOR yes
+setenv GREP_OPTIONS --color=auto
+
+
+unalias ls
+#------------------------------------------------------------
+#--------------       Quick Command          ----------------
+#------------------------------------------------------------
+alias   a       "alias"
+alias   ls      "ls --color=auto"
+alias   ll      "ls -A -lh --color=auto"
+alias   llrt    "ll -rt"
+alias   cd      "cd \!*; ls"
+alias   h       "history 30"
+alias   hist    "history"
+alias   c       "cd ../"
+alias   cc      "cd ../../"
+alias   ccc     "cd ../../../"
+alias   g       "gvim"
+alias   gf      "rvimdiff"
+alias   grep    "grep --color=auto"
+
+alias   myss    "source ~/.tcshrc"
+alias   emyss   "g ~/.tcshrc &"
+alias   du0     "du -h --max-depth=0"
+alias   du1     "du -h --max-depth=1"
+alias   du2     "du -h --max-depth=2"
+alias   du3     "du -h --max-depth=3"
+alias   du4     "du -h --max-depth=4"
+alias   du5     "du -h --max-depth=5"
+alias   clc     "clear"
+
+# -------------------- EDA PATH
+unsetenv VERILATOR_ROOT
+unsetenv GREP_OPTIONS
+setenv PATH "/c/Users/sailong.fan/AppData/Local/Programs/Microsoft VS Code/bin:$PATH"
+setenv PATH "/c/Users/sailong.fan/AppData/Local/Programs/Python/Python313/:$PATH"
+setenv PATH "/c/Users/sailong.fan/AppData/Local/Programs/Python/Python313/Scripts/:$PATH"
+setenv PATH "/d/Xilinx/Vivado/2024.2/bin/:$PATH"
+setenv PATH "/d/Program Files/Vim/vim91/:$PATH"
