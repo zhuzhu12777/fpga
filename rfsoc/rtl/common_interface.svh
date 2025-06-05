@@ -212,6 +212,7 @@ interface RFSOC_REG;
     logic        gt_powergood;
     logic        rf_irq;
     logic        rf_int;
+    logic        c0_init_calib_complete;
 
     modport master(
         output dac_start_addr, dac_cap_size, dac_reset, dac_start,
@@ -220,7 +221,7 @@ interface RFSOC_REG;
         input  adc_cap_done,
         input  dac_datamover_status, dac_current_addr, dac_run_cycles, dac_read_mm2s_err,
         input  adc_datamover_status, adc_current_addr, adc_run_cycles, adc_wr_mm2s_err,
-        input  gt_powergood, rf_irq,
+        input  gt_powergood, rf_irq, c0_init_calib_complete,
         output rf_int
     );
 

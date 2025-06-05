@@ -34,17 +34,18 @@ segment address : 0x0010
 
 ## 状态与只读寄存器
 
-| 名称                 | 地址        | 位宽/位域 | 读写属性 | 描述              |
-| -------------------- | ----------- | --------- | -------- | ----------------- |
-| dac_read_mm2s_err    | 0x0010_0100 | [15]      | RO       | DAC读错误标志     |
-| dac_run_cycles       | 0x0010_0100 | [14:0]    | RO       | DAC运行周期计数   |
-| dac_datamover_status | 0x0010_0100 | [31:16]   | RO       | DAC DataMover状态 |
-| dac_current_addr     | 0x0010_0104 | [31:0]    | RO       | DAC当前地址       |
-| adc_wr_mm2s_err      | 0x0010_0108 | [15]      | RO       | ADC写错误标志     |
-| adc_run_cycles       | 0x0010_0108 | [14:0]    | RO       | ADC运行周期计数   |
-| adc_datamover_status | 0x0010_0108 | [31:16]   | RO       | ADC DataMover状态 |
-| adc_current_addr     | 0x0010_010C | [31:0]    | RO       | ADC当前地址       |
-| gt_powergood         | 0x0010_0110 | [31]      | RO       | GT电源良好状态    |
+| 名称                   | 地址        | 位宽/位域 | 读写属性 | 描述              |
+| ---------------------- | ----------- | --------- | -------- | ----------------- |
+| dac_read_mm2s_err      | 0x0010_0100 | [16]      | RO       | DAC读错误标志     |
+| dac_run_cycles         | 0x0010_0100 | [15:8]    | RO       | DAC运行周期计数   |
+| dac_datamover_status   | 0x0010_0100 | [7:0]     | RO       | DAC DataMover状态 |
+| dac_current_addr       | 0x0010_0104 | [31:0]    | RO       | DAC当前地址       |
+| adc_wr_mm2s_err        | 0x0010_0108 | [16]      | RO       | ADC写错误标志     |
+| adc_run_cycles         | 0x0010_0108 | [15:8]    | RO       | ADC运行周期计数   |
+| adc_datamover_status   | 0x0010_0108 | [7:0]     | RO       | ADC DataMover状态 |
+| adc_current_addr       | 0x0010_010C | [31:0]    | RO       | ADC当前地址       |
+| c0_init_calib_complete | 0x0010_0110 | [1]       | RO       | DDR初始化校准完成 |
+| gt_powergood           | 0x0010_0110 | [0]       | RO       | GT电源良好状态    |
 
 ## 中断相关寄存器
 

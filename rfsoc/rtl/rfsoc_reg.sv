@@ -208,7 +208,7 @@ always @(*) begin
         16'h0104: rdata = regs.dac_current_addr;
         16'h0108: rdata = {15'd0, regs.adc_wr_mm2s_err, regs.adc_run_cycles, regs.adc_datamover_status};
         16'h010C: rdata = regs.adc_current_addr;
-        16'h0110: rdata = {31'd0, regs.gt_powergood};
+        16'h0110: rdata = {30'd0, regs.c0_init_calib_complete, regs.gt_powergood};
         16'h0114: rdata = {22'd0, irq_rf_status, irq_dm_status, 6'd0, irq_enable};
 
         default:  rdata = 32'h0;

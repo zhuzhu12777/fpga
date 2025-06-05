@@ -26,24 +26,26 @@ module rfsoc_fpga(
     input  logic    [5:0]   vin_p,
     input  logic    [5:0]   vin_n,
     output logic            vout_p,
-    output logic            vout_n
+    output logic            vout_n,
+
+    input  logic            c0_init_calib_complete
+
+
 );
 
 wire                pl_clk, pl_rstb;    // 333.25MHz
 wire                dac_usr_clk, dac_usr_rstb;    // 500MHz
 wire [2:0]          adc_usr_clk, adc_usr_rstb;    // 187.5MHz
 wire                gt_usr_clk, gt_usr_rstb;      // 187.5MHz
-wire                gt_refclk_in;   // 50MHz
-wire                gt_init_clk, gt_init_rstb;    // 187.5MHz
+
+assign pl_clk  = ps_clk;
+assign pl_rstb = ps_rstb;
+
 
 // interface
 AXI4Lite                    axil_regs();
 AXI4Lite                    axil_rf_ctrl();
 RFSOC_REG                   regs();
-
-// PLL gen TODO
-
-// reset generator TODO
 
 // axilite crossbar to regs and rf_ctrl
 // rf_ctrl: 0x0000_0000 ~ 0x000F_FFFF
@@ -101,7 +103,7 @@ reg_map #(
     .regs                   (regs)
 );
 
-STREAM #(256) dac_stream;
+STREAM #(256) dac_stream();
 dac_data_path u_dac_data_path (
     // clock & reset
     .pl_clk                 (pl_clk),
@@ -126,11 +128,11 @@ dac_data_path u_dac_data_path (
     // regs
     .read_start             (regs.dac_start),
     .read_reset             (regs.dac_reset),
-    .start_address          (regs.dac_start_address),
+    .start_address          (regs.dac_start_addr),
     .cap_size               (regs.dac_cap_size)
 );
 
-STREAM #(128) adc_stream[6];
+STREAM #(128) adc_stream[6]();
 adc_data_path u_adc_data_path (
     // clock & reset
     .ps_clk                 (ps_clk),
@@ -160,7 +162,7 @@ adc_data_path u_adc_data_path (
     // regs
     .write_start            (regs.adc_start),
     .write_reset            (regs.adc_reset),
-    .start_address          (regs.adc_start_address),
+    .start_address          (regs.adc_start_addr),
     .cap_size               (regs.adc_cap_size)
 );
 
@@ -184,8 +186,7 @@ gt_data_path u_gt_data_path (
 
 // rfsoc wrapper
 RF_Wrapper #(
-    .RF_ADC_NUM             (6),
-    .RF_ADC_AXIS_WID        (128)
+    .RF_ADC_NUM             (6)
 ) u_rf_wrapper (
     .axilite_clk            (axilite_clk),
     .axilite_rstb           (axilite_rstb),
@@ -219,9 +220,9 @@ GT_TX_Wrapper #(
     .MASTER_CHN            (3),
     .USER_DATA_WIDTH       (32)
 ) u_gt_tx_wrapper (
-    .gt_reset              (!gt_init_rstb),
-    .gt_init_clk           (gt_init_clk),
-    .gt_refclk_in          (gt_refclk_in),
+    .gt_reset              (!axilite_rstb),
+    .gt_init_clk           (axilite_clk),
+    .gt_refclk_in          (axilite_clk),
     .gt_txp                (gt_txp),
     .gt_txn                (gt_txn),
     .userclk_out           (gt_usr_clk),
