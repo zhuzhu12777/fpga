@@ -99,6 +99,10 @@ if {[get_ips axilite_crossbar_0] == ""} {
 }
 set_property -dict [list \
   CONFIG.PROTOCOL {AXI4LITE} \
+  CONFIG.M00_A00_ADDR_WIDTH {18} \
+  CONFIG.M01_A00_ADDR_WIDTH {16} \
+  CONFIG.M00_A00_BASE_ADDR {0x0000000080000000} \
+  CONFIG.M01_A00_BASE_ADDR {0x0000000080100000} \
 ] [get_ips axilite_crossbar_0]
 
 

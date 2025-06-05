@@ -89,7 +89,7 @@ usp_rf_data_converter_0 u_usp_rf_data_converter_0 (
     .clk_dac0                       (dac_usr_dac),                // output wire clk_dac0
     .s_axi_aclk                     (axilite_clk),            // input wire s_axi_aclk
     .s_axi_aresetn                  (axilite_rstb),      // input wire s_axi_aresetn
-    .s_axi_awaddr                   (s_axil.awaddr),        // input wire [17 : 0] s_axi_awaddr
+    .s_axi_awaddr                   (s_axil.awaddr[17:0]),        // input wire [17 : 0] s_axi_awaddr
     .s_axi_awvalid                  (s_axil.awvalid),      // input wire s_axi_awvalid
     .s_axi_awready                  (s_axil.awready),      // output wire s_axi_awready
     .s_axi_wdata                    (s_axil.wdata),          // input wire [31 : 0] s_axi_wdata
@@ -99,7 +99,7 @@ usp_rf_data_converter_0 u_usp_rf_data_converter_0 (
     .s_axi_bresp                    (s_axil.bresp),          // output wire [1 : 0] s_axi_bresp
     .s_axi_bvalid                   (s_axil.bvalid),        // output wire s_axi_bvalid
     .s_axi_bready                   (s_axil.bready),        // input wire s_axi_bready
-    .s_axi_araddr                   (s_axil.araddr),        // input wire [17 : 0] s_axi_araddr
+    .s_axi_araddr                   (s_axil.araddr[17:0]),        // input wire [17 : 0] s_axi_araddr
     .s_axi_arvalid                  (s_axil.arvalid),      // input wire s_axi_arvalid
     .s_axi_arready                  (s_axil.arready),      // output wire s_axi_arready
     .s_axi_rdata                    (s_axil.rdata),          // output wire [31 : 0] s_axi_rdata

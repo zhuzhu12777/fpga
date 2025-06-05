@@ -48,8 +48,8 @@ AXI4Lite                    axil_rf_ctrl();
 RFSOC_REG                   regs();
 
 // axilite crossbar to regs and rf_ctrl
-// rf_ctrl: 0x0000_0000 ~ 0x000F_FFFF
-// regs:  0x0010_0000 ~ 0x0010_FFFF
+// rf_ctrl: 0x8000_0000 ~ 0x800F_FFFF
+// regs:  0x8010_0000 ~ 0x8010_FFFF
 axilite_crossbar_0 u_axilite_crossbar (
     .aclk                   (axilite_clk),                      // input wire aclk
     .aresetn                (axilite_rstb),                     // input wire aresetn
@@ -94,7 +94,7 @@ axilite_crossbar_0 u_axilite_crossbar (
 );
 
 reg_map #(
-    .ADDR_SEGMENT           (16'h0010)
+    .ADDR_SEGMENT           (16'h8010)
 ) u_reg_map (
     .axilite_clk            (axilite_clk),
     .axilite_rstb           (axilite_rstb),

@@ -3,7 +3,7 @@
 module top();
 
 import axi4_task::*;
-glbl glbl();
+//glbl glbl();
 
 initial begin
     string wave_file;
@@ -64,6 +64,7 @@ AXI4Lite                    ps_s_axilite();
 AXI4Lite                    axil_regs();
 AXI4Lite                    axil_rf_ctrl();
 RFSOC_REG                   regs();
+RFSOC_REG                   regs2();
 
 // axilite crossbar to regs and rf_ctrl
 // rf_ctrl: 0x0000_0000 ~ 0x000F_FFFF
@@ -114,15 +115,15 @@ axilite_crossbar_0 u_axilite_crossbar (
 reg_map u_regs(
     .axilite_clk            (axilite_clk),
     .axilite_rstb           (axilite_rstb),
-    .s_axilite              (axil_regs),
-    .regs                   ()
+    .s_axil                 (axil_regs),
+    .regs                   (regs)
 );
 
 reg_map u_rf_ctrl(
     .axilite_clk            (axilite_clk),
     .axilite_rstb           (axilite_rstb),
-    .s_axilite              (axil_rf_ctrl),
-    .regs                   ()
+    .s_axil                 (axil_rf_ctrl),
+    .regs                   (regs2)
 );
 
 assign axi4_task::axi_aclk = axi_aclk;
@@ -141,6 +142,18 @@ initial begin
     WriteReg(32'h0010_0000, 32'h40);
 
     WriteReg(32'h0100_0000, 32'h50);
+
+    WriteReg(32'h8000_0000, 32'h10);
+
+    WriteReg(32'h8000_1000, 32'h20);
+
+    WriteReg(32'h8001_0000, 32'h30);
+
+    WriteReg(32'h8010_0000, 32'h40);
+
+    WriteReg(32'h8100_0000, 32'h50);
+
+
 
     repeat(100)@(posedge axi_aclk);
     $finish;
