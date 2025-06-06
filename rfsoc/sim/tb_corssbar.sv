@@ -56,7 +56,7 @@ initial begin
     axilite_rstb = 1'b0;
     #(clk_period_axilite*10) axilite_rstb = 1'b1;
     -> RST_DONE;
-    $display("[%t] Reset Done", $time);
+    $display("[%t] : Reset Done", $time);
 end
 
 // interface

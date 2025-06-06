@@ -1,8 +1,6 @@
 // --------------------
-// xpm
-D:/Xilinx/Vivado/2022.2/data/ip/xpm/xpm_cdc/hdl/xpm_cdc.sv
-D:/Xilinx/Vivado/2022.2/data/ip/xpm/xpm_fifo/hdl/xpm_fifo.sv
-D:/Xilinx/Vivado/2022.2/data/ip/xpm/xpm_memory/hdl/xpm_memory.sv
+// share
+-f ../../share/unisims.f
 
 // --------------------
 // ip
@@ -19,6 +17,3 @@ D:/Xilinx/Vivado/2022.2/data/ip/xpm/xpm_memory/hdl/xpm_memory.sv
 ../ip/axi_bram_ctrl_256b/axi_bram_ctrl_256b_sim_netlist.v
 ../ip/axi_bram_ctrl_128b/axi_bram_ctrl_128b_sim_netlist.v
 ../ip/axilite_crossbar_0/axilite_crossbar_0_sim_netlist.v
-
--f D:/Xilinx/Vivado/2022.2/data/verilog/src/unisims.f
-
