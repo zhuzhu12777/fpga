@@ -1,9 +1,7 @@
 `timescale 1ns / 1ps
 //////////////////////////////////////////////////////////////////////////////////
 
-module reg_map #(
-    parameter ADDR_SEGMENT = 16'h0000
-)(
+module reg_map(
     input                       axilite_clk, axilite_rstb,      // AXI-Lite clock and reset
 
     AXI4Lite.slave              s_axil, 
@@ -50,7 +48,7 @@ assign apb_if.pslverr = 1'b0;
 
 // reg interface
 wire [15:0] offset = {apb_if.paddr[15:2], 2'b00};
-wire        wren   = apb_if.pwrite & apb_if.penable & apb_if.psel & (apb_if.paddr[31:16] == ADDR_SEGMENT);
+wire        wren   = apb_if.pwrite & apb_if.penable & apb_if.psel;
 
 rfsoc_reg u_rfsoc_reg (
     .rdata                      (apb_if.prdata),

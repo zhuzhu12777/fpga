@@ -93,9 +93,7 @@ axilite_crossbar_0 u_axilite_crossbar (
     .m_axi_rready           ({axil_regs.rready  , axil_rf_ctrl.rready })    // output wire [1 : 0] m_axi_rready
 );
 
-reg_map #(
-    .ADDR_SEGMENT           (16'h8010)
-) u_reg_map (
+reg_map u_reg_map (
     .axilite_clk            (axilite_clk),
     .axilite_rstb           (axilite_rstb),
 
