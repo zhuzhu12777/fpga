@@ -148,25 +148,21 @@ axis_data_afifo_32b u_stream_5_fifo (
 );
 
 // 3. merge all axis data to one stream
-wire [5:0]   cbin_axis_tvalid = {fifo_stream[5].tvalid, fifo_stream[4].tvalid, fifo_stream[3].tvalid, fifo_stream[2].tvalid, fifo_stream[1].tvalid, fifo_stream[0].tvalid};
-wire [5:0]   cbin_axis_tready = {fifo_stream[5].tready, fifo_stream[4].tready, fifo_stream[3].tready, fifo_stream[2].tready, fifo_stream[1].tready, fifo_stream[0].tready};
-wire [191:0] cbin_axis_tdata = {fifo_stream[5].tdata, fifo_stream[4].tdata, fifo_stream[3].tdata, fifo_stream[2].tdata, fifo_stream[1].tdata, fifo_stream[0].tdata};
-
 STREAM #(192) cbout_axis();
-axis_combiner_0 u_axis_combiner (
-    .aclk                           (ps_clk),               // input wire aclk
-    .aresetn                        (ps_rstb),              // input wire aresetn
-    .s_axis_tvalid                  (cbin_axis_tvalid),     // input wire [5 : 0] s_axis_tvalid
-    .s_axis_tready                  (cbin_axis_tready),     // output wire [5 : 0] s_axis_tready
-    .s_axis_tdata                   (cbin_axis_tdata),      // input wire [191 : 0] s_axis_tdata
-    .m_axis_tvalid                  (cbout_axis.tvalid),    // output wire m_axis_tvalid
-    .m_axis_tready                  (cbout_axis.tready),    // input wire m_axis_tready
-    .m_axis_tdata                   (cbout_axis.tdata)      // output wire [191 : 0] m_axis_tdata
-);
-wire [191:0] reorder_tdata = {cbout_axis.tdata[191:184], cbout_axis.tdata[159:152], cbout_axis.tdata[127:120], cbout_axis.tdata[95:88], cbout_axis.tdata[63:56], cbout_axis.tdata[31:24], 
-                              cbout_axis.tdata[183:176], cbout_axis.tdata[151:144], cbout_axis.tdata[119:112], cbout_axis.tdata[87:80], cbout_axis.tdata[55:48], cbout_axis.tdata[23:16],
-                              cbout_axis.tdata[175:168], cbout_axis.tdata[143:136], cbout_axis.tdata[111:104], cbout_axis.tdata[79:72], cbout_axis.tdata[47:40], cbout_axis.tdata[15:8],
-                              cbout_axis.tdata[167:160], cbout_axis.tdata[135:128], cbout_axis.tdata[103:96], cbout_axis.tdata[71:64], cbout_axis.tdata[39:32], cbout_axis.tdata[7:0]};
+assign cbout_axis.tvalid = fifo_stream[0].tvalid & fifo_stream[1].tvalid & fifo_stream[2].tvalid & fifo_stream[3].tvalid & fifo_stream[4].tvalid & fifo_stream[5].tvalid;
+assign fifo_stream[0].tready = cbout_axis.tvalid & cbout_axis.tready;
+assign fifo_stream[1].tready = cbout_axis.tvalid & cbout_axis.tready;
+assign fifo_stream[2].tready = cbout_axis.tvalid & cbout_axis.tready;
+assign fifo_stream[3].tready = cbout_axis.tvalid & cbout_axis.tready;
+assign fifo_stream[4].tready = cbout_axis.tvalid & cbout_axis.tready;
+assign fifo_stream[5].tready = cbout_axis.tvalid & cbout_axis.tready;
+wire [191:0] merge_tdata = {fifo_stream[5].tdata, fifo_stream[4].tdata, fifo_stream[3].tdata, fifo_stream[2].tdata, fifo_stream[1].tdata, fifo_stream[0].tdata};
+
+// 4. reorder data
+assign cbout_axis.tdata = {merge_tdata[191:184], merge_tdata[159:152], merge_tdata[127:120], merge_tdata[95:88], merge_tdata[63:56], merge_tdata[31:24], 
+                           merge_tdata[183:176], merge_tdata[151:144], merge_tdata[119:112], merge_tdata[87:80], merge_tdata[55:48], merge_tdata[23:16],
+                           merge_tdata[175:168], merge_tdata[143:136], merge_tdata[111:104], merge_tdata[79:72], merge_tdata[47:40], merge_tdata[15:8],
+                           merge_tdata[167:160], merge_tdata[135:128], merge_tdata[103:96],  merge_tdata[71:64], merge_tdata[39:32], merge_tdata[7:0]};
 
 // 5. change bit width from 192 to 128
 STREAM #(128) dw_axis();
@@ -175,7 +171,7 @@ axis_dwidth_converter_wr u_axis_dwidth_converter_wr (
     .aresetn                        (ps_rstb),              // input wire aresetn
     .s_axis_tvalid                  (cbout_axis.tvalid),         // input wire s_axis_tvalid
     .s_axis_tready                  (cbout_axis.tready),         // output wire s_axis_tready
-    .s_axis_tdata                   (reorder_tdata),          // input wire [191 : 0] s_axis_tdata
+    .s_axis_tdata                   (cbout_axis.tdata),          // input wire [191 : 0] s_axis_tdata
     .m_axis_tvalid                  (dw_axis.tvalid),       // output wire m_axis_tvalid
     .m_axis_tready                  (dw_axis.tready),       // input wire m_axis_tready
     .m_axis_tdata                   (dw_axis.tdata)         // output wire [127 : 0] m_axis_tdata

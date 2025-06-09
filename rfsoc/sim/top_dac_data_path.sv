@@ -70,9 +70,7 @@ STREAM #(256)               dac_stream();
 
 AXI4 #(.DATA_WIDTH(256))    bram_wr_axi();
 
-reg_map #(
-    .ADDR_SEGMENT           (16'h0000)
-) u_reg_map (
+reg_map u_reg_map (
     .axilite_clk            (axilite_clk),
     .axilite_rstb           (axilite_rstb),
 

@@ -53,9 +53,7 @@ end
 AXI4Lite            ps_s_axilite();    // 保持原有接口
 RFSOC_REG           regs();          // 移除非法modport声明
 
-reg_map #(
-    .ADDR_SEGMENT           (16'h0000)
-) u_reg_map (
+reg_map u_reg_map (
     .axilite_clk            (axilite_clk),
     .axilite_rstb           (axilite_rstb),
 

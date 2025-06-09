@@ -21,7 +21,7 @@ package axi4_task;
         m_axi.arvalid <= '0;
         m_axi.rready <= '0;
         m_axi.awid  <= '0;
-        m_axi.awlen   <= '1;        // len = 1
+        m_axi.awlen   <= '0;        // len = 1
         m_axi.awsize  <= $clog2(DATA_WIDTH/8);       // 256b
         m_axi.awburst <= '1;        // incr
         m_axi.awlock  <= '0;
@@ -30,7 +30,7 @@ package axi4_task;
         m_axi.awqos   <= '0;
         m_axi.wlast <= '0;
         m_axi.arid  <= '1;
-        m_axi.arlen   <= '1;
+        m_axi.arlen   <= '0;
         m_axi.arsize  <= $clog2(DATA_WIDTH/8);
         m_axi.arburst <= '1;
         m_axi.arlock  <= '0;
@@ -69,16 +69,16 @@ package axi4_task;
     endtask
 
     task axi4_read(input [31:0] addr, output [DATA_WIDTH-1:0] data);
-        m_axi.arlen   <= '1;
+        m_axi.arlen   <= '0;
         @(posedge axi_aclk);
         if (m_axi != null) begin
             m_axi.araddr <= addr;
             m_axi.arvalid <= 1'b1;
-            @(m_axi.arready);
+            wait(m_axi.arready);
             @(posedge axi_aclk);
             m_axi.arvalid <= 1'b0;
             m_axi.rready <= 1'b1;
-            @(m_axi.rvalid);
+            wait(m_axi.rvalid);
             data = m_axi.rdata;
             @(posedge axi_aclk);
             m_axi.rready <= 1'b0;
@@ -108,18 +108,18 @@ package axi4_task;
         if (m_axil != null) begin
             m_axil.awvalid <= 1'b1;
             m_axil.awaddr <= addr;
-            @(m_axil.awready);
+            wait(m_axil.awready);
             @(posedge axilite_clk);
             m_axil.awvalid <= 1'b0;
             m_axil.wvalid <= 1'b1;
             m_axil.wdata <= data;
             m_axil.wstrb <= 4'hf;
-            @(m_axil.wready);
+            wait(m_axil.wready);
             @(posedge axilite_clk);
             m_axil.wvalid <= 1'b0;
             m_axil.wstrb <= 4'h0;
             m_axil.bready <= 1'b1;
-            @(m_axil.bvalid);
+            wait(m_axil.bvalid);
             @(posedge axilite_clk);
             m_axil.bready <= 1'b0;
             @(posedge axilite_clk);

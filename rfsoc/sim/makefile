@@ -1,8 +1,8 @@
 # Vivado Simulator
 
 TOP ?= top
-DUT = crossbar
-WAVE_FILE = $(DUT)_wave.vcd
+DUT = adc_data_path
+WAVE_FILE = wave.vcd
 
 FILE_LIST = run.f
 
@@ -16,7 +16,7 @@ com:
 	xelab -incr -debug typical $(TOP) -s $(TOP)_sim -log log/xelab_$(DUT).log
 
 sim:
-	xsim $(TOP)_sim -tclbatch run.tcl -testplusarg WAVE_FILE="$(WAVE_FILE)" -log log/xsim_$(DUT).log
+	xsim $(TOP)_sim -tclbatch run.tcl -log log/xsim_$(DUT).log
 	# xsim $(TOP)_sim -tclbatch run.tcl -log log/xsim_$(DUT).log
 
 clean:

@@ -3,7 +3,7 @@
 module top();
 
 import axi4_task::*;
-//glbl glbl();
+glbl glbl();
 
 initial begin
     string wave_file;

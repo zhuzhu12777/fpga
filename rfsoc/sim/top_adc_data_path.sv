@@ -92,9 +92,7 @@ STREAM #(128)               adc_stream[6]();
 
 AXI4 #(.DATA_WIDTH(128))    bram_wr_axi();
 
-reg_map #(
-    .ADDR_SEGMENT           (16'h0000)
-) u_reg_map (
+reg_map u_reg_map (
     .axilite_clk            (axilite_clk),
     .axilite_rstb           (axilite_rstb),
 
@@ -238,6 +236,7 @@ initial begin
                 adc_stream[0].tvalid <= '1;
                 adc_stream[0].tdata <= val[0];
             end
+            @(posedge rf_clk[0]);
             adc_stream[0].tvalid <= '0;
         end
         begin : stream_1
@@ -249,6 +248,7 @@ initial begin
                 adc_stream[1].tvalid <= '1;
                 adc_stream[1].tdata <= val[1];
             end
+            @(posedge rf_clk[0]);
             adc_stream[1].tvalid <= '0;
         end
         begin : stream_2
@@ -260,6 +260,7 @@ initial begin
                adc_stream[2].tvalid <= '1;
                adc_stream[2].tdata <= val[2];
             end
+            @(posedge rf_clk[1]);
             adc_stream[2].tvalid <= '0;
         end
         begin : stream_3
@@ -271,6 +272,7 @@ initial begin
                 adc_stream[3].tvalid <= '1;
                 adc_stream[3].tdata <= val[3];
             end
+            @(posedge rf_clk[1]);
             adc_stream[3].tvalid <= '0;
         end
         begin : stream_4
@@ -282,6 +284,7 @@ initial begin
                 adc_stream[4].tvalid <= '1;
                 adc_stream[4].tdata <= val[4];
             end
+            @(posedge rf_clk[2]);
             adc_stream[4].tvalid <= '0;
         end
         begin : stream_5
@@ -293,6 +296,7 @@ initial begin
                 adc_stream[5].tvalid <= '1;
                 adc_stream[5].tdata <= val[5];
             end
+            @(posedge rf_clk[2]);
             adc_stream[5].tvalid <= '0;
         end
     join
@@ -310,6 +314,7 @@ initial begin
         op_done = read_data[8];
     end
 
+    repeat(100) @(posedge axilite_clk);
     // capture data
     for(int i = 0; i < 2*PKG_NUM; i++) begin
         axi4_task::axi4_read(16*i, val[0]);
