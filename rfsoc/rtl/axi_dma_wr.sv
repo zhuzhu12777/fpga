@@ -71,8 +71,8 @@ axi_datamover_wr u_axi_datamover_wr (
   .m_axi_s2mm_bvalid            (m_axi.bvalid),                     // input wire m_axi_s2mm_bvalid
   .m_axi_s2mm_bready            (m_axi.bready),                     // output wire m_axi_s2mm_bready
   .s_axis_s2mm_tdata            (s_axis.tdata),                       // input wire [127 : 0] s_axis_s2mm_tdata
-  .s_axis_s2mm_tkeep            (16'hff),                           // input wire [15 : 0] s_axis_s2mm_tkeep
-  .s_axis_s2mm_tlast            (1'b0),                             // input wire s_axis_s2mm_tlast
+  .s_axis_s2mm_tkeep            ('1),                           // input wire [15 : 0] s_axis_s2mm_tkeep
+  .s_axis_s2mm_tlast            ('0),                             // input wire s_axis_s2mm_tlast
   .s_axis_s2mm_tvalid           (s_axis.tvalid),                      // input wire s_axis_s2mm_tvalid
   .s_axis_s2mm_tready           (s_axis.tready)                       // output wire s_axis_s2mm_tready
 );

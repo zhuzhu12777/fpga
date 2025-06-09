@@ -17,9 +17,11 @@ module rfsoc_fpga(
     input  logic    [5:0]   adc_clk_n,
     input  logic            dac_clk_p,
     input  logic            dac_clk_n,
-    input  logic            sysref_in_p,
-    input  logic            sysref_in_n,
+    input  logic            rf_sysref_in_p,
+    input  logic            rf_sysref_in_n,
 
+    input  logic            gt_refclk_p,
+    input  logic            gt_refclk_n,
     output logic    [5:0]   gt_txp,
     output logic    [5:0]   gt_txn,
 
@@ -197,8 +199,8 @@ RF_Wrapper #(
     .dac_clk_n              (dac_clk_n),
     .dac_usr_clk            (dac_usr_clk),
     .dac_usr_rstb           (dac_usr_rstb),
-    .sysref_in_p            (sysref_in_p),
-    .sysref_in_n            (sysref_in_n),
+    .sysref_in_p            (rf_sysref_in_p),
+    .sysref_in_n            (rf_sysref_in_n),
 
     .vin_p                  (vin_p),
     .vin_n                  (vin_n),
@@ -212,6 +214,19 @@ RF_Wrapper #(
     .irq                    (regs.rf_irq)
 );
 
+
+wire gt_refclk_in;
+    IBUFDS_GTE4 #(
+        .REFCLK_EN_TX_PATH  (1'b0       ),
+        .REFCLK_HROW_CK_SEL (2'b00      ),
+        .REFCLK_ICNTL_RX    (2'b00      )
+    ) gth_quad230_refclk_ibuf (
+        .I     (gt_refclk_p   ),
+        .IB    (gt_refclk_n   ),
+        .CEB   (1'b0                    ),
+        .O     (gt_refclk_in            ),
+        .ODIV2 (                        )
+    );
 // gt wrapper
 GT_TX_Wrapper #(
     .GT_CHN_NUM            (6),
@@ -220,7 +235,7 @@ GT_TX_Wrapper #(
 ) u_gt_tx_wrapper (
     .gt_reset              (!axilite_rstb),
     .gt_init_clk           (axilite_clk),
-    .gt_refclk_in          (axilite_clk),
+    .gt_refclk_in          (gt_refclk_in),
     .gt_txp                (gt_txp),
     .gt_txn                (gt_txn),
     .userclk_out           (gt_usr_clk),

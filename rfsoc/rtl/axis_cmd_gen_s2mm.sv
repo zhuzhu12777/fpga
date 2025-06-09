@@ -47,7 +47,7 @@ wire [71:0] cmd = {
     4'b0000,        // 保留
     current_addr,   // 当前地址
     1'b1,           // 类型：1=S2MM（流到内存）
-    1'b1,           // EOF
+    1'b0,           // EOF
     6'b000000,      // 保留
     1'b1,           // SOF
     btt             // BTT字段

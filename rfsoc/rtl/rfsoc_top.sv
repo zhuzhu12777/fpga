@@ -25,9 +25,11 @@ module rfsoc_top(
     input  logic    [5:0]   adc_clk_n,
     input  logic            dac_clk_p,
     input  logic            dac_clk_n,
-    input  logic            sysref_in_p,
-    input  logic            sysref_in_n,
+    input  logic            rf_sysref_in_p,
+    input  logic            rf_sysref_in_n,
 
+    input  logic            gt_refclk_p,
+    input  logic            gt_refclk_n,
     output logic    [5:0]   gt_txp,
     output logic    [5:0]   gt_txn,
 

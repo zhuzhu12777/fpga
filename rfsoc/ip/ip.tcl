@@ -52,13 +52,13 @@ set_property -dict [list \
   CONFIG.TDATA_NUM_BYTES {4} \
 ] [get_ips axis_data_afifo_32b]
 
-if {[get_ips axis_combiner_0] == ""} {
-  create_ip -name axis_combiner -vendor xilinx.com -library ip -module_name axis_combiner_0
+if {[get_ips axis_data_fifo_128b] == ""} {
+  create_ip -name axis_data_fifo -vendor xilinx.com -library ip -module_name axis_data_fifo_128b
 }
 set_property -dict [list \
-  CONFIG.NUM_SI {6} \
-  CONFIG.TDATA_NUM_BYTES {4} \
-] [get_ips axis_combiner_0]
+  CONFIG.FIFO_DEPTH {128} \
+  CONFIG.TDATA_NUM_BYTES {16} \
+] [get_ips axis_data_fifo_128b]
 
 if {[get_ips axis_dwidth_converter_wr] == ""} {
   create_ip -name axis_dwidth_converter -vendor xilinx.com -library ip -module_name axis_dwidth_converter_wr

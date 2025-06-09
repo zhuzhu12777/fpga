@@ -197,7 +197,7 @@ assign axi4_task::axi_aclk = axi_aclk;
 assign axi4_task::axilite_clk = axilite_clk;
 
 
-parameter PKG_NUM = 10;
+parameter PKG_NUM = 20;
 
 initial begin
     bit [127:0] tmp_data[6][$], exp_data[$], real_data[$];

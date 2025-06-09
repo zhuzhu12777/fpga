@@ -177,7 +177,20 @@ axis_dwidth_converter_wr u_axis_dwidth_converter_wr (
     .m_axis_tdata                   (dw_axis.tdata)         // output wire [127 : 0] m_axis_tdata
 );
 
-// 6. axi_dma_wr to move data to ddr
+//6. add fifo, depth=128
+STREAM #(128) dma_axis();
+axis_data_fifo_128b u_axis_fifo_dma (
+    .s_axis_aresetn                 (ps_rstb),           // input wire s_axis_aresetn
+    .s_axis_aclk                    (ps_clk),          // input wire s_axis_aclk
+    .s_axis_tvalid                  (dw_axis.tvalid),    // input wire s_axis_tvalid
+    .s_axis_tready                  (dw_axis.tready),    // output wire s_axis_tready
+    .s_axis_tdata                   (dw_axis.tdata),      // input wire [127 : 0] s_axis_tdata
+    .m_axis_tvalid                  (dma_axis.tvalid),    // output wire m_axis_tvalid
+    .m_axis_tready                  (dma_axis.tready),    // input wire m_axis_tready
+    .m_axis_tdata                   (dma_axis.tdata)      // output wire [127 : 0] m_axis_tdata
+);
+
+// 7. axi_dma_wr to move data to ddr
 axi_dma_wr u_axi_dma_wr (
     // clock & reset
     .axi_aclk                       (ps_clk),
@@ -189,7 +202,7 @@ axi_dma_wr u_axi_dma_wr (
     .m_axi                          (m_axi),
 
     // axis
-    .s_axis                         (dw_axis),
+    .s_axis                         (dma_axis),
 
     // status
     .datamover_status               (datamover_status),
