@@ -37,37 +37,37 @@ wire                    axis_tlast_merge;
 wire    [255:0]         axis_tdata_merge;
 
 // 1. handle each adc axis input 
-wire [7:0]  stream_0_sample_0_data = (s_axis[0].tdata[15:7] + s_axis[0].tdata[31:24] + 1)>>1;  //round
+wire [7:0]  stream_0_sample_0_data = (s_axis[0].tdata[15:8] + s_axis[0].tdata[31:24] + 1)>>1;  //round
 wire [7:0]  stream_0_sample_1_data = (s_axis[0].tdata[47:40] + s_axis[0].tdata[63:56] + 1)>>1;  //round
 wire [7:0]  stream_0_sample_2_data = (s_axis[0].tdata[79:72] + s_axis[0].tdata[95:88] + 1)>>1;  //round
 wire [7:0]  stream_0_sample_3_data = (s_axis[0].tdata[111:104] + s_axis[0].tdata[127:120] + 1)>>1;  //round
 wire [31:0] stream_0_tdata = {stream_0_sample_3_data, stream_0_sample_2_data, stream_0_sample_1_data, stream_0_sample_0_data};
 
-wire [7:0]  stream_1_sample_0_data = (s_axis[1].tdata[15:7] + s_axis[1].tdata[31:24] + 1)>>1;  //round
+wire [7:0]  stream_1_sample_0_data = (s_axis[1].tdata[15:8] + s_axis[1].tdata[31:24] + 1)>>1;  //round
 wire [7:0]  stream_1_sample_1_data = (s_axis[1].tdata[47:40] + s_axis[1].tdata[63:56] + 1)>>1;  //round
 wire [7:0]  stream_1_sample_2_data = (s_axis[1].tdata[79:72] + s_axis[1].tdata[95:88] + 1)>>1;  //round
 wire [7:0]  stream_1_sample_3_data = (s_axis[1].tdata[111:104] + s_axis[1].tdata[127:120] + 1)>>1;  //round
 wire [31:0] stream_1_tdata = {stream_1_sample_3_data, stream_1_sample_2_data, stream_1_sample_1_data, stream_1_sample_0_data};
 
-wire [7:0]  stream_2_sample_0_data = (s_axis[2].tdata[15:7] + s_axis[2].tdata[31:24] + 1)>>1;  //round
+wire [7:0]  stream_2_sample_0_data = (s_axis[2].tdata[15:8] + s_axis[2].tdata[31:24] + 1)>>1;  //round
 wire [7:0]  stream_2_sample_1_data = (s_axis[2].tdata[47:40] + s_axis[2].tdata[63:56] + 1)>>1;  //round
 wire [7:0]  stream_2_sample_2_data = (s_axis[2].tdata[79:72] + s_axis[2].tdata[95:88] + 1)>>1;  //round
 wire [7:0]  stream_2_sample_3_data = (s_axis[2].tdata[111:104] + s_axis[2].tdata[127:120] + 1)>>1;  //round
 wire [31:0] stream_2_tdata = {stream_2_sample_3_data, stream_2_sample_2_data, stream_2_sample_1_data, stream_2_sample_0_data};
 
-wire [7:0]  stream_3_sample_0_data = (s_axis[3].tdata[15:7] + s_axis[3].tdata[31:24] + 1)>>1;  //round
+wire [7:0]  stream_3_sample_0_data = (s_axis[3].tdata[15:8] + s_axis[3].tdata[31:24] + 1)>>1;  //round
 wire [7:0]  stream_3_sample_1_data = (s_axis[3].tdata[47:40] + s_axis[3].tdata[63:56] + 1)>>1;  //round
 wire [7:0]  stream_3_sample_2_data = (s_axis[3].tdata[79:72] + s_axis[3].tdata[95:88] + 1)>>1;  //round
 wire [7:0]  stream_3_sample_3_data = (s_axis[3].tdata[111:104] + s_axis[3].tdata[127:120] + 1)>>1;  //round
 wire [31:0] stream_3_tdata = {stream_3_sample_3_data, stream_3_sample_2_data, stream_3_sample_1_data, stream_3_sample_0_data};
 
-wire [7:0]  stream_4_sample_0_data = (s_axis[4].tdata[15:7] + s_axis[4].tdata[31:24] + 1)>>1;  //round
+wire [7:0]  stream_4_sample_0_data = (s_axis[4].tdata[15:8] + s_axis[4].tdata[31:24] + 1)>>1;  //round
 wire [7:0]  stream_4_sample_1_data = (s_axis[4].tdata[47:40] + s_axis[4].tdata[63:56] + 1)>>1;  //round
 wire [7:0]  stream_4_sample_2_data = (s_axis[4].tdata[79:72] + s_axis[4].tdata[95:88] + 1)>>1;  //round
 wire [7:0]  stream_4_sample_3_data = (s_axis[4].tdata[111:104] + s_axis[4].tdata[127:120] + 1)>>1;  //round
 wire [31:0] stream_4_tdata = {stream_4_sample_3_data, stream_4_sample_2_data, stream_4_sample_1_data, stream_4_sample_0_data};
 
-wire [7:0]  stream_5_sample_0_data = (s_axis[5].tdata[15:7] + s_axis[5].tdata[31:24] + 1)>>1;  //round
+wire [7:0]  stream_5_sample_0_data = (s_axis[5].tdata[15:8] + s_axis[5].tdata[31:24] + 1)>>1;  //round
 wire [7:0]  stream_5_sample_1_data = (s_axis[5].tdata[47:40] + s_axis[5].tdata[63:56] + 1)>>1;  //round
 wire [7:0]  stream_5_sample_2_data = (s_axis[5].tdata[79:72] + s_axis[5].tdata[95:88] + 1)>>1;  //round
 wire [7:0]  stream_5_sample_3_data = (s_axis[5].tdata[111:104] + s_axis[5].tdata[127:120] + 1)>>1;  //round

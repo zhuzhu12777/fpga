@@ -83,8 +83,8 @@ initial begin
 end
 
 // interface
-AXI4 #(.DATA_WIDTH(256))    pl_m_axi_rd();
-AXI4 #(.DATA_WIDTH(128))    ps_m_axi_wr();
+AXI4 #(4, 40, 256)          pl_m_axi_rd();
+AXI4 #(4, 40, 128)          ps_m_axi_wr();
 AXI4Lite                    axil_regs();
 AXI4Lite                    axil_rf_ctrl();
 RFSOC_REG                   regs();
@@ -180,16 +180,21 @@ axi_bram_ctrl_128b u_bram_ctrl_128b (
 
 task automatic check_adc_data_path(bit [127:0] exp_data[6][$], ref bit [127:0] real_data[$]);
     bit [127:0] exp_val, real_val;
+    bit [31:0] exp_val_32b;
+    bit [7:0] real_val_8b, exp_val_8b;
     int data_size;
     data_size = real_data.size();
     
-    // for (int i = 0; i < data_size; i++) begin
-    //     exp_val = exp_data.pop_front();
-    //     real_val = real_data.pop_front();
-    //     if (exp_val != real_val) begin
-    //         $display("ERROR: exp_data[%0d] = 0x%0h, real_data[%0d] = 0x%0h", i, exp_val, i, real_val);
-    //     end
-    // end
+    for (int i = 0; i < data_size * 16; i++) begin
+        real_val_8b = real_data[i/16][i[3:0]*8+:8];
+        exp_val_32b = exp_data[i%6][i/24][(i/6%4)*32+:32];
+        exp_val_8b = (exp_val_32b[31:24]+exp_val_32b[15:8]+1)>>1;
+        if (real_val_8b != exp_val_8b) begin
+            $display("ERROR: exp_data[%0d] = 0x%0h, real_data[%0d] = 0x%0h", i, exp_val_8b, i, real_val_8b);
+        end else if(i<10 || i>data_size * 16 - 10) begin
+            $display("INFO: exp_data[%0d] = 0x%0h, real_data[%0d] = 0x%0h", i, exp_val_8b, i, real_val_8b);
+        end
+    end
 endtask
 
 
@@ -197,7 +202,7 @@ assign axi4_task::axi_aclk = axi_aclk;
 assign axi4_task::axilite_clk = axilite_clk;
 
 
-parameter PKG_NUM = 20;
+parameter PKG_NUM = 1000;
 
 initial begin
     bit [127:0] tmp_data[6][$], exp_data[$], real_data[$];
@@ -225,18 +230,22 @@ initial begin
     adc_stream[5].tdata <= '0;
 
     @RST_DONE;
+    repeat(500) @(posedge axilite_clk);
     // driver
     fork
         begin : stream_0
             for(int i = 0; i < PKG_NUM; i++) begin
-                val[0] = {$urandom(), $urandom(), $urandom(), $urandom()};
+                val[0] = {32{i[3:0]}};
                 tmp_data[0].push_back(val[0]);
                 wait(adc_stream[0].tready);
                 @(posedge rf_clk[0]);
                 adc_stream[0].tvalid <= '1;
                 adc_stream[0].tdata <= val[0];
+                @(posedge rf_clk[0]);
+                adc_stream[0].tvalid <= '0;
+                if(i % 100 == 99)
+                    $display("current pkg num: %0d", i);
             end
-            @(posedge rf_clk[0]);
             adc_stream[0].tvalid <= '0;
         end
         begin : stream_1
@@ -247,8 +256,9 @@ initial begin
                 @(posedge rf_clk[0]);
                 adc_stream[1].tvalid <= '1;
                 adc_stream[1].tdata <= val[1];
+                @(posedge rf_clk[0]);
+                adc_stream[1].tvalid <= '0;
             end
-            @(posedge rf_clk[0]);
             adc_stream[1].tvalid <= '0;
         end
         begin : stream_2
@@ -259,8 +269,9 @@ initial begin
                 @(posedge rf_clk[1]);
                adc_stream[2].tvalid <= '1;
                adc_stream[2].tdata <= val[2];
+               @(posedge rf_clk[1]);
+               adc_stream[2].tvalid <= '0;
             end
-            @(posedge rf_clk[1]);
             adc_stream[2].tvalid <= '0;
         end
         begin : stream_3
@@ -271,8 +282,9 @@ initial begin
                 @(posedge rf_clk[1]);
                 adc_stream[3].tvalid <= '1;
                 adc_stream[3].tdata <= val[3];
+                @(posedge rf_clk[1]);
+                adc_stream[3].tvalid <= '0;
             end
-            @(posedge rf_clk[1]);
             adc_stream[3].tvalid <= '0;
         end
         begin : stream_4
@@ -283,8 +295,9 @@ initial begin
                 @(posedge rf_clk[2]);
                 adc_stream[4].tvalid <= '1;
                 adc_stream[4].tdata <= val[4];
+                @(posedge rf_clk[2]);
+                adc_stream[4].tvalid <= '0;
             end
-            @(posedge rf_clk[2]);
             adc_stream[4].tvalid <= '0;
         end
         begin : stream_5
@@ -295,28 +308,31 @@ initial begin
                 @(posedge rf_clk[2]);
                 adc_stream[5].tvalid <= '1;
                 adc_stream[5].tdata <= val[5];
+                @(posedge rf_clk[2]);
+                adc_stream[5].tvalid <= '0;
             end
-            @(posedge rf_clk[2]);
             adc_stream[5].tvalid <= '0;
+        end
+
+        begin : adc_start
+            repeat(100) @(posedge axilite_clk);
+
+            // config regs
+            axi4_task::WriteReg(32'h0c, 0);              // start_addr
+            axi4_task::WriteReg(32'h10, PKG_NUM * 24);     // cap_size
+            axi4_task::WriteReg(32'h14, 1);  //[0]start, [1]reset
+            op_done = 0;
+            while(!op_done) begin
+                repeat(50) @(posedge axilite_clk);
+                axi4_task::ReadReg(32'h14, read_data);
+                op_done = read_data[8];
+            end
         end
     join
 
     repeat(100) @(posedge axilite_clk);
-
-    // config regs
-    axi4_task::WriteReg(32'h0c, 0);              // start_addr
-    axi4_task::WriteReg(32'h10, PKG_NUM * 32);     // cap_size
-    axi4_task::WriteReg(32'h14, 1);  //[0]start, [1]reset
-    op_done = 0;
-    while(!op_done) begin
-        repeat(10) @(posedge axilite_clk);
-        axi4_task::ReadReg(32'h14, read_data);
-        op_done = read_data[8];
-    end
-
-    repeat(100) @(posedge axilite_clk);
     // capture data
-    for(int i = 0; i < 2*PKG_NUM; i++) begin
+    for(int i = 0; i < 1.5*PKG_NUM; i++) begin
         axi4_task::axi4_read(16*i, val[0]);
         real_data.push_back(val[0]);
     end

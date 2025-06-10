@@ -1,2 +1,2 @@
-run 1ms
+run all
 quit

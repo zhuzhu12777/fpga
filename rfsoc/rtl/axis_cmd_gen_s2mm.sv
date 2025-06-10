@@ -20,6 +20,7 @@ module axis_cmd_gen_s2mm #(
     output reg      [71:0]      m_axis_tdata,
     output reg                  m_axis_tvalid,
     input                       m_axis_tready,
+    input                       m_axis_sts_tvalid,
 
     input                       write_start,
     input                       write_reset,
@@ -32,6 +33,7 @@ module axis_cmd_gen_s2mm #(
 localparam  IDLE        = 2'd0;
 localparam  SEND_CMD    = 2'd1;
 localparam  WAIT_READY  = 2'd2;
+localparam  WAIT_STATUS = 2'd3;
 
 reg  [1:0]  state;
 reg  [31:0] current_addr;
@@ -53,6 +55,24 @@ wire [71:0] cmd = {
     btt             // BTT字段
 };
 
+reg [15:0] cmd_cnt, sts_cnt;
+always @(posedge clk or negedge resetn) begin
+    if(!resetn)
+        cmd_cnt <= 16'h0000;
+    else if(write_reset)
+        cmd_cnt <= 16'h0000;
+    else if(m_axis_tvalid && m_axis_tready)
+        cmd_cnt <= cmd_cnt + 16'h0001;
+end
+
+always @(posedge clk or negedge resetn) begin
+    if(!resetn)
+        sts_cnt <= 16'h0000;
+    else if(write_reset)
+        sts_cnt <= 16'h0000;
+    else if(m_axis_sts_tvalid)
+        sts_cnt <= sts_cnt + 16'h0001;
+end
 
 always @(posedge clk or negedge resetn) begin
     if (!resetn) begin
@@ -85,7 +105,6 @@ always @(posedge clk or negedge resetn) begin
                 m_axis_tvalid <= 1'b1;
                 state <= WAIT_READY;
             end
-            
             WAIT_READY: begin
                 if (m_axis_tready && m_axis_tvalid) begin
                     m_axis_tvalid <= 1'b0;
@@ -95,14 +114,19 @@ always @(posedge clk or negedge resetn) begin
                     remaining_size <= remaining_size - transfer_size;
 
                     // 检查是否到达末尾
-                    if (remaining_size <= transfer_size) begin
+                    if (remaining_size <= transfer_size)
+                        state <= WAIT_STATUS;
+                    else
+                        state <= SEND_CMD;
+                end
+            end
+            WAIT_STATUS: begin
+                if (m_axis_sts_tvalid && (sts_cnt == cmd_cnt - 1'b1)) begin
                         // 不回到起始地址，结束传输
                         current_addr <= base_addr;
                         remaining_size <= cap_size;
                         cap_done <= 1'b1; // 设置完成标志
                         state <= IDLE; // 结束传输
-                    end else
-                        state <= SEND_CMD;
                 end
             end
         endcase

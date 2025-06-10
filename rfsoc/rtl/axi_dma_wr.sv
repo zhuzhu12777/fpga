@@ -38,6 +38,8 @@ wire                [7:0]       m_axis_sts_tdata;
 wire                [0:0]       m_axis_sts_tkeep;
 wire                            m_axis_sts_tlast;
 
+wire [31:0] wraddr;
+assign m_axi.awaddr = 40'h4_0000_0000 + wraddr;
 axi_datamover_wr u_axi_datamover_wr (
   .m_axi_s2mm_aclk              (axi_aclk),                         // input wire m_axi_s2mm_aclk
   .m_axi_s2mm_aresetn           (axi_rstb),                         // input wire m_axi_s2mm_aresetn
@@ -53,7 +55,7 @@ axi_datamover_wr u_axi_datamover_wr (
   .m_axis_s2mm_sts_tkeep        (m_axis_sts_tkeep),                 // output wire [0 : 0] m_axis_s2mm_sts_tkeep
   .m_axis_s2mm_sts_tlast        (m_axis_sts_tlast),                 // output wire m_axis_s2mm_sts_tlast
   .m_axi_s2mm_awid              (m_axi.awid),                       // output wire [3 : 0] m_axi_s2mm_awid
-  .m_axi_s2mm_awaddr            (m_axi.awaddr),                     // output wire [31 : 0] m_axi_s2mm_awaddr
+  .m_axi_s2mm_awaddr            (wraddr),                     // output wire [31 : 0] m_axi_s2mm_awaddr
   .m_axi_s2mm_awlen             (m_axi.awlen),                      // output wire [7 : 0] m_axi_s2mm_awlen
   .m_axi_s2mm_awsize            (m_axi.awsize),                     // output wire [2 : 0] m_axi_s2mm_awsize
   .m_axi_s2mm_awburst           (m_axi.awburst),                    // output wire [1 : 0] m_axi_s2mm_awburst
@@ -83,6 +85,7 @@ axis_cmd_gen_s2mm u_axis_cmd_gen_s2mm(
     .m_axis_tdata               (s_axis_cmd_tdata),
     .m_axis_tvalid              (s_axis_cmd_tvalid),
     .m_axis_tready              (s_axis_cmd_tready),
+    .m_axis_sts_tvalid          (m_axis_sts_tvalid),
     .write_start                (write_start),
     .write_reset                (write_reset),
     .base_addr                  (start_address),
