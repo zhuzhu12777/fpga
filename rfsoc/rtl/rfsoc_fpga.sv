@@ -99,7 +99,7 @@ reg_map u_reg_map (
     .axilite_clk            (axilite_clk),
     .axilite_rstb           (axilite_rstb),
 
-    .s_axil                 (ps_s_axilite),
+    .s_axil                 (axil_regs),
     .regs                   (regs)
 );
 
