@@ -2,6 +2,12 @@
 
 module rfsoc_top(
 
+    // SPI IO
+    inout                   SPI_SCK,
+    inout                   SPI_CS,
+    inout                   SPI_IO0,
+    inout                   SPI_IO1,
+
     //DDR4 IO
     output logic            C0_DDR4_0_act_n,
     output logic    [16:0]  C0_DDR4_0_adr,
@@ -163,6 +169,10 @@ design_1_wrapper u_bd(
     .S_AXI_HP0_FPD_0_wready     (ps_m_axi_wr.wready),
     .S_AXI_HP0_FPD_0_wstrb      (ps_m_axi_wr.wstrb),
     .S_AXI_HP0_FPD_0_wvalid     (ps_m_axi_wr.wvalid),
+    .SPI_0_0_io0_io             (SPI_IO0),
+    .SPI_0_0_io1_io             (SPI_IO1),
+    .SPI_0_0_sck_io             (SPI_SCK),
+    .SPI_0_0_ss_io              (SPI_CS),
     .c0_init_calib_complete_0   (c0_init_calib_complete_0),
     .pl_clk0_0                  (pl_clk0_0),
     .pl_clk1_0                  (pl_clk1_0),

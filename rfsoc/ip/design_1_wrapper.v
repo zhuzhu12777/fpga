@@ -1,7 +1,7 @@
 //Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.
 //--------------------------------------------------------------------------------
 //Tool Version: Vivado v.2022.2 (win64) Build 3671981 Fri Oct 14 05:00:03 MDT 2022
-//Date        : Wed May 28 22:35:11 2025
+//Date        : Sat Jun 14 23:04:36 2025
 //Host        : slfan running 64-bit major release  (build 9200)
 //Command     : generate_target design_1_wrapper.bd
 //Design      : design_1_wrapper
@@ -82,6 +82,10 @@ module design_1_wrapper
     S01_AXI_0_wready,
     S01_AXI_0_wstrb,
     S01_AXI_0_wvalid,
+    SPI_0_0_io0_io,
+    SPI_0_0_io1_io,
+    SPI_0_0_sck_io,
+    SPI_0_0_ss_io,
     S_AXI_HP0_FPD_0_araddr,
     S_AXI_HP0_FPD_0_arburst,
     S_AXI_HP0_FPD_0_arcache,
@@ -198,6 +202,10 @@ module design_1_wrapper
   output S01_AXI_0_wready;
   input [31:0]S01_AXI_0_wstrb;
   input S01_AXI_0_wvalid;
+  inout SPI_0_0_io0_io;
+  inout SPI_0_0_io1_io;
+  inout SPI_0_0_sck_io;
+  inout SPI_0_0_ss_io;
   input [48:0]S_AXI_HP0_FPD_0_araddr;
   input [1:0]S_AXI_HP0_FPD_0_arburst;
   input [3:0]S_AXI_HP0_FPD_0_arcache;
@@ -315,6 +323,22 @@ module design_1_wrapper
   wire S01_AXI_0_wready;
   wire [31:0]S01_AXI_0_wstrb;
   wire S01_AXI_0_wvalid;
+  wire SPI_0_0_io0_i;
+  wire SPI_0_0_io0_io;
+  wire SPI_0_0_io0_o;
+  wire SPI_0_0_io0_t;
+  wire SPI_0_0_io1_i;
+  wire SPI_0_0_io1_io;
+  wire SPI_0_0_io1_o;
+  wire SPI_0_0_io1_t;
+  wire SPI_0_0_sck_i;
+  wire SPI_0_0_sck_io;
+  wire SPI_0_0_sck_o;
+  wire SPI_0_0_sck_t;
+  wire SPI_0_0_ss_i;
+  wire SPI_0_0_ss_io;
+  wire SPI_0_0_ss_o;
+  wire SPI_0_0_ss_t;
   wire [48:0]S_AXI_HP0_FPD_0_araddr;
   wire [1:0]S_AXI_HP0_FPD_0_arburst;
   wire [3:0]S_AXI_HP0_FPD_0_arcache;
@@ -360,6 +384,26 @@ module design_1_wrapper
   wire [0:0]pl_resetn_0;
   wire [0:0]pl_resetn_1;
 
+  IOBUF SPI_0_0_io0_iobuf
+       (.I(SPI_0_0_io0_o),
+        .IO(SPI_0_0_io0_io),
+        .O(SPI_0_0_io0_i),
+        .T(SPI_0_0_io0_t));
+  IOBUF SPI_0_0_io1_iobuf
+       (.I(SPI_0_0_io1_o),
+        .IO(SPI_0_0_io1_io),
+        .O(SPI_0_0_io1_i),
+        .T(SPI_0_0_io1_t));
+  IOBUF SPI_0_0_sck_iobuf
+       (.I(SPI_0_0_sck_o),
+        .IO(SPI_0_0_sck_io),
+        .O(SPI_0_0_sck_i),
+        .T(SPI_0_0_sck_t));
+  IOBUF SPI_0_0_ss_iobuf
+       (.I(SPI_0_0_ss_o),
+        .IO(SPI_0_0_ss_io),
+        .O(SPI_0_0_ss_i),
+        .T(SPI_0_0_ss_t));
   design_1 design_1_i
        (.C0_DDR4_0_act_n(C0_DDR4_0_act_n),
         .C0_DDR4_0_adr(C0_DDR4_0_adr),
@@ -433,6 +477,18 @@ module design_1_wrapper
         .S01_AXI_0_wready(S01_AXI_0_wready),
         .S01_AXI_0_wstrb(S01_AXI_0_wstrb),
         .S01_AXI_0_wvalid(S01_AXI_0_wvalid),
+        .SPI_0_0_io0_i(SPI_0_0_io0_i),
+        .SPI_0_0_io0_o(SPI_0_0_io0_o),
+        .SPI_0_0_io0_t(SPI_0_0_io0_t),
+        .SPI_0_0_io1_i(SPI_0_0_io1_i),
+        .SPI_0_0_io1_o(SPI_0_0_io1_o),
+        .SPI_0_0_io1_t(SPI_0_0_io1_t),
+        .SPI_0_0_sck_i(SPI_0_0_sck_i),
+        .SPI_0_0_sck_o(SPI_0_0_sck_o),
+        .SPI_0_0_sck_t(SPI_0_0_sck_t),
+        .SPI_0_0_ss_i(SPI_0_0_ss_i),
+        .SPI_0_0_ss_o(SPI_0_0_ss_o),
+        .SPI_0_0_ss_t(SPI_0_0_ss_t),
         .S_AXI_HP0_FPD_0_araddr(S_AXI_HP0_FPD_0_araddr),
         .S_AXI_HP0_FPD_0_arburst(S_AXI_HP0_FPD_0_arburst),
         .S_AXI_HP0_FPD_0_arcache(S_AXI_HP0_FPD_0_arcache),

@@ -39,7 +39,7 @@ wire                [0:0]       m_axis_sts_tkeep;
 wire                            m_axis_sts_tlast;
 
 wire [31:0] wraddr;
-assign m_axi.awaddr = 40'h4_0000_0000 + wraddr;
+assign m_axi.awaddr = wraddr[31] ? 40'h8_0000_0000 + wraddr : wraddr;
 axi_datamover_wr u_axi_datamover_wr (
   .m_axi_s2mm_aclk              (axi_aclk),                         // input wire m_axi_s2mm_aclk
   .m_axi_s2mm_aresetn           (axi_rstb),                         // input wire m_axi_s2mm_aresetn

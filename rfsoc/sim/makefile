@@ -28,3 +28,7 @@ view:
 
 
 .PHONY: pre com sim clean view
+
+
+# SPI ready
+
