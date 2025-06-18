@@ -234,6 +234,8 @@ initial begin
     // driver
     fork
         begin : stream_0
+            wait(top.u_adc_data_path.write_start_sync0);
+            repeat(10)@(posedge rf_clk[0]);
             for(int i = 0; i < PKG_NUM; i++) begin
                 val[0] = {32{i[3:0]}};
                 tmp_data[0].push_back(val[0]);
@@ -249,6 +251,8 @@ initial begin
             adc_stream[0].tvalid <= '0;
         end
         begin : stream_1
+            wait(top.u_adc_data_path.write_start_sync0);
+            repeat(10)@(posedge rf_clk[0]);
             for(int i = 0; i < PKG_NUM; i++) begin
                 val[1] = {$urandom(), $urandom(), $urandom(), $urandom()};
                 tmp_data[1].push_back(val[1]);
@@ -262,6 +266,8 @@ initial begin
             adc_stream[1].tvalid <= '0;
         end
         begin : stream_2
+            wait(top.u_adc_data_path.write_start_sync1);
+            repeat(10)@(posedge rf_clk[1]);
             for(int i = 0; i < PKG_NUM; i++) begin
                 val[2] = {$urandom(), $urandom(), $urandom(), $urandom()};
                 tmp_data[2].push_back(val[2]);
@@ -275,6 +281,8 @@ initial begin
             adc_stream[2].tvalid <= '0;
         end
         begin : stream_3
+            wait(top.u_adc_data_path.write_start_sync1);
+            repeat(10)@(posedge rf_clk[1]);
             for(int i = 0; i < PKG_NUM; i++) begin
                 val[3] = {$urandom(), $urandom(), $urandom(), $urandom()};
                 tmp_data[3].push_back(val[3]);
@@ -288,6 +296,8 @@ initial begin
             adc_stream[3].tvalid <= '0;
         end
         begin : stream_4
+            wait(top.u_adc_data_path.write_start_sync2);
+            repeat(10)@(posedge rf_clk[2]);
             for(int i = 0; i < PKG_NUM; i++) begin
                 val[4] = {$urandom(), $urandom(), $urandom(), $urandom()};
                 tmp_data[4].push_back(val[4]);
@@ -301,6 +311,8 @@ initial begin
             adc_stream[4].tvalid <= '0;
         end
         begin : stream_5
+            wait(top.u_adc_data_path.write_start_sync2);
+            repeat(10)@(posedge rf_clk[2]);
             for(int i = 0; i < PKG_NUM; i++) begin
                 val[5] = {$urandom(), $urandom(), $urandom(), $urandom()};
                 tmp_data[5].push_back(val[5]);
@@ -319,7 +331,7 @@ initial begin
 
             // config regs
             axi4_task::WriteReg(32'h0c, 0);              // start_addr
-            axi4_task::WriteReg(32'h10, PKG_NUM * 24);     // cap_size
+            axi4_task::WriteReg(32'h10, PKG_NUM * 20);     // cap_size
             axi4_task::WriteReg(32'h14, 1);  //[0]start, [1]reset
             op_done = 0;
             while(!op_done) begin
@@ -332,7 +344,7 @@ initial begin
 
     repeat(100) @(posedge axilite_clk);
     // capture data
-    for(int i = 0; i < 1.5*PKG_NUM; i++) begin
+    for(int i = 0; i < PKG_NUM; i++) begin
         axi4_task::axi4_read(16*i, val[0]);
         real_data.push_back(val[0]);
     end

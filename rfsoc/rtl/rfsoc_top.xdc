@@ -1,4 +1,9 @@
 
+set_property PACKAGE_PIN D42 [get_ports {SPI_SCK}]
+set_property PACKAGE_PIN C43 [get_ports {SPI_CS}]
+set_property PACKAGE_PIN E42 [get_ports {SPI_IO0}]
+set_property PACKAGE_PIN B43 [get_ports {SPI_IO1}]
+set_property IOSTANDARD LVCMOS18 [get_ports {SPI_*}]
 
 set_property PACKAGE_PIN M28  [get_ports gt_refclk_p]
 create_clock -name GT_REFCLK -period 6.667 [get_ports gt_refclk_p]
