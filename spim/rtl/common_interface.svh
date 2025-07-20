@@ -68,6 +68,71 @@ interface AXI4Lite #(
     );
 endinterface
 
+interface AXI4 #(
+    parameter ID_WIDTH          = 4         ,
+    parameter ADDR_WIDTH        = 32        ,
+    parameter DATA_WIDTH        = 256
+)();
+    logic [ID_WIDTH-1:0]        awid        ;
+    logic [ADDR_WIDTH-1:0]      awaddr      ;
+    logic [7:0]                 awlen       ;
+    logic [2:0]                 awsize      ;
+    logic [1:0]                 awburst     ;
+    logic [0:0]                 awlock      ;
+    logic [3:0]                 awcache     ;
+    logic [2:0]                 awprot      ;
+    logic [3:0]                 awregion    ;
+    logic [3:0]                 awqos       ;
+    logic                       awvalid     ;
+    logic                       awready     ;
+    logic [DATA_WIDTH-1:0]      wdata       ;
+    logic [DATA_WIDTH/8-1:0]    wstrb       ;
+    logic                       wlast       ;
+    logic                       wvalid      ;
+    logic                       wready      ;
+    logic [ID_WIDTH-1:0]        bid         ;
+    logic [1:0]                 bresp       ;
+    logic                       bvalid      ;
+    logic                       bready      ;
+    logic [ID_WIDTH-1:0]        arid        ;
+    logic [ADDR_WIDTH-1:0]      araddr      ;
+    logic [7:0]                 arlen       ;
+    logic [2:0]                 arsize      ;
+    logic [1:0]                 arburst     ;
+    logic [0:0]                 arlock      ;
+    logic [3:0]                 arcache     ;
+    logic [2:0]                 arprot      ;
+    logic [3:0]                 arregion    ;
+    logic [3:0]                 arqos       ;
+    logic                       arvalid     ;
+    logic                       arready     ;
+    logic [ID_WIDTH-1:0]        rid         ;
+    logic [1:0]                 rresp       ;
+    logic [DATA_WIDTH-1:0]      rdata       ;
+    logic                       rlast       ;
+    logic                       rvalid      ;
+    logic                       rready      ;
+    modport master(
+        output awid    , awaddr , awlen   , awsize , awburst, awlock ,
+               awcache , awprot , awregion, awqos  , awvalid,
+               wdata   , wstrb  , wlast   , wvalid , bready ,
+               arid    , araddr , arlen   , arsize , arburst, arlock ,
+               arcache , arprot , arregion, arqos  , arvalid, rready ,
+        input  awready , wready , bid     , bresp  , bvalid ,
+               arready , rid    , rresp   , rdata  , rlast  , rvalid 
+    );
+    modport slave(
+        input  awid    , awaddr , awlen   , awsize , awburst, awlock ,
+               awcache , awprot , awregion, awqos  , awvalid,
+               wdata   , wstrb  , wlast   , wvalid , bready ,
+               arid    , araddr , arlen   , arsize , arburst, arlock ,
+               arcache , arprot , arregion, arqos  , arvalid, rready ,
+        output awready , wready , bid     , bresp  , bvalid ,
+               arready , rid    , rresp   , rdata  , rlast  , rvalid 
+    );
+endinterface
+
+
 interface APB4 #(
     parameter ADDR_WIDTH = 32,    // Address bus width
     parameter DATA_WIDTH = 32     // Data bus width
@@ -92,26 +157,5 @@ interface APB4 #(
         output prdata, pready, pslverr
     );
 endinterface
-
-
-interface SPIM_REGS();
-    logic [23:0] spim_ctrl[0:15];
-    logic [15:0] spim_transfer;
-    logic [15:0] spim_load;
-
-    logic [7:0]  rx_data[0:15];
-    logic [15:0] rx_status;
-
-    logic [15:0] div_n;
-
-
-    modport master(
-        output spim_ctrl, spim_transfer, spim_load, div_n,
-        input  rx_data, rx_status
-    );
-
-endinterface
-
-
 
 `endif

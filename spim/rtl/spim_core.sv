@@ -13,7 +13,7 @@
 
 `timescale 1ns / 1ps
 
-module SPI_Master #(
+module spim_core #(
     parameter MODE                      = 0                  //MODE=0~3
 )(
     input  logic                        clk                 ,//input 1-bit clk
