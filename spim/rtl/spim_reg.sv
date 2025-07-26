@@ -279,22 +279,22 @@ end
 
 always @(*) begin
     case(offset)
-        16'h0000: rdata = {8'd0, regs.rd_flag[0], regs.spim_ctrl[0][22:8], regs.rd_data[0]};
-        16'h0004: rdata = {8'd0, regs.rd_flag[1], regs.spim_ctrl[1][22:8], regs.rd_data[1]};
-        16'h0008: rdata = {8'd0, regs.rd_flag[2], regs.spim_ctrl[2][22:8], regs.rd_data[2]};
-        16'h000c: rdata = {8'd0, regs.rd_flag[3], regs.spim_ctrl[3][22:8], regs.rd_data[3]};
-        16'h0010: rdata = {8'd0, regs.rd_flag[4], regs.spim_ctrl[4][22:8], regs.rd_data[4]};
-        16'h0014: rdata = {8'd0, regs.rd_flag[5], regs.spim_ctrl[5][22:8], regs.rd_data[5]};
-        16'h0018: rdata = {8'd0, regs.rd_flag[6], regs.spim_ctrl[6][22:8], regs.rd_data[6]};
-        16'h001c: rdata = {8'd0, regs.rd_flag[7], regs.spim_ctrl[7][22:8], regs.rd_data[7]};
-        16'h0020: rdata = {8'd0, regs.rd_flag[8], regs.spim_ctrl[8][22:8], regs.rd_data[8]};
-        16'h0024: rdata = {8'd0, regs.rd_flag[9], regs.spim_ctrl[9][22:8], regs.rd_data[9]};
-        16'h0028: rdata = {8'd0, regs.rd_flag[10], regs.spim_ctrl[10][22:8], regs.rd_data[10]};
-        16'h002c: rdata = {8'd0, regs.rd_flag[11], regs.spim_ctrl[11][22:8], regs.rd_data[11]};
-        16'h0030: rdata = {8'd0, regs.rd_flag[12], regs.spim_ctrl[12][22:8], regs.rd_data[12]};
-        16'h0034: rdata = {8'd0, regs.rd_flag[13], regs.spim_ctrl[13][22:8], regs.rd_data[13]};
-        16'h0038: rdata = {8'd0, regs.rd_flag[14], regs.spim_ctrl[14][22:8], regs.rd_data[14]};
-        16'h003c: rdata = {8'd0, regs.rd_flag[15], regs.spim_ctrl[15][22:8], regs.rd_data[15]};
+        16'h0000: rdata = {8'd0, regs.spi_done[0], regs.spim_ctrl[0][22:8], regs.rd_data[0]};
+        16'h0004: rdata = {8'd0, regs.spi_done[1], regs.spim_ctrl[1][22:8], regs.rd_data[1]};
+        16'h0008: rdata = {8'd0, regs.spi_done[2], regs.spim_ctrl[2][22:8], regs.rd_data[2]};
+        16'h000c: rdata = {8'd0, regs.spi_done[3], regs.spim_ctrl[3][22:8], regs.rd_data[3]};
+        16'h0010: rdata = {8'd0, regs.spi_done[4], regs.spim_ctrl[4][22:8], regs.rd_data[4]};
+        16'h0014: rdata = {8'd0, regs.spi_done[5], regs.spim_ctrl[5][22:8], regs.rd_data[5]};
+        16'h0018: rdata = {8'd0, regs.spi_done[6], regs.spim_ctrl[6][22:8], regs.rd_data[6]};
+        16'h001c: rdata = {8'd0, regs.spi_done[7], regs.spim_ctrl[7][22:8], regs.rd_data[7]};
+        16'h0020: rdata = {8'd0, regs.spi_done[8], regs.spim_ctrl[8][22:8], regs.rd_data[8]};
+        16'h0024: rdata = {8'd0, regs.spi_done[9], regs.spim_ctrl[9][22:8], regs.rd_data[9]};
+        16'h0028: rdata = {8'd0, regs.spi_done[10], regs.spim_ctrl[10][22:8], regs.rd_data[10]};
+        16'h002c: rdata = {8'd0, regs.spi_done[11], regs.spim_ctrl[11][22:8], regs.rd_data[11]};
+        16'h0030: rdata = {8'd0, regs.spi_done[12], regs.spim_ctrl[12][22:8], regs.rd_data[12]};
+        16'h0034: rdata = {8'd0, regs.spi_done[13], regs.spim_ctrl[13][22:8], regs.rd_data[13]};
+        16'h0038: rdata = {8'd0, regs.spi_done[14], regs.spim_ctrl[14][22:8], regs.rd_data[14]};
+        16'h003c: rdata = {8'd0, regs.spi_done[15], regs.spim_ctrl[15][22:8], regs.rd_data[15]};
         16'h0040: rdata = {16'd0, regs.spim_transfer};
         16'h0044: rdata = {16'd0, regs.spim_load};
 

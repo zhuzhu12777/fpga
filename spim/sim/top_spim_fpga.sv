@@ -6,11 +6,11 @@ import axi4_task_pkg::*;
 glbl glbl();
 
 real clk_period_axi = 2.0; // 500MHz
-real clk_period_axilite = 5.0; // 200MHz
+real clk_period_axilite = 10.0; // 100MHz
 
 
-logic axi_aclk, axi_rstb; // 500MHz
-logic axilite_clk, axilite_rstb; // 200MHz
+logic axi_aclk, axi_rstb;
+logic axilite_clk, axilite_rstb;
 event RST_DONE;
 
 initial begin
@@ -50,6 +50,8 @@ SPIM_FPGA U_DUT(
     .m_spi                      (m_spi)
 );
 
+assign m_spi[0].miso = m_spi[0].mosi;
+assign m_spi[1].miso = m_spi[1].mosi;
 
 task check_spi_data(input bit [23:0] tx_data[$], bit [23:0] rx_data0[$], bit [23:0] rx_data1[$]); 
     bit [23:0] exp_data, read_data0, read_data1;
@@ -92,24 +94,24 @@ initial begin
         spi_id = $urandom();
         spi_addr = $urandom();
         spi_data = $urandom();
-        val = {1'b0, spi_id, spi_addr, spi_data};
+        val = {1'b1, spi_id, spi_addr, spi_data};
         tx_data.push_back(val);
-        axi4_task_pkg::WriteReg(32'h8000_0000, val);
-        axi4_task_pkg::WriteReg(32'h8000_0004, val);
-        axi4_task_pkg::WriteReg(32'h8000_0040, 32'h3);
+        axi4_task_pkg::WriteReg(32'h4000_0000, val);
+        axi4_task_pkg::WriteReg(32'h4000_0004, val);
+        axi4_task_pkg::WriteReg(32'h4000_0040, 32'h3);
     end
 
     op_done = 0;
     while(op_done == 0) begin
-        axi4_task_pkg::ReadReg(32'h8000_0104, val);
+        axi4_task_pkg::ReadReg(32'h4000_0104, val);
         if(val == 32'hffff)
             op_done = 1;
         else
             repeat(100) @(posedge axilite_clk);
     end
 
-    axi4_task_pkg::WriteReg(32'h8000_0044, 32'h3);
-    axi4_task_pkg::WriteReg(32'h8000_0044, 32'h0);
+    axi4_task_pkg::WriteReg(32'h4000_0044, 32'h3);
+    axi4_task_pkg::WriteReg(32'h4000_0044, 32'h0);
     end join_none
 
     // check spi data
@@ -142,6 +144,30 @@ initial begin
     wait(top.spi_load[0] == 1'b1);
 
     check_spi_data(tx_data, rx_data0, rx_data1);
+
+
+    for(int i = 0; i < test_max; i++) begin
+        spi_id = $urandom();
+        spi_addr = $urandom();
+        spi_data = $urandom();
+        val = {1'b1, spi_id, spi_addr, spi_data};
+        tx_data.push_back(val);
+        axi4_task_pkg::WriteReg(32'h4000_0000, val);
+        axi4_task_pkg::WriteReg(32'h4000_0004, val);
+        axi4_task_pkg::WriteReg(32'h4000_0040, 32'h3);
+    end
+
+    op_done = 0;
+    while(op_done == 0) begin
+        axi4_task_pkg::ReadReg(32'h4000_0104, val);
+        if(val == 32'hffff)
+            op_done = 1;
+        else
+            repeat(100) @(posedge axilite_clk);
+    end
+
+    axi4_task_pkg::WriteReg(32'h4000_0044, 32'h3);
+    axi4_task_pkg::WriteReg(32'h4000_0044, 32'h0);
 
     repeat(1000) @(posedge axilite_clk);
     $finish;

@@ -84,5 +84,27 @@ set_property PACKAGE_PIN U5   [get_ports {SPI_MISO[15]}]
 set_property PACKAGE_PIN W7   [get_ports {SPI_MOSI[15]}]
 set_property PACKAGE_PIN W8   [get_ports {SPI_LOAD[15]}]
 
-set_property IOSTANDARD LVCMOS18 [get_ports {SPI_*}]
+set_property IOSTANDARD LVCMOS33 [get_ports {SPI_*}]
+
+
+set_property PACKAGE_PIN V18  [get_ports {LED_tri_io[0]}]
+set_property PACKAGE_PIN V19  [get_ports {LED_tri_io[1]}]
+set_property PACKAGE_PIN AB21 [get_ports {LED_tri_io[2]}]
+set_property PACKAGE_PIN AB22 [get_ports {LED_tri_io[3]}]
+set_property PACKAGE_PIN AA21 [get_ports {LED_tri_io[4]}]
+set_property PACKAGE_PIN AA22 [get_ports {LED_tri_io[5]}]
+set_property PACKAGE_PIN Y20  [get_ports {LED_tri_io[6]}]
+set_property PACKAGE_PIN Y21  [get_ports {LED_tri_io[7]}]
+set_property IOSTANDARD LVCMOS18 [get_ports {LED_tri_io*}]
+
+
+
+
+
+
+
+
+
+
+
 
