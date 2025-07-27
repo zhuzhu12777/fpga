@@ -1,12 +1,14 @@
 `include "common_interface.svh"
 
 module rfsoc_top(
+    output                  ADG918_CTRL,
 
     // SPI IO
-    inout                   SPI_SCK,
-    inout                   SPI_CS,
-    inout                   SPI_IO0,
-    inout                   SPI_IO1,
+    output                  SPI_SCK,
+    output                  SPI_CS,
+    input                   SPI_MISO,
+    output                  SPI_MOSI,
+    output                  SPI_RSTB,
 
     //DDR4 IO
     output logic            C0_DDR4_0_act_n,
@@ -27,8 +29,8 @@ module rfsoc_top(
     input  logic            C0_SYS_CLK_0_clk_p,
 
     // ADC / DAC / GT clocks
-    input  logic    [5:0]   adc_clk_p,
-    input  logic    [5:0]   adc_clk_n,
+    input  logic    [2:0]   adc_clk_p,
+    input  logic    [2:0]   adc_clk_n,
     input  logic            dac_clk_p,
     input  logic            dac_clk_n,
     input  logic            rf_sysref_in_p,
@@ -55,7 +57,7 @@ AXI4Lite            ps_s_axilite();
 wire    pl_clk0, pl_clk1;
 wire    pl_resetn_0, pl_resetn_1;
 wire    c0_init_calib_complete_0;
-
+wire    spi_clk, spi_rstb;
 
 design_1_wrapper u_bd(
     .C0_DDR4_0_act_n            (C0_DDR4_0_act_n),
@@ -169,15 +171,13 @@ design_1_wrapper u_bd(
     .S_AXI_HP0_FPD_0_wready     (ps_m_axi_wr.wready),
     .S_AXI_HP0_FPD_0_wstrb      (ps_m_axi_wr.wstrb),
     .S_AXI_HP0_FPD_0_wvalid     (ps_m_axi_wr.wvalid),
-    .SPI_0_0_io0_io             (SPI_IO0),
-    .SPI_0_0_io1_io             (SPI_IO1),
-    .SPI_0_0_sck_io             (SPI_SCK),
-    .SPI_0_0_ss_io              (SPI_CS),
     .c0_init_calib_complete_0   (c0_init_calib_complete_0),
     .pl_clk0_0                  (pl_clk0_0),
     .pl_clk1_0                  (pl_clk1_0),
     .pl_resetn_0                (pl_resetn_0),
-    .pl_resetn_1                (pl_resetn_1)
+    .pl_resetn_1                (pl_resetn_1),
+    .spi_clk                    (spi_clk),
+    .spi_rstb                   (spi_rstb)
 );
 
 rfsoc_fpga u_rfsoc_fpga (
@@ -214,6 +214,24 @@ rfsoc_fpga u_rfsoc_fpga (
     .vout_n                     (vout_n),
     .c0_init_calib_complete     (c0_init_calib_complete_0)
 );
+
+AU5619_cfg_top u_AU5619_cfg_top(
+    .clk_10m                    (spi_clk        ),
+    .arst_n                     (spi_rstb       ),
+    .init_complete              (               ),
+    .user_cfg_valid             (1'b0           ),
+    .user_cfg_data              (32'd0          ),
+    .uesr_rd_valid              (               ),
+    .uesr_rd_data               (               ),
+    .pll_rstn                   (SPI_RSTB       ),
+    .m_spi_sdo                  (SPI_MISO       ),
+    .m_spi_sck                  (SPI_SCK        ),
+    .m_spi_ncs                  (SPI_CS         ),
+    .m_spi_sdi                  (SPI_MOSI       )
+);
+
+assign ADG918_CTRL = 1'b0;
+
 
 
 endmodule

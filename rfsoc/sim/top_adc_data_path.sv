@@ -331,7 +331,7 @@ initial begin
 
             // config regs
             axi4_task::WriteReg(32'h0c, 0);              // start_addr
-            axi4_task::WriteReg(32'h10, PKG_NUM * 20);     // cap_size
+            axi4_task::WriteReg(32'h10, PKG_NUM);        // cap_size
             axi4_task::WriteReg(32'h14, 1);  //[0]start, [1]reset
             op_done = 0;
             while(!op_done) begin

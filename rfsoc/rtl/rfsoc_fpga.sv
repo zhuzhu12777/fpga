@@ -13,8 +13,8 @@ module rfsoc_fpga(
     AXI4Lite.slave          ps_s_axilite,
 
     // adc/dac clocks
-    input  logic    [5:0]   adc_clk_p,
-    input  logic    [5:0]   adc_clk_n,
+    input  logic    [2:0]   adc_clk_p,
+    input  logic    [2:0]   adc_clk_n,
     input  logic            dac_clk_p,
     input  logic            dac_clk_n,
     input  logic            rf_sysref_in_p,

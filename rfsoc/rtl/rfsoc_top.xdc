@@ -1,12 +1,34 @@
 
+set_property PACKAGE_PIN AK9 [get_ports {ADG918_CTRL}]
+set_property IOSTANDARD LVCMOS12 [get_ports {ADG918_CTRL}]
+
 set_property PACKAGE_PIN J14 [get_ports {SPI_SCK}]
 set_property PACKAGE_PIN G13 [get_ports {SPI_CS}]
-set_property PACKAGE_PIN J13 [get_ports {SPI_IO0}]
-set_property PACKAGE_PIN H13 [get_ports {SPI_IO1}]
+set_property PACKAGE_PIN J13 [get_ports {SPI_MOSI}]
+set_property PACKAGE_PIN H13 [get_ports {SPI_MISO}]
+set_property PACKAGE_PIN F14 [get_ports {SPI_RSTB}]
+
 set_property IOSTANDARD LVCMOS18 [get_ports {SPI_*}]
 
 set_property PACKAGE_PIN M28  [get_ports gt_refclk_p]
-create_clock -name GT_REFCLK -period 6.667 [get_ports gt_refclk_p]
+create_clock -name GT_REFCLK -period 5.000 [get_ports gt_refclk_p]
+
+create_clock -name ADC_CLK_0 -period 5.000 [get_ports {adc_clk_p[0]}]
+create_clock -name ADC_CLK_1 -period 5.000 [get_ports {adc_clk_p[1]}]
+create_clock -name ADC_CLK_2 -period 5.000 [get_ports {adc_clk_p[2]}]
+create_clock -name DAC_CLK_0 -period 5.000 [get_ports {dac_clk_p}]
+
+#create_clock -name C0_SYS_CLK -period 4.000 [get_ports {C0_SYS_CLK_0_clk_p}]
+
+set_clock_groups -asynchronous -group {GT_REFCLK \
+    RFADC0_CLK  \
+    RFADC1_CLK  \
+    RFADC2_CLK  \
+    RFDAC0_CLK  \
+    [get_clocks -of_objects [get_nets u_bd/design_1_i/ddr4_0/c0_ddr4_ui_clk]] \
+    clk_pl_0 \
+    clk_pl_1 \
+    clk_pl_2 }
 
 set_property PACKAGE_PIN AM9 [get_ports {C0_SYS_CLK_0_clk_n} ]
 set_property PACKAGE_PIN AL9 [get_ports {C0_SYS_CLK_0_clk_p} ]

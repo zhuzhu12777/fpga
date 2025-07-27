@@ -43,14 +43,19 @@ set_property -dict [list \
   CONFIG.c_m_axi_s2mm_data_width {128} \
 ] [get_ips axi_datamover_wr]
 
-if {[get_ips axis_data_afifo_32b] == ""} {
-  create_ip -name axis_data_fifo -vendor xilinx.com -library ip -module_name axis_data_afifo_32b
+if {[get_ips fifo_gen_afifo_64b_32b] == ""} {
+  create_ip -name fifo_generator -vendor xilinx.com -library ip -module_name fifo_gen_afifo_64b_32b
 }
 set_property -dict [list \
-  CONFIG.FIFO_DEPTH {128} \
-  CONFIG.IS_ACLK_ASYNC {1} \
-  CONFIG.TDATA_NUM_BYTES {4} \
-] [get_ips axis_data_afifo_32b]
+  CONFIG.Enable_Reset_Synchronization {false} \
+  CONFIG.Fifo_Implementation {Independent_Clocks_Block_RAM} \
+  CONFIG.INTERFACE_TYPE {Native} \
+  CONFIG.Input_Data_Width {64} \
+  CONFIG.Input_Depth {256} \
+  CONFIG.Output_Data_Width {32} \
+  CONFIG.Performance_Options {First_Word_Fall_Through} \
+  CONFIG.asymmetric_port_width {true} \
+] [get_ips fifo_gen_afifo_64b_32b]
 
 if {[get_ips axis_data_fifo_128b] == ""} {
   create_ip -name axis_data_fifo -vendor xilinx.com -library ip -module_name axis_data_fifo_128b
@@ -114,15 +119,12 @@ if {[get_ips usp_rf_data_converter_0] == ""} {
 set_property -dict [list \
   CONFIG.ADC0_Outclk_Freq {11.719} \
   CONFIG.ADC0_PLL_Enable {true} \
-  CONFIG.ADC0_Refclk_Freq {125.000} \
   CONFIG.ADC0_Sampling_Rate {1.5} \
   CONFIG.ADC1_Outclk_Freq {11.719} \
   CONFIG.ADC1_PLL_Enable {true} \
-  CONFIG.ADC1_Refclk_Freq {125.000} \
   CONFIG.ADC1_Sampling_Rate {1.5} \
   CONFIG.ADC2_Outclk_Freq {11.719} \
   CONFIG.ADC2_PLL_Enable {true} \
-  CONFIG.ADC2_Refclk_Freq {125.000} \
   CONFIG.ADC2_Sampling_Rate {1.5} \
   CONFIG.ADC_Slice02_Enable {true} \
   CONFIG.ADC_Slice10_Enable {true} \
@@ -130,10 +132,13 @@ set_property -dict [list \
   CONFIG.ADC_Slice20_Enable {true} \
   CONFIG.ADC_Slice22_Enable {true} \
   CONFIG.DAC0_PLL_Enable {true} \
-  CONFIG.DAC0_Refclk_Freq {125.000} \
   CONFIG.DAC0_Sampling_Rate {8} \
   CONFIG.DAC_Mode00 {3} \
   CONFIG.DAC_Slice00_Enable {true} \
+  CONFIG.ADC0_Refclk_Freq {200.000} \
+  CONFIG.ADC1_Refclk_Freq {200.000} \
+  CONFIG.ADC2_Refclk_Freq {200.000} \
+  CONFIG.DAC0_Refclk_Freq {200.000} \
 ] [get_ips usp_rf_data_converter_0]
 
 # gty
@@ -145,15 +150,24 @@ set_property -dict [list \
     CONFIG.FREERUN_FREQUENCY {100} \
     CONFIG.RX_LINE_RATE {6} \
     CONFIG.RX_PLL_TYPE {CPLL} \
-    CONFIG.RX_REFCLK_FREQUENCY {150} \
-    CONFIG.RX_REFCLK_SOURCE {X0Y9 clk0-1 X0Y8 clk0-1} \
     CONFIG.TX_LINE_RATE {6} \
     CONFIG.TX_PLL_TYPE {CPLL} \
-    CONFIG.TX_REFCLK_FREQUENCY {150} \
-    CONFIG.TX_REFCLK_SOURCE {X0Y9 clk0-1 X0Y8 clk0-1} \
+    CONFIG.RX_REFCLK_FREQUENCY {200} \
+    CONFIG.RX_REFCLK_SOURCE {X0Y7 clk0+1 X0Y6 clk0+1 X0Y5 clk0+1 X0Y4 clk0+1} \
+    CONFIG.TX_REFCLK_FREQUENCY {200} \
+    CONFIG.TX_REFCLK_SOURCE {X0Y7 clk0+1 X0Y6 clk0+1 X0Y5 clk0+1 X0Y4 clk0+1}
 ] [get_ips GTY_Raw_6CHN]
 
-
-
+if {[get_ips init_rom_au5619] == ""} {
+    create_ip -name blk_mem_gen -vendor xilinx.com -library ip -module_name init_rom_au5619
+}
+set_property -dict [list \
+  CONFIG.Coe_File {E:/git_resp/fpga/rfsoc/rtl/AU5619.coe} \
+  CONFIG.Enable_A {Always_Enabled} \
+  CONFIG.Load_Init_File {true} \
+  CONFIG.Memory_Type {Single_Port_ROM} \
+  CONFIG.Write_Depth_A {512} \
+  CONFIG.Write_Width_A {32} \
+] [get_ips init_rom_au5619]
 
 
