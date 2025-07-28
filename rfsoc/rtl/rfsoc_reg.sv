@@ -111,7 +111,8 @@ always @(posedge clk or negedge rstb) begin
         if (wren && (offset == 16'h0014) && wstrb[0]) begin
             regs.adc_reset <= wdata[1];
             regs.adc_start <= wdata[0];
-        end
+        end else if(regs.adc_cap_done)
+            regs.adc_start <= 1'b0;
     end
 end
 
