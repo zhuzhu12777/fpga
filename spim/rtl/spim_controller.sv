@@ -12,6 +12,7 @@ module spim_controller(
     input   logic       [15:0]      div_n,
     input   logic       [23:0]      reg_tx_data,
     input   logic                   reg_tx_valid,
+    input   logic                   spim_transfer,
     SPI_BUS.master                  m_spi
 );
 
@@ -25,8 +26,10 @@ logic                       tfifo_rd_ready;
 
 logic       [23:0]          tfifo_rdata_lat;
 
+logic                       spim_transfer_en;
+
 assign tfifo_wr_en = reg_tx_valid & ~tfifo_full;
-assign tfifo_rd_en = ~tfifo_empty & tfifo_rd_ready;
+assign tfifo_rd_en = spim_transfer_en & ~tfifo_empty & tfifo_rd_ready;
 fifo_256x24b u_spim_cmd_fifo (
     .clk                    (clk),                      // input wire clk
     .srst                   (~rstb),                    // input wire srst
@@ -37,6 +40,17 @@ fifo_256x24b u_spim_cmd_fifo (
     .full                   (tfifo_full),               // output wire full
     .empty                  (tfifo_empty)               // output wire empty
 );
+
+
+// spim command read enable
+always@(posedge clk or negedge rstb) begin
+    if (!rstb)
+        spim_transfer_en <= 1'b0;
+    else if(spim_transfer)
+        spim_transfer_en <= 1'b1;
+    else if(spi_done)
+        spim_transfer_en <= 1'b0;
+end
 
 always@(posedge clk or negedge rstb) begin
     if (!rstb)

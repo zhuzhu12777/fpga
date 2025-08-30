@@ -3,6 +3,7 @@
 
 interface SPIM_REGS();
     logic [23:0] spim_ctrl[0:15];
+    logic [15:0] spim_ctrl_pulse;
     logic [15:0] spim_transfer;
     logic [15:0] spim_load;
 
@@ -15,7 +16,7 @@ interface SPIM_REGS();
 
 
     modport master(
-        output spim_ctrl, spim_transfer, spim_load, div_n,
+        output spim_ctrl, spim_ctrl_pulse, spim_transfer, spim_load, div_n,
         input  rd_data, rd_flag, fifo_overflow, spi_done
     );
 
@@ -33,213 +34,37 @@ module spim_reg (
     SPIM_REGS.master            regs
 );
 
+genvar i;
+
+generate for(i=0; i<16; i=i+1) begin : gen_spim_ctrl
+
 always @(posedge clk or negedge rstb) begin
     if(!rstb)
-        regs.spim_ctrl[0] <= 24'h0;
-    else if(wren && (offset == 16'h0000)) begin
+        regs.spim_ctrl[i] <= 24'h0;
+    else if(wren && (offset == 16'h0000 + i*4)) begin
         if (wstrb[2])
-            regs.spim_ctrl[0][23:16] <= wdata[23:16];
+            regs.spim_ctrl[i][23:16] <= wdata[23:16];
         if (wstrb[1])
-            regs.spim_ctrl[0][15:8] <= wdata[15:8];
+            regs.spim_ctrl[i][15:8] <= wdata[15:8];
         if (wstrb[0])
-            regs.spim_ctrl[0][7:0] <= wdata[7:0];
+            regs.spim_ctrl[i][7:0] <= wdata[7:0];
     end
 end
 
 always @(posedge clk or negedge rstb) begin
     if(!rstb)
-        regs.spim_ctrl[1] <= 24'h0;
-    else if(wren && (offset == 16'h0004)) begin
+        regs.spim_ctrl_pulse[i] <= 1'b0;
+    else if(wren && (offset == 16'h0000 + i*4)) begin
         if (wstrb[2])
-            regs.spim_ctrl[1][23:16] <= wdata[23:16];
-        if (wstrb[1])
-            regs.spim_ctrl[1][15:8] <= wdata[15:8];
-        if (wstrb[0])
-            regs.spim_ctrl[1][7:0] <= wdata[7:0];
-    end
+            regs.spim_ctrl_pulse[i] <= 1'b1;
+        else
+            regs.spim_ctrl_pulse[i] <= 1'b0;
+    end else
+        regs.spim_ctrl_pulse[i] <= 1'b0;
 end
 
-always @(posedge clk or negedge rstb) begin
-    if(!rstb)
-        regs.spim_ctrl[2] <= 24'h0;
-    else if(wren && (offset == 16'h0008)) begin
-        if (wstrb[2])
-            regs.spim_ctrl[2][23:16] <= wdata[23:16];
-        if (wstrb[1])
-            regs.spim_ctrl[2][15:8] <= wdata[15:8];
-        if (wstrb[0])
-            regs.spim_ctrl[2][7:0] <= wdata[7:0];
-    end
-end
-
-always @(posedge clk or negedge rstb) begin
-    if(!rstb)
-        regs.spim_ctrl[3] <= 24'h0;
-    else if(wren && (offset == 16'h000c)) begin
-        if (wstrb[2])
-            regs.spim_ctrl[3][23:16] <= wdata[23:16];
-        if (wstrb[1])
-            regs.spim_ctrl[3][15:8] <= wdata[15:8];
-        if (wstrb[0])
-            regs.spim_ctrl[3][7:0] <= wdata[7:0];
-    end
-end
-
-always @(posedge clk or negedge rstb) begin
-    if(!rstb)
-        regs.spim_ctrl[4] <= 24'h0;
-    else if(wren && (offset == 16'h0010)) begin
-        if (wstrb[2])
-            regs.spim_ctrl[4][23:16] <= wdata[23:16];
-        if (wstrb[1])
-            regs.spim_ctrl[4][15:8] <= wdata[15:8];
-        if (wstrb[0])
-            regs.spim_ctrl[4][7:0] <= wdata[7:0];
-    end
-end
-
-always @(posedge clk or negedge rstb) begin
-    if(!rstb)
-        regs.spim_ctrl[5] <= 24'h0;
-    else if(wren && (offset == 16'h0014)) begin
-        if (wstrb[2])
-            regs.spim_ctrl[5][23:16] <= wdata[23:16];
-        if (wstrb[1])
-            regs.spim_ctrl[5][15:8] <= wdata[15:8];
-        if (wstrb[0])
-            regs.spim_ctrl[5][7:0] <= wdata[7:0];
-    end
-end
-
-always @(posedge clk or negedge rstb) begin
-    if(!rstb)
-        regs.spim_ctrl[6] <= 24'h0;
-    else if(wren && (offset == 16'h0018)) begin
-        if (wstrb[2])
-            regs.spim_ctrl[6][23:16] <= wdata[23:16];
-        if (wstrb[1])
-            regs.spim_ctrl[6][15:8] <= wdata[15:8];
-        if (wstrb[0])
-            regs.spim_ctrl[6][7:0] <= wdata[7:0];
-    end
-end
-
-always @(posedge clk or negedge rstb) begin
-    if(!rstb)
-        regs.spim_ctrl[7] <= 24'h0;
-    else if(wren && (offset == 16'h001c)) begin
-        if (wstrb[2])
-            regs.spim_ctrl[7][23:16] <= wdata[23:16];
-        if (wstrb[1])
-            regs.spim_ctrl[7][15:8] <= wdata[15:8];
-        if (wstrb[0])
-            regs.spim_ctrl[7][7:0] <= wdata[7:0];
-    end
-end
-
-always @(posedge clk or negedge rstb) begin
-    if(!rstb)
-        regs.spim_ctrl[8] <= 24'h0;
-    else if(wren && (offset == 16'h0020)) begin
-        if (wstrb[2])
-            regs.spim_ctrl[8][23:16] <= wdata[23:16];
-        if (wstrb[1])
-            regs.spim_ctrl[8][15:8] <= wdata[15:8];
-        if (wstrb[0])
-            regs.spim_ctrl[8][7:0] <= wdata[7:0];
-    end
-end
-
-always @(posedge clk or negedge rstb) begin
-    if(!rstb)
-        regs.spim_ctrl[9] <= 24'h0;
-    else if(wren && (offset == 16'h0024)) begin
-        if (wstrb[2])
-            regs.spim_ctrl[9][23:16] <= wdata[23:16];
-        if (wstrb[1])
-            regs.spim_ctrl[9][15:8] <= wdata[15:8];
-        if (wstrb[0])
-            regs.spim_ctrl[9][7:0] <= wdata[7:0];
-    end
-end
-
-always @(posedge clk or negedge rstb) begin
-    if(!rstb)
-        regs.spim_ctrl[10] <= 24'h0;
-    else if(wren && (offset == 16'h0028)) begin
-        if (wstrb[2])
-            regs.spim_ctrl[10][23:16] <= wdata[23:16];
-        if (wstrb[1])
-            regs.spim_ctrl[10][15:8] <= wdata[15:8];
-        if (wstrb[0])
-            regs.spim_ctrl[10][7:0] <= wdata[7:0];
-    end
-end
-
-always @(posedge clk or negedge rstb) begin
-    if(!rstb)
-        regs.spim_ctrl[11] <= 24'h0;
-    else if(wren && (offset == 16'h002c)) begin
-        if (wstrb[2])
-            regs.spim_ctrl[11][23:16] <= wdata[23:16];
-        if (wstrb[1])
-            regs.spim_ctrl[11][15:8] <= wdata[15:8];
-        if (wstrb[0])
-            regs.spim_ctrl[11][7:0] <= wdata[7:0];
-    end
-end
-
-always @(posedge clk or negedge rstb) begin
-    if(!rstb)
-        regs.spim_ctrl[12] <= 24'h0;
-    else if(wren && (offset == 16'h0030)) begin
-        if (wstrb[2])
-            regs.spim_ctrl[12][23:16] <= wdata[23:16];
-        if (wstrb[1])
-            regs.spim_ctrl[12][15:8] <= wdata[15:8];
-        if (wstrb[0])
-            regs.spim_ctrl[12][7:0] <= wdata[7:0];
-    end
-end
-
-always @(posedge clk or negedge rstb) begin
-    if(!rstb)
-        regs.spim_ctrl[13] <= 24'h0;
-    else if(wren && (offset == 16'h0034)) begin
-        if (wstrb[2])
-            regs.spim_ctrl[13][23:16] <= wdata[23:16];
-        if (wstrb[1])
-            regs.spim_ctrl[13][15:8] <= wdata[15:8];
-        if (wstrb[0])
-            regs.spim_ctrl[13][7:0] <= wdata[7:0];
-    end
-end
-
-always @(posedge clk or negedge rstb) begin
-    if(!rstb)
-        regs.spim_ctrl[14] <= 24'h0;
-    else if(wren && (offset == 16'h0038)) begin
-        if (wstrb[2])
-            regs.spim_ctrl[14][23:16] <= wdata[23:16];
-        if (wstrb[1])
-            regs.spim_ctrl[14][15:8] <= wdata[15:8];
-        if (wstrb[0])
-            regs.spim_ctrl[14][7:0] <= wdata[7:0];
-    end
-end
-
-always @(posedge clk or negedge rstb) begin
-    if(!rstb)
-        regs.spim_ctrl[15] <= 24'h0;
-    else if(wren && (offset == 16'h003c)) begin
-        if (wstrb[2])
-            regs.spim_ctrl[15][23:16] <= wdata[23:16];
-        if (wstrb[1])
-            regs.spim_ctrl[15][15:8] <= wdata[15:8];
-        if (wstrb[0])
-            regs.spim_ctrl[15][7:0] <= wdata[7:0];
-    end
-end
+end : gen_spim_ctrl
+endgenerate
 
 always @(posedge clk or negedge rstb) begin
     if(!rstb)

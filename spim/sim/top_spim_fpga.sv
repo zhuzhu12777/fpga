@@ -42,13 +42,21 @@ AXI4Lite            ps_s_axilite();
 SPI_BUS             m_spi[16]();
 logic [15:0]        spi_load;
 
-SPIM_FPGA U_DUT(
+spim_fpga U_DUT(
     .SPI_LOAD                   (spi_load),
     .axilite_clk                (axilite_clk),
     .axilite_rstb               (axilite_rstb),
     .ps_axil                    (ps_s_axilite),
     .m_spi                      (m_spi)
 );
+
+wire [23:0] spim_ctrl_0 = top.U_DUT.regs.spim_ctrl[0];
+wire        spim_trasfer_0 = top.U_DUT.regs.spim_transfer[0];
+wire        spim_ctrl_pulse_0 = top.U_DUT.regs.spim_ctrl_pulse[0];
+wire        spim_load_0 = top.U_DUT.regs.spim_load[0];
+wire [7:0]  rd_data_0 = top.U_DUT.regs.rd_data[0];
+wire        spi_done_0 = top.U_DUT.regs.spi_done[0];
+
 
 assign m_spi[0].miso = m_spi[0].mosi;
 assign m_spi[1].miso = m_spi[1].mosi;
@@ -88,18 +96,19 @@ initial begin
     axi4_task_pkg::axilite_reset();
     @RST_DONE;
     repeat(100) @(posedge axilite_clk);
-    test_max = $urandom_range(1, 10);
+    test_max = $urandom_range(4, 4);
     fork begin
     for(int i = 0; i < test_max; i++) begin
         spi_id = $urandom();
         spi_addr = $urandom();
         spi_data = $urandom();
-        val = {1'b1, spi_id, spi_addr, spi_data};
+        val = {1'b0, spi_id, spi_addr, spi_data};
+        $display("send spi write, id=0x%0x, addr=0x%0x, data = 0x%0x, val=0x%0x", spi_id, spi_addr, spi_data, val);
         tx_data.push_back(val);
         axi4_task_pkg::WriteReg(32'h4000_0000, val);
         axi4_task_pkg::WriteReg(32'h4000_0004, val);
-        axi4_task_pkg::WriteReg(32'h4000_0040, 32'h3);
     end
+    axi4_task_pkg::WriteReg(32'h4000_0040, 32'h3);
 
     op_done = 0;
     while(op_done == 0) begin
@@ -111,9 +120,9 @@ initial begin
     end
 
     axi4_task_pkg::WriteReg(32'h4000_0044, 32'h3);
+    repeat(100) @(posedge axilite_clk);
     axi4_task_pkg::WriteReg(32'h4000_0044, 32'h0);
     end join_none
-
     // check spi data
 
     fork
@@ -145,17 +154,19 @@ initial begin
 
     check_spi_data(tx_data, rx_data0, rx_data1);
 
-
+    repeat(200) @(posedge axilite_clk);
+    test_max = 1;
     for(int i = 0; i < test_max; i++) begin
         spi_id = $urandom();
         spi_addr = $urandom();
         spi_data = $urandom();
         val = {1'b1, spi_id, spi_addr, spi_data};
+        $display("send spi read, id=0x%0x, addr=0x%0x, data = 0x%0x, val=0x%0x", spi_id, spi_addr, spi_data, val);
         tx_data.push_back(val);
         axi4_task_pkg::WriteReg(32'h4000_0000, val);
         axi4_task_pkg::WriteReg(32'h4000_0004, val);
-        axi4_task_pkg::WriteReg(32'h4000_0040, 32'h3);
     end
+    axi4_task_pkg::WriteReg(32'h4000_0040, 32'h3);
 
     op_done = 0;
     while(op_done == 0) begin
@@ -167,6 +178,7 @@ initial begin
     end
 
     axi4_task_pkg::WriteReg(32'h4000_0044, 32'h3);
+    repeat(100) @(posedge axilite_clk);
     axi4_task_pkg::WriteReg(32'h4000_0044, 32'h0);
 
     repeat(1000) @(posedge axilite_clk);

@@ -75,7 +75,8 @@ generate for(i = 0; i < 16; i = i + 1) begin : spim_loop
         .rstb                   (axilite_rstb),
         .div_n                  (regs.div_n),
         .reg_tx_data            (regs.spim_ctrl[i]),
-        .reg_tx_valid           (regs.spim_transfer[i]),
+        .reg_tx_valid           (regs.spim_ctrl_pulse[i]),
+        .spim_transfer          (regs.spim_transfer[i]),
         .m_spi                  (m_spi[i])
     );
 
