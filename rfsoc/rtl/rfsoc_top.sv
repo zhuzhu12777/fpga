@@ -51,7 +51,8 @@ module rfsoc_top(
 // interface
 AXI4 #(4, 40, 256)  pl_m_axi_rd();
 AXI4 #(4, 40, 128)  ps_m_axi_wr();
-AXI4Lite            ps_s_axilite();
+AXI4Lite            ps_axil_reg();
+AXI4Lite            ps_axil_rf();
 
 // clock & reset
 wire    pl_clk0, pl_clk1;
@@ -76,25 +77,44 @@ design_1_wrapper u_bd(
     .C0_DDR4_0_reset_n          (C0_DDR4_0_reset_n),
     .C0_SYS_CLK_0_clk_n         (C0_SYS_CLK_0_clk_n),
     .C0_SYS_CLK_0_clk_p         (C0_SYS_CLK_0_clk_p),
-    .M_AXI_HPM0_LPD_0_araddr    (ps_s_axilite.araddr),
-    .M_AXI_HPM0_LPD_0_arprot    (ps_s_axilite.arprot),
-    .M_AXI_HPM0_LPD_0_arready   (ps_s_axilite.arready),
-    .M_AXI_HPM0_LPD_0_arvalid   (ps_s_axilite.arvalid),
-    .M_AXI_HPM0_LPD_0_awaddr    (ps_s_axilite.awaddr),
-    .M_AXI_HPM0_LPD_0_awprot    (ps_s_axilite.awprot),
-    .M_AXI_HPM0_LPD_0_awready   (ps_s_axilite.awready),
-    .M_AXI_HPM0_LPD_0_awvalid   (ps_s_axilite.awvalid),
-    .M_AXI_HPM0_LPD_0_bready    (ps_s_axilite.bready),
-    .M_AXI_HPM0_LPD_0_bresp     (ps_s_axilite.bresp),
-    .M_AXI_HPM0_LPD_0_bvalid    (ps_s_axilite.bvalid),
-    .M_AXI_HPM0_LPD_0_rdata     (ps_s_axilite.rdata),
-    .M_AXI_HPM0_LPD_0_rready    (ps_s_axilite.rready),
-    .M_AXI_HPM0_LPD_0_rresp     (ps_s_axilite.rresp),
-    .M_AXI_HPM0_LPD_0_rvalid    (ps_s_axilite.rvalid),
-    .M_AXI_HPM0_LPD_0_wdata     (ps_s_axilite.wdata),
-    .M_AXI_HPM0_LPD_0_wready    (ps_s_axilite.wready),
-    .M_AXI_HPM0_LPD_0_wstrb     (ps_s_axilite.wstrb),
-    .M_AXI_HPM0_LPD_0_wvalid    (ps_s_axilite.wvalid),
+    .M_AXI_HPM0_LPD_0_araddr    (ps_axil_rf.araddr),
+    .M_AXI_HPM0_LPD_0_arprot    (ps_axil_rf.arprot),
+    .M_AXI_HPM0_LPD_0_arready   (ps_axil_rf.arready),
+    .M_AXI_HPM0_LPD_0_arvalid   (ps_axil_rf.arvalid),
+    .M_AXI_HPM0_LPD_0_awaddr    (ps_axil_rf.awaddr),
+    .M_AXI_HPM0_LPD_0_awprot    (ps_axil_rf.awprot),
+    .M_AXI_HPM0_LPD_0_awready   (ps_axil_rf.awready),
+    .M_AXI_HPM0_LPD_0_awvalid   (ps_axil_rf.awvalid),
+    .M_AXI_HPM0_LPD_0_bready    (ps_axil_rf.bready),
+    .M_AXI_HPM0_LPD_0_bresp     (ps_axil_rf.bresp),
+    .M_AXI_HPM0_LPD_0_bvalid    (ps_axil_rf.bvalid),
+    .M_AXI_HPM0_LPD_0_rdata     (ps_axil_rf.rdata),
+    .M_AXI_HPM0_LPD_0_rready    (ps_axil_rf.rready),
+    .M_AXI_HPM0_LPD_0_rresp     (ps_axil_rf.rresp),
+    .M_AXI_HPM0_LPD_0_rvalid    (ps_axil_rf.rvalid),
+    .M_AXI_HPM0_LPD_0_wdata     (ps_axil_rf.wdata),
+    .M_AXI_HPM0_LPD_0_wready    (ps_axil_rf.wready),
+    .M_AXI_HPM0_LPD_0_wstrb     (ps_axil_rf.wstrb),
+    .M_AXI_HPM0_LPD_0_wvalid    (ps_axil_rf.wvalid),
+    .M_AXI_HPM0_LPD_1_araddr    (ps_axil_reg.araddr),
+    .M_AXI_HPM0_LPD_1_arprot    (ps_axil_reg.arprot),
+    .M_AXI_HPM0_LPD_1_arready   (ps_axil_reg.arready),
+    .M_AXI_HPM0_LPD_1_arvalid   (ps_axil_reg.arvalid),
+    .M_AXI_HPM0_LPD_1_awaddr    (ps_axil_reg.awaddr),
+    .M_AXI_HPM0_LPD_1_awprot    (ps_axil_reg.awprot),
+    .M_AXI_HPM0_LPD_1_awready   (ps_axil_reg.awready),
+    .M_AXI_HPM0_LPD_1_awvalid   (ps_axil_reg.awvalid),
+    .M_AXI_HPM0_LPD_1_bready    (ps_axil_reg.bready),
+    .M_AXI_HPM0_LPD_1_bresp     (ps_axil_reg.bresp),
+    .M_AXI_HPM0_LPD_1_bvalid    (ps_axil_reg.bvalid),
+    .M_AXI_HPM0_LPD_1_rdata     (ps_axil_reg.rdata),
+    .M_AXI_HPM0_LPD_1_rready    (ps_axil_reg.rready),
+    .M_AXI_HPM0_LPD_1_rresp     (ps_axil_reg.rresp),
+    .M_AXI_HPM0_LPD_1_rvalid    (ps_axil_reg.rvalid),
+    .M_AXI_HPM0_LPD_1_wdata     (ps_axil_reg.wdata),
+    .M_AXI_HPM0_LPD_1_wready    (ps_axil_reg.wready),
+    .M_AXI_HPM0_LPD_1_wstrb     (ps_axil_reg.wstrb),
+    .M_AXI_HPM0_LPD_1_wvalid    (ps_axil_reg.wvalid),
     .S01_AXI_0_araddr           (pl_m_axi_rd.araddr),
     .S01_AXI_0_arburst          (pl_m_axi_rd.arburst),
     .S01_AXI_0_arcache          (pl_m_axi_rd.arcache),
@@ -193,7 +213,8 @@ rfsoc_fpga u_rfsoc_fpga (
     .ps_m_axi_wr                (ps_m_axi_wr),
 
     // axi4l slave
-    .ps_s_axilite               (ps_s_axilite),
+    .ps_axil_rf                 (ps_axil_rf),
+    .ps_axil_reg                (ps_axil_reg),
 
     // adc/dac clocks
     .adc_clk_p                  (adc_clk_p),
