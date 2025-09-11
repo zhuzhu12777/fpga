@@ -102,7 +102,7 @@ initial begin
         spi_id = $urandom();
         spi_addr = $urandom();
         spi_data = $urandom();
-        val = {1'b0, spi_id, spi_addr, spi_data};
+        val = {1'b1, spi_id, spi_addr, spi_data};
         $display("send spi write, id=0x%0x, addr=0x%0x, data = 0x%0x, val=0x%0x", spi_id, spi_addr, spi_data, val);
         tx_data.push_back(val);
         axi4_task_pkg::WriteReg(32'h4000_0000, val);
@@ -160,7 +160,7 @@ initial begin
         spi_id = $urandom();
         spi_addr = $urandom();
         spi_data = $urandom();
-        val = {1'b1, spi_id, spi_addr, spi_data};
+        val = {1'b0, spi_id, spi_addr, spi_data};
         $display("send spi read, id=0x%0x, addr=0x%0x, data = 0x%0x, val=0x%0x", spi_id, spi_addr, spi_data, val);
         tx_data.push_back(val);
         axi4_task_pkg::WriteReg(32'h4000_0000, val);

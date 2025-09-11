@@ -120,7 +120,7 @@ always@(posedge clk or negedge rstb) begin
     if (!rstb)
         rd_flag <= 1'b0;
     else if(sel_rx_valid && rx_cnt == 2'd0)
-        rd_flag <= tfifo_rdata_lat[23];
+        rd_flag <= ~tfifo_rdata_lat[23];
     else if(sel_rx_valid && rx_cnt == 2'd2)
         rd_flag <= 1'b0;
 end
