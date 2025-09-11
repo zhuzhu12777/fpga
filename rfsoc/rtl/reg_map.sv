@@ -50,7 +50,7 @@ assign apb_if.pslverr = 1'b0;
 wire [15:0] offset = {apb_if.paddr[15:2], 2'b00};
 wire        wren   = apb_if.pwrite & apb_if.penable & apb_if.psel;
 
-rfsoc_reg u_rfsoc_reg (
+rfsoc_register u_rfsoc_register (
     .rdata                      (apb_if.prdata),
     .clk                        (axilite_clk),
     .rstb                       (axilite_rstb),

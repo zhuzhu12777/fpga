@@ -49,8 +49,8 @@ module rfsoc_top(
 );
 
 // interface
-AXI4 #(4, 40, 256)  pl_m_axi_rd();
-AXI4 #(4, 40, 128)  ps_m_axi_wr();
+AXI4 #(5, 40, 256)  pl_m_axi_rd();
+AXI4 #(6, 40, 128)  ps_m_axi_wr();
 AXI4Lite            ps_axil_reg();
 AXI4Lite            ps_axil_rf();
 

@@ -17,7 +17,7 @@
     // output  reg                 gty_reset,          // 0x0020[1]
     // output  reg                 gty_start,          // 0x0020[0]
 
-module rfsoc_reg (
+module rfsoc_register (
     output  reg         [31:0]  rdata,
 
 

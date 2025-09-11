@@ -21,10 +21,10 @@ create_clock -name DAC_CLK_0 -period 5.000 [get_ports {dac_clk_p}]
 #create_clock -name C0_SYS_CLK -period 4.000 [get_ports {C0_SYS_CLK_0_clk_p}]
 
 set_clock_groups -asynchronous -group {GT_REFCLK \
-    RFADC0_CLK  \
-    RFADC1_CLK  \
-    RFADC2_CLK  \
-    RFDAC0_CLK  \
+    ADC_CLK_0  \
+    ADC_CLK_1  \
+    ADC_CLK_2  \
+    DAC_CLK_0  \
     [get_clocks -of_objects [get_nets u_bd/design_1_i/ddr4_0/c0_ddr4_ui_clk]] \
     clk_pl_0 \
     clk_pl_1 \
