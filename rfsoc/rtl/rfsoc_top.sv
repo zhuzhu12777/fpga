@@ -58,7 +58,22 @@ AXI4Lite            ps_axil_rf();
 wire    pl_clk0, pl_clk1;
 wire    pl_resetn_0, pl_resetn_1;
 wire    c0_init_calib_complete_0;
-wire    spi_clk, spi_rstb;
+wire    spi_clk, spi_arstn;
+
+
+//reg [31:0] cnt0 = '0;
+//always@(posedge pl_clk0) begin
+//    if(cnt0 < 1000000)
+//        cnt0 <= cnt0 + 1'b1;
+//end
+//assign pl_resetn_0 = cnt0 >= 1000000;      //10ms / 10ns = 100_0000
+
+//reg [31:0] cnt1 = '0;
+//always@(posedge pl_clk1) begin
+//    if(cnt1 < 3333333)
+//        cnt1 <= cnt1 + 1'b1;
+//end
+//assign pl_resetn_1 = cnt1 >= 3333333;     //10ms / 3.0ns = 333_3333
 
 design_1_wrapper u_bd(
     .C0_DDR4_0_act_n            (C0_DDR4_0_act_n),
@@ -192,12 +207,12 @@ design_1_wrapper u_bd(
     .S_AXI_HP0_FPD_0_wstrb      (ps_m_axi_wr.wstrb),
     .S_AXI_HP0_FPD_0_wvalid     (ps_m_axi_wr.wvalid),
     .c0_init_calib_complete_0   (c0_init_calib_complete_0),
-    .pl_clk0_0                  (pl_clk0_0),
-    .pl_clk1_0                  (pl_clk1_0),
+    .pl_clk0_0                  (pl_clk0),
+    .pl_clk1_0                  (pl_clk1),
     .pl_resetn_0                (pl_resetn_0),
     .pl_resetn_1                (pl_resetn_1),
     .spi_clk                    (spi_clk),
-    .spi_rstb                   (spi_rstb)
+    .spi_rstb                   (spi_arstn)
 );
 
 rfsoc_fpga u_rfsoc_fpga (
@@ -238,7 +253,7 @@ rfsoc_fpga u_rfsoc_fpga (
 
 AU5619_cfg_top u_AU5619_cfg_top(
     .clk_10m                    (spi_clk        ),
-    .arst_n                     (spi_rstb       ),
+    .arst_n                     (spi_arstn       ),
     .init_complete              (               ),
     .user_cfg_valid             (1'b0           ),
     .user_cfg_data              (32'd0          ),

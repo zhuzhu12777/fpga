@@ -58,6 +58,19 @@ reg_map u_reg_map (
     .regs                   (regs)
 );
 
+xpm_cdc_single #(
+      .DEST_SYNC_FF(4),   // DECIMAL; range: 2-10
+      .INIT_SYNC_FF(0),   // DECIMAL; 0=disable simulation init values, 1=enable simulation init values
+      .SIM_ASSERT_CHK(0), // DECIMAL; 0=disable simulation messages, 1=enable simulation messages
+      .SRC_INPUT_REG(0)   // DECIMAL; 0=do not register input, 1=register input
+) ddr_init_impl_cdc (
+      .dest_out(regs.c0_init_calib_complete), // 1-bit output: src_in synchronized to the destination clock domain. This output is
+                           // registered.
+      .dest_clk(axilite_clk), // 1-bit input: Clock signal for the destination clock domain.
+      .src_clk(1'b0),   // 1-bit input: optional; required when SRC_INPUT_REG = 1
+      .src_in(c0_init_calib_complete)      // 1-bit input: Input signal to be synchronized to dest_clk domain.
+);
+
 STREAM #(256) dac_stream();
 dac_data_path u_dac_data_path (
     // clock & reset

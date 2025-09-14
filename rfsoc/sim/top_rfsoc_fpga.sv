@@ -4,17 +4,17 @@ module top();
 
 import axi4_task::*;
 
-initial begin
-    string wave_file;
-    int tmp;
-    $timeformat(-9, 2, " ns", 16);  // set time format to allow #?ns etc.
-    if ($test$plusargs("WAVE_FILE"))
-        tmp = $value$plusargs("WAVE_FILE=%s", wave_file);
-    else
-        wave_file = "wave.vcd";
-    $dumpfile(wave_file);
-    $dumpvars(0, top);
-end
+//initial begin
+//    string wave_file;
+//    int tmp;
+//    $timeformat(-9, 2, " ns", 16);  // set time format to allow #?ns etc.
+//    if ($test$plusargs("WAVE_FILE"))
+//        tmp = $value$plusargs("WAVE_FILE=%s", wave_file);
+//    else
+//        wave_file = "wave.vcd";
+//    $dumpfile(wave_file);
+//    $dumpvars(0, top);
+//end
 
 real clk_period_axi = 1000/333.25; // 333.25MHz
 real clk_period_axilite = 10.0; // 100MHz
@@ -111,7 +111,7 @@ rfsoc_fpga u_rfsoc_fpga (
     .axilite_rstb       (axilite_rstb),
     .pl_m_axi_rd        (pl_m_axi_rd),
     .ps_m_axi_wr        (bram_wr_axi),
-    .ps_s_axilite       (axil_regs),
+    .ps_axil_reg        (axil_regs),
     .adc_clk_p          ('0),           // 未连接，仿真可用'0
     .adc_clk_n          ('0),
     .dac_clk_p          ('0),
@@ -120,7 +120,7 @@ rfsoc_fpga u_rfsoc_fpga (
     .rf_sysref_in_n     ('0),
     .gt_refclk_p        ('0),
     .gt_refclk_n        ('0),
-    .gt_txp             (),             // 未连�?
+    .gt_txp             (),             // 未连�??
     .gt_txn             (),
     .vin_p              ('0),
     .vin_n              ('0),

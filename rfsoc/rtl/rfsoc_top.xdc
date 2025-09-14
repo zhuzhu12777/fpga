@@ -11,8 +11,9 @@ set_property PACKAGE_PIN F14 [get_ports {SPI_RSTB}]
 set_property IOSTANDARD LVCMOS18 [get_ports {SPI_*}]
 
 set_property PACKAGE_PIN M28  [get_ports gt_refclk_p]
-create_clock -name GT_REFCLK -period 5.000 [get_ports gt_refclk_p]
 
+
+create_clock -name GT_REFCLK -period 5.000 [get_ports gt_refclk_p]
 create_clock -name ADC_CLK_0 -period 5.000 [get_ports {adc_clk_p[0]}]
 create_clock -name ADC_CLK_1 -period 5.000 [get_ports {adc_clk_p[1]}]
 create_clock -name ADC_CLK_2 -period 5.000 [get_ports {adc_clk_p[2]}]
@@ -20,15 +21,24 @@ create_clock -name DAC_CLK_0 -period 5.000 [get_ports {dac_clk_p}]
 
 #create_clock -name C0_SYS_CLK -period 4.000 [get_ports {C0_SYS_CLK_0_clk_p}]
 
-set_clock_groups -asynchronous -group {GT_REFCLK \
-    ADC_CLK_0  \
-    ADC_CLK_1  \
-    ADC_CLK_2  \
-    DAC_CLK_0  \
-    [get_clocks -of_objects [get_nets u_bd/design_1_i/ddr4_0/c0_ddr4_ui_clk]] \
-    clk_pl_0 \
-    clk_pl_1 \
-    clk_pl_2 }
+#333M vs dac_clk vs dac_clk
+set_false_path -from [get_clocks clk_pl_1] -to [get_clocks RFDAC0_CLK]
+set_false_path -from [get_clocks RFADC0_CLK] -to [get_clocks clk_pl_1]
+set_false_path -from [get_clocks RFADC1_CLK] -to [get_clocks clk_pl_1]
+set_false_path -from [get_clocks RFADC2_CLK] -to [get_clocks clk_pl_1]
+#100M vs gt_clk
+set_false_path -from [get_clocks clk_pl_0] -to [get_clocks -of_objects [get_nets u_rfsoc_fpga/gt_usr_clk]]
+set_false_path -from [get_clocks -of_objects [get_nets u_rfsoc_fpga/gt_usr_clk]] -to [get_clocks clk_pl_0]
+
+#ddr vs 333M
+set_false_path -from [get_clocks clk_pl_1] -to [get_clocks -of_objects [get_nets u_bd/design_1_i/ddr4_0/c0_ddr4_ui_clk]]
+set_false_path -from [get_clocks -of_objects [get_nets u_bd/design_1_i/ddr4_0/c0_ddr4_ui_clk]] -to [get_clocks clk_pl_1]
+#clk_pl_0=100M  clk_pl_1=333M clk_pl_2=10M
+set_false_path -from [get_clocks clk_pl_0] -to [get_clocks clk_pl_1]
+set_false_path -from [get_clocks clk_pl_1] -to [get_clocks clk_pl_0]
+set_false_path -from [get_clocks clk_pl_0] -to [get_clocks clk_pl_2]
+set_false_path -from [get_clocks clk_pl_2] -to [get_clocks clk_pl_0]
+
 
 set_property PACKAGE_PIN AM9 [get_ports {C0_SYS_CLK_0_clk_n} ]
 set_property PACKAGE_PIN AL9 [get_ports {C0_SYS_CLK_0_clk_p} ]

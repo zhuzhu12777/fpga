@@ -41,7 +41,7 @@ axi_dma_rd u_axi_dma_rd (
     .m_axi              (m_axi),
 
     // axis
-    .m_axis             (dma_axis.master),
+    .m_axis             (dma_axis),
 
     // status
     .datamover_status   (datamover_status),

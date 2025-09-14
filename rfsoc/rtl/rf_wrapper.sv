@@ -86,7 +86,7 @@ usp_rf_data_converter_0 u_usp_rf_data_converter_0 (
     .clk_adc2                       (adc_usr_clk[2]),                // output wire clk_adc2
     .dac0_clk_p                     (dac_clk_p),            // input wire dac0_clk_p
     .dac0_clk_n                     (dac_clk_n),            // input wire dac0_clk_n
-    .clk_dac0                       (dac_usr_dac),                // output wire clk_dac0
+    .clk_dac0                       (dac_usr_clk),                // output wire clk_dac0
     .s_axi_aclk                     (axilite_clk),            // input wire s_axi_aclk
     .s_axi_aresetn                  (axilite_rstb),      // input wire s_axi_aresetn
     .s_axi_awaddr                   (s_axil.awaddr[17:0]),        // input wire [17 : 0] s_axi_awaddr
