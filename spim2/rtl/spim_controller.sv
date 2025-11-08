@@ -1,0 +1,169 @@
+`timescale 1ns / 1ps
+//////////////////////////////////////////////////////////////////////////////////
+
+module spim_controller(
+
+    output  logic       [15:0]      reg_rx_data,
+    output  logic                   reg_rx_valid,
+    output  logic                   fifo_overflow,
+    output  logic                   spi_done,
+
+    input   logic                   clk, rstb,
+    input   logic       [15:0]      div_n,
+    input   logic       [55:0]      reg_tx_data,
+    input   logic                   reg_tx_valid,
+    input   logic                   spim_transfer,
+    SPI_BUS.master                  m_spi
+);
+
+// tx fifo packets
+logic                       tfifo_full;
+logic                       tfifo_wr_en;
+logic                       tfifo_rd_en;
+logic                       tfifo_empty;
+logic       [55:0]          tfifo_rdata;
+logic                       tfifo_rd_ready;
+
+logic       [55:0]          tfifo_rdata_lat;
+
+logic                       spim_transfer_en;
+
+assign tfifo_wr_en = reg_tx_valid & ~tfifo_full;
+assign tfifo_rd_en = spim_transfer_en & ~tfifo_empty & tfifo_rd_ready;
+fifo_256x56b u_spim_cmd_fifo (
+    .clk                    (clk),                      // input wire clk
+    .srst                   (~rstb),                    // input wire srst
+    .din                    (reg_tx_data),              // input wire [55 : 0] din
+    .wr_en                  (tfifo_wr_en),              // input wire wr_en
+    .rd_en                  (tfifo_rd_en),              // input wire rd_en
+    .dout                   (tfifo_rdata),              // output wire [55: 0] dout
+    .full                   (tfifo_full),               // output wire full
+    .empty                  (tfifo_empty)               // output wire empty
+);
+
+
+// spim command read enable
+always@(posedge clk or negedge rstb) begin
+    if (!rstb)
+        spim_transfer_en <= 1'b0;
+    else if(spim_transfer)
+        spim_transfer_en <= 1'b1;
+    else if(spi_done)
+        spim_transfer_en <= 1'b0;
+end
+
+always@(posedge clk or negedge rstb) begin
+    if (!rstb)
+        fifo_overflow <= 1'b0;
+    else if(reg_tx_valid & tfifo_full)
+        fifo_overflow <= 1'b1;
+end
+
+always@(posedge clk or negedge rstb) begin
+    if (!rstb)
+        tfifo_rdata_lat <= #1 56'd0;
+    else if(tfifo_rd_en)
+        tfifo_rdata_lat <= tfifo_rdata;
+end
+
+// rd data
+logic       [7:0]           sel_rx_data;
+logic                       sel_rx_valid;
+logic       [2:0]           tx_cnt, rx_cnt;
+logic                       rd_flag;
+
+logic       [7:0]           spi_tx_data;
+logic                       spi_tx_ready;
+logic                       spi_tx_valid;
+logic                       spi_tx_lst;
+
+always@(posedge clk or negedge rstb) begin
+    if (!rstb)
+        spi_done <= 1'b1;
+    else if(~tfifo_empty)
+        spi_done <= 1'b0;
+    else if(tx_cnt == 3'd0 && sel_rx_valid)
+        spi_done <= 1'b1;
+end
+
+assign tfifo_rd_ready = tx_cnt == 3'd0;
+assign spi_tx_valid = tx_cnt != 3'd0;
+assign spi_tx_lst = tx_cnt == 3'd1;
+always@(posedge clk or negedge rstb) begin
+    if (!rstb)
+        tx_cnt <= 3'd0;
+    else if(tfifo_rd_en)
+        tx_cnt <= 3'd7;
+    else if(spi_tx_ready && spi_tx_valid)
+        tx_cnt <= tx_cnt - 3'd1;
+end
+
+always@(*) begin
+    case(tx_cnt)
+        3'd7: spi_tx_data = tfifo_rdata_lat[55:48];
+        3'd6: spi_tx_data = tfifo_rdata_lat[47:40];
+        3'd5: spi_tx_data = tfifo_rdata_lat[39:32];
+        3'd4: spi_tx_data = tfifo_rdata_lat[31:24];
+        3'd3: spi_tx_data = tfifo_rdata_lat[23:16];
+        3'd2: spi_tx_data = tfifo_rdata_lat[15: 8];
+        3'd1: spi_tx_data = tfifo_rdata_lat[ 7: 0];
+        default: spi_tx_data = 8'd0;
+    endcase
+end
+
+always@(posedge clk or negedge rstb) begin
+    if (!rstb)
+        rx_cnt <= 3'd0;
+    else if(sel_rx_valid && rx_cnt == 3'd6)
+        rx_cnt <= 3'd0;
+    else if(sel_rx_valid)
+        rx_cnt <= rx_cnt + 3'd1;
+end
+
+always@(posedge clk or negedge rstb) begin
+    if (!rstb)
+        rd_flag <= 1'b0;
+    else if(sel_rx_valid && rx_cnt == 3'd0)
+        rd_flag <= ~tfifo_rdata_lat[55];
+    else if(sel_rx_valid && rx_cnt == 3'd6)
+        rd_flag <= 1'b0;
+end
+
+always@(posedge clk or negedge rstb) begin
+    if (!rstb)
+        reg_rx_data <= 16'd0;
+    else begin
+        if(sel_rx_valid && rx_cnt == 3'd5)
+            reg_rx_data[15:8] <= sel_rx_data;
+        if(sel_rx_valid && rx_cnt == 3'd6)
+            reg_rx_data[7:0] <= sel_rx_data;
+    end
+end
+
+always@(posedge clk or negedge rstb) begin
+    if (!rstb)
+        reg_rx_valid <= 1'b0;
+    else if(tfifo_rd_en)
+        reg_rx_valid <= 1'b0;
+    else if(rd_flag && sel_rx_valid && rx_cnt == 3'd6)
+        reg_rx_valid <= 1'b1;
+end
+
+
+spim_core #(
+    .MODE                   (0)
+) u_spim_core(
+    .clk                    (clk),
+    .rst                    (~rstb),
+    .div_n                  (div_n),
+    .tx_dat                 (spi_tx_data),
+    .tx_lst                 (spi_tx_lst),
+    .tx_vld                 (spi_tx_valid),
+    .tx_rdy                 (spi_tx_ready),
+    .rx_dat                 (sel_rx_data),
+    .rx_vld                 (sel_rx_valid),
+    .m_spi                  (m_spi)
+);
+
+
+endmodule
