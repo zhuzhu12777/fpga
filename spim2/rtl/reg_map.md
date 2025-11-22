@@ -6,18 +6,18 @@ segment address : 0x4000_0000
 
 | 地址偏移       | 寄存器名称    | 读/写 | 位宽 | 默认值 | 描述              |
 | -------------- | ------------- | ----- | ---- | ------ | ----------------- |
-| 0x0000 ~ 0x006 | spim_ctrl[0]  | R/W   | 56b  | 0x0    | TX0通道控制寄存器 |
-| 0x0008 ~ 0x00e | spim_ctrl[1]  | R/W   | 56b  | 0x0    | TX1通道控制寄存器 |
-| 0x0010 ~ 0x016 | spim_ctrl[2]  | R/W   | 56b  | 0x0    | TX2通道控制寄存器 |
-| 0x0018 ~ 0x01e | spim_ctrl[3]  | R/W   | 56b  | 0x0    | TX3通道控制寄存器 |
-| 0x0020 ~ 0x026 | spim_ctrl[4]  | R/W   | 56b  | 0x0    | RX0通道控制寄存器 |
-| 0x0028 ~ 0x02e | spim_ctrl[5]  | R/W   | 56b  | 0x0    | RX1通道控制寄存器 |
-| 0x0030 ~ 0x036 | spim_ctrl[6]  | R/W   | 56b  | 0x0    | RX2通道控制寄存器 |
-| 0x0038 ~ 0x03e | spim_ctrl[7]  | R/W   | 56b  | 0x0    | RX3通道控制寄存器 |
-| 0x0040 ~ 0x046 | spim_ctrl[8]  | R/W   | 56b  | 0x0    | TRX通道控制寄存器 |
-| 0x0048         | spim_transfer | R/W   | 9b   | 0x0    | 传输控制寄存器    |
-| 0x004C         | spim_load     | R/W   | 9b   | 0x0    | 加载控制寄存器    |
-| 0x0050         | spim_reset    | R/W   | 9b   | 0x0    | 复位控制寄存器    |
+| 0x0000         | spim_ctrl[0]  | R/W   | 32b  | 0x0    | TX0通道控制寄存器 |
+| 0x0004         | spim_ctrl[1]  | R/W   | 32b  | 0x0    | TX1通道控制寄存器 |
+| 0x0008         | spim_ctrl[2]  | R/W   | 32b  | 0x0    | TX2通道控制寄存器 |
+| 0x000c         | spim_ctrl[3]  | R/W   | 32b  | 0x0    | TX3通道控制寄存器 |
+| 0x0010         | spim_ctrl[4]  | R/W   | 32b  | 0x0    | RX0通道控制寄存器 |
+| 0x0014         | spim_ctrl[5]  | R/W   | 32b  | 0x0    | RX1通道控制寄存器 |
+| 0x0018         | spim_ctrl[6]  | R/W   | 32b  | 0x0    | RX2通道控制寄存器 |
+| 0x001c         | spim_ctrl[7]  | R/W   | 32b  | 0x0    | RX3通道控制寄存器 |
+| 0x0020         | spim_ctrl[8]  | R/W   | 32b  | 0x0    | TRX通道控制寄存器 |
+| 0x0024         | spim_transfer | R/W   | 9b   | 0x0    | 传输控制寄存器    |
+| 0x0028         | spim_load     | R/W   | 9b   | 0x0    | 加载控制寄存器    |
+| 0x002c         | spim_reset    | W     | 9b   | 0x0    | 复位控制寄存器    |
 | 0x0100         | div_n         | R/W   | 16b  | 0x14   | 时钟分频寄存器    |
 | 0x0104         | status        | R     | 32b  | 0x1ff  | 状态寄存器        |
 
