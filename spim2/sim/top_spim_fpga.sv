@@ -43,14 +43,14 @@ SPI_BUS             m_spi[9]();
 logic [8:0]         spi_reset;
 
 spim_fpga U_DUT(
-    .SPI_RESET                  (spi_reset),
+    .SPI_SYSRST                 (spi_reset),
     .axilite_clk                (axilite_clk),
     .axilite_rstb               (axilite_rstb),
     .ps_axil                    (ps_s_axilite),
     .m_spi                      (m_spi)
 );
 
-wire [55:0] spim_ctrl_0 = top.U_DUT.regs.spim_ctrl[0];
+wire [31:0] spim_ctrl_0 = top.U_DUT.regs.spim_ctrl[0];
 wire        spim_trasfer_0 = top.U_DUT.regs.spim_transfer[0];
 wire        spim_ctrl_pulse_0 = top.U_DUT.regs.spim_ctrl_pulse[0];
 wire        spim_load_0 = top.U_DUT.regs.spim_load[0];
@@ -61,8 +61,8 @@ wire        spi_done_0 = top.U_DUT.regs.spi_done[0];
 assign m_spi[0].miso = m_spi[0].mosi;
 assign m_spi[1].miso = m_spi[1].mosi;
 
-task check_spi_data(input bit [55:0] tx_data[$], bit [55:0] rx_data0[$], bit [55:0] rx_data1[$]); 
-    bit [55:0] exp_data, read_data0, read_data1;
+task check_spi_data(input bit [31:0] tx_data[$], bit [31:0] rx_data0[$], bit [31:0] rx_data1[$]); 
+    bit [31:0] exp_data, read_data0, read_data1;
     int check_err;
     int data_size;
     data_size = tx_data.size();
@@ -87,12 +87,12 @@ assign axi4_task_pkg::axi_aclk = axi_aclk;
 assign axi4_task_pkg::axilite_clk = axilite_clk;
 
 initial begin
-    bit [55:0] val, read_data, op_done;
-    bit [55:0] val0, val1;
+    bit [31:0] val, read_data, op_done;
+    bit [31:0] val0, val1;
     int test_max;
-    bit [55:0] tx_data[$], rx_data0[$], rx_data1[$];
-    bit [14:0] spi_id;
-    bit [23:0] spi_addr;
+    bit [31:0] tx_data[$], rx_data0[$], rx_data1[$];
+    bit [6:0] spi_id;
+    bit [7:0] spi_addr;
     bit [15:0] spi_data;
     axi4_task_pkg::m_axil = ps_s_axilite;
     axi4_task_pkg::axilite_reset();
@@ -108,11 +108,9 @@ initial begin
         $display("send spi write, id=0x%0x, addr=0x%0x, data = 0x%0x, val=0x%0x", spi_id, spi_addr, spi_data, val);
         tx_data.push_back(val);
         axi4_task_pkg::WriteReg(32'h4000_0000, val[31:0]);
-        axi4_task_pkg::WriteReg(32'h4000_0004, val[55:32]);
-        axi4_task_pkg::WriteReg(32'h4000_0008, val[31:0]);
-        axi4_task_pkg::WriteReg(32'h4000_000c, val[55:32]);
+        axi4_task_pkg::WriteReg(32'h4000_0004, val[31:0]);
     end
-    axi4_task_pkg::WriteReg(32'h4000_0048, 32'h3);
+    axi4_task_pkg::WriteReg(32'h4000_0024, 32'h3);
 
     op_done = 0;
     while(op_done == 0) begin
@@ -123,9 +121,9 @@ initial begin
             repeat(100) @(posedge axilite_clk);
     end
 
-    axi4_task_pkg::WriteReg(32'h4000_004c, 32'h3);
+    axi4_task_pkg::WriteReg(32'h4000_002c, 32'h3);
     repeat(100) @(posedge axilite_clk);
-    axi4_task_pkg::WriteReg(32'h4000_004c, 32'h0);
+    axi4_task_pkg::WriteReg(32'h4000_002c, 32'h0);
     end join_none
     // check spi data
 
@@ -133,7 +131,7 @@ initial begin
         while(1) begin
             @(negedge m_spi[0].csn);
             val0 = 0;
-            for(int j=0; j<7; j++) begin
+            for(int j=0; j<4; j++) begin
                 for(int i=0; i<8; i++) begin
                     @(posedge m_spi[0].sck);
                     val0 = (val0<<1) | m_spi[0].mosi;
@@ -145,7 +143,7 @@ initial begin
         while(1) begin
             @(negedge m_spi[1].csn);
             val1 = 0;
-            for(int j=0; j<7; j++) begin
+            for(int j=0; j<4; j++) begin
                 for(int i=0; i<8; i++) begin
                     @(posedge m_spi[0].sck);
                     val1 = (val1<<1) | m_spi[0].mosi;
@@ -176,11 +174,9 @@ initial begin
             $display("send spi read, id=0x%0x, addr=0x%0x, data = 0x%0x, val=0x%0x", spi_id, spi_addr, spi_data, val);
             tx_data.push_back(val);
             axi4_task_pkg::WriteReg(32'h4000_0000, val[31:0]);
-            axi4_task_pkg::WriteReg(32'h4000_0004, val[55:32]);
-            axi4_task_pkg::WriteReg(32'h4000_0008, val[31:0]);
-            axi4_task_pkg::WriteReg(32'h4000_000c, val[55:32]);
+            axi4_task_pkg::WriteReg(32'h4000_0004, val[31:0]);
         end
-        axi4_task_pkg::WriteReg(32'h4000_0048, 32'h3);
+        axi4_task_pkg::WriteReg(32'h4000_0024, 32'h3);
 
         op_done = 0;
         while(op_done == 0) begin
@@ -191,15 +187,15 @@ initial begin
                 repeat(100) @(posedge axilite_clk);
         end
 
-        axi4_task_pkg::WriteReg(32'h4000_004c, 32'h3);
+        axi4_task_pkg::WriteReg(32'h4000_002c, 32'h3);
         repeat(100) @(posedge axilite_clk);
-        axi4_task_pkg::WriteReg(32'h4000_004c, 32'h0);
+        axi4_task_pkg::WriteReg(32'h4000_002c, 32'h0);
     end
     // check spi data
     while(1) begin
         @(negedge m_spi[0].csn);
         val0 = 0;
-        for(int j=0; j<7; j++) begin
+        for(int j=0; j<4; j++) begin
             for(int i=0; i<8; i++) begin
                 @(posedge m_spi[0].sck);
                 val0 = (val0<<1) | m_spi[0].miso;
@@ -211,7 +207,7 @@ initial begin
     while(1) begin
         @(negedge m_spi[1].csn);
         val1 = 0;
-        for(int j=0; j<7; j++) begin
+        for(int j=0; j<4; j++) begin
             for(int i=0; i<8; i++) begin
                 @(posedge m_spi[1].sck);
                 val1 = (val1<<1) | m_spi[0].miso;

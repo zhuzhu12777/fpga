@@ -2,7 +2,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 interface SPIM_REGS();
-    logic [55:0] spim_ctrl[0:8];
+    logic [31:0] spim_ctrl[0:8];
     logic [8:0]  spim_ctrl_pulse;
     logic [8:0]  spim_transfer;
     logic [8:0]  spim_load;
@@ -41,8 +41,8 @@ generate for(i=0; i<9; i=i+1) begin : gen_spim_ctrl
 
 always @(posedge clk or negedge rstb) begin
     if(!rstb)
-        regs.spim_ctrl[i] <= 56'h0;
-    else if(wren && (offset == 16'h0000 + i*8)) begin
+        regs.spim_ctrl[i] <= 32'h0;
+    else if(wren && (offset == 16'h0000 + i*4)) begin
         if (wstrb[3])
             regs.spim_ctrl[i][31:24] <= wdata[31:24];
         if (wstrb[2])
@@ -51,21 +51,14 @@ always @(posedge clk or negedge rstb) begin
             regs.spim_ctrl[i][15:8] <= wdata[15:8];
         if (wstrb[0])
             regs.spim_ctrl[i][7:0] <= wdata[7:0];
-    end else if(wren && (offset == 16'h0000 + i*8 + 4)) begin
-        if (wstrb[2])
-            regs.spim_ctrl[i][55:48] <= wdata[23:16];
-        if (wstrb[1])
-            regs.spim_ctrl[i][47:40] <= wdata[15:8];
-        if (wstrb[0])
-            regs.spim_ctrl[i][39:32] <= wdata[7:0];
     end
 end
 
 always @(posedge clk or negedge rstb) begin
     if(!rstb)
         regs.spim_ctrl_pulse[i] <= 1'b0;
-    else if(wren && (offset == 16'h0000 + i*8 + 4)) begin
-        if (wstrb[2])
+    else if(wren && (offset == 16'h0000 + i*4)) begin
+        if (wstrb[3])
             regs.spim_ctrl_pulse[i] <= 1'b1;
         else
             regs.spim_ctrl_pulse[i] <= 1'b0;
@@ -79,7 +72,7 @@ endgenerate
 always @(posedge clk or negedge rstb) begin
     if(!rstb)
         regs.spim_transfer <= 9'h0;
-    else if(wren && (offset == 16'h0048)) begin
+    else if(wren && (offset == 16'h0024)) begin
         if (wstrb[1])
             regs.spim_transfer[8] <= wdata[8];
         if (wstrb[0])
@@ -91,7 +84,7 @@ end
 always @(posedge clk or negedge rstb) begin
     if(!rstb)
         regs.spim_load <= 9'h0;
-    else if(wren && (offset == 16'h004c)) begin
+    else if(wren && (offset == 16'h0028)) begin
         if (wstrb[1])
             regs.spim_load[8] <= wdata[8];
         if (wstrb[0])
@@ -102,7 +95,7 @@ end
 always @(posedge clk or negedge rstb) begin
     if(!rstb)
         regs.spim_reset <= 9'h0;
-    else if(wren && (offset == 16'h0050)) begin
+    else if(wren && (offset == 16'h002c)) begin
         if (wstrb[1])
             regs.spim_reset[8] <= wdata[8];
         if (wstrb[0])
@@ -125,27 +118,18 @@ end
 
 always @(*) begin
     case(offset)
-        16'h0000: rdata = {regs.spim_ctrl[0][31:16], regs.rd_data[0]};
-        16'h0004: rdata = {8'd0, regs.spi_done[0], regs.spim_ctrl[0][54:32]};
-        16'h0008: rdata = {regs.spim_ctrl[1][31:16], regs.rd_data[1]};
-        16'h000c: rdata = {8'd0, regs.spi_done[1], regs.spim_ctrl[1][54:32]};
-        16'h0010: rdata = {regs.spim_ctrl[2][31:16], regs.rd_data[2]};
-        16'h0014: rdata = {8'd0, regs.spi_done[2], regs.spim_ctrl[2][54:32]};
-        16'h0018: rdata = {regs.spim_ctrl[3][31:16], regs.rd_data[3]};
-        16'h001c: rdata = {8'd0, regs.spi_done[3], regs.spim_ctrl[3][54:32]};
-        16'h0020: rdata = {regs.spim_ctrl[4][31:16], regs.rd_data[4]};
-        16'h0024: rdata = {8'd0, regs.spi_done[4], regs.spim_ctrl[4][54:32]};
-        16'h0028: rdata = {regs.spim_ctrl[5][31:16], regs.rd_data[5]};
-        16'h002c: rdata = {8'd0, regs.spi_done[5], regs.spim_ctrl[5][54:32]};
-        16'h0030: rdata = {regs.spim_ctrl[6][31:16], regs.rd_data[6]};
-        16'h0034: rdata = {8'd0, regs.spi_done[6], regs.spim_ctrl[6][54:32]};
-        16'h0038: rdata = {regs.spim_ctrl[7][31:16], regs.rd_data[7]};
-        16'h003c: rdata = {8'd0, regs.spi_done[7], regs.spim_ctrl[7][54:32]};
-        16'h0040: rdata = {regs.spim_ctrl[8][31:16], regs.rd_data[8]};
-        16'h0044: rdata = {8'd0, regs.spi_done[8], regs.spim_ctrl[8][54:32]};
-        16'h0048: rdata = {23'd0, regs.spim_transfer};
-        16'h004c: rdata = {23'd0, regs.spim_load};
-        16'h0050: rdata = {23'd0, regs.spim_reset};
+        16'h0000: rdata = {regs.spi_done[0], regs.spim_ctrl[0][30:16], regs.rd_data[0]};
+        16'h0004: rdata = {regs.spi_done[1], regs.spim_ctrl[1][30:16], regs.rd_data[1]};
+        16'h0008: rdata = {regs.spi_done[2], regs.spim_ctrl[2][30:16], regs.rd_data[2]};
+        16'h000c: rdata = {regs.spi_done[3], regs.spim_ctrl[3][30:16], regs.rd_data[3]};
+        16'h0010: rdata = {regs.spi_done[4], regs.spim_ctrl[4][30:16], regs.rd_data[4]};
+        16'h0014: rdata = {regs.spi_done[5], regs.spim_ctrl[5][30:16], regs.rd_data[5]};
+        16'h0018: rdata = {regs.spi_done[6], regs.spim_ctrl[6][30:16], regs.rd_data[6]};
+        16'h001c: rdata = {regs.spi_done[7], regs.spim_ctrl[7][30:16], regs.rd_data[7]};
+        16'h0020: rdata = {regs.spi_done[8], regs.spim_ctrl[8][30:16], regs.rd_data[8]};
+        16'h0024: rdata = {23'd0, regs.spim_transfer};
+        16'h0028: rdata = {23'd0, regs.spim_load};
+        16'h002c: rdata = {23'd0, regs.spim_reset};
 
         16'h0100: rdata = {16'h0, regs.div_n};
         16'h0104: rdata = {7'd0, regs.fifo_overflow, 7'd0, regs.spi_done};
