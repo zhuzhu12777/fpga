@@ -1,13 +1,13 @@
 set cur_tcl_path [file dirname [file normalize [info script]]]
 
-if {[get_ips fifo_256x56b] == ""} {
-  create_ip -name fifo_generator -vendor xilinx.com -library ip -module_name fifo_256x56b
+if {[get_ips fifo_256x32b] == ""} {
+  create_ip -name fifo_generator -vendor xilinx.com -library ip -module_name fifo_256x32b
 }
 set_property -dict [list \
-  CONFIG.Input_Data_Width {56} \
+  CONFIG.Input_Data_Width {32} \
   CONFIG.Input_Depth {256} \
   CONFIG.Performance_Options {First_Word_Fall_Through} \
-] [get_ips fifo_256x56b]
+] [get_ips fifo_256x32b]
 
 
 if {[get_ips axi_apb_bridge_0] == ""} {

@@ -35,9 +35,9 @@ set_property PACKAGE_PIN E21  [get_ports {SPI_LOAD[3]}]
 
 ### J12 ###
 #RX0
-set_property PACKAGE_PIN R6   [get_ports {SPI_LOAD[4]}]
+set_property PACKAGE_PIN U6   [get_ports {SPI_LOAD[4]}]
 set_property PACKAGE_PIN T4   [get_ports {SPI_MISO[4]}]
-set_property PACKAGE_PIN AB7  [get_ports {SPI_MOSI[4]}]
+set_property PACKAGE_PIN AB2  [get_ports {SPI_MOSI[4]}]
 set_property PACKAGE_PIN V5   [get_ports {SPI_SYSRST[4]}]
 set_property PACKAGE_PIN Y4   [get_ports {SPI_SCK[4]}]
 set_property PACKAGE_PIN W6   [get_ports {SPI_CSN[4]}]
@@ -67,8 +67,8 @@ set_property PACKAGE_PIN Y8   [get_ports {SPI_MISO[7]}]
 set_property PACKAGE_PIN W12  [get_ports {SPI_LOAD[7]}]
 
 #TRX
-set_property PACKAGE_PIN T6   [get_ports {SPI_CSN[8]}]
-set_property PACKAGE_PIN AB6  [get_ports {SPI_SCK[8]}]
+set_property PACKAGE_PIN U5   [get_ports {SPI_CSN[8]}]
+set_property PACKAGE_PIN AB1  [get_ports {SPI_SCK[8]}]
 set_property PACKAGE_PIN U4   [get_ports {SPI_SYSRST[8]}]
 set_property PACKAGE_PIN AA4  [get_ports {SPI_MOSI[8]}]
 set_property PACKAGE_PIN V4   [get_ports {SPI_MISO[8]}]
